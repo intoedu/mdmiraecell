@@ -86,24 +86,24 @@ const SERVICES = [
     desc: "첨단 퀀텀 양자 기술을 활용한 진단 및 치료 프로그램입니다. 자세한 내용은 내원 상담 시 안내해 드립니다.",
     groups: [ { tags: ["퀀텀 양자 진단", "퀀텀 양자 치료"] } ] },
 ];
-const svcHref = s => `${s.key}.html`;
+const svcHref = s => `${s.key}`;
 
 /* 대메뉴 4개: [대표링크, 라벨, 하위]. 하위가 "mega"면 진료안내(10개 분야),
    아니면 [컬럼링크, 컬럼제목, [[링크, 항목], ...]] 배열 → 메뉴별 메가 패널로 렌더 */
 const NAV_ITEMS = [
-  ["about.html", "의원소개", [
-    ["about.html", "소개·인사말", [["about.html#greeting", "인사말"], ["about.html#values", "진료 철학"]]],
-    ["location.html", "오시는 길", [["location.html#map", "위치·지도"], ["location.html#transport", "대중교통 안내"]]],
+  ["about", "의원소개", [
+    ["about", "소개·인사말", [["about#greeting", "인사말"], ["about#values", "진료 철학"]]],
+    ["location", "오시는 길", [["location#map", "위치·지도"], ["location#transport", "대중교통 안내"]]],
   ]],
-  ["services.html", "진료안내", "mega"],
-  ["notice.html", "커뮤니티", [
-    ["notice.html", "공지·소식", [["notice.html#list", "공지사항"], ["notice.html#video", "유튜브 영상"]]],
-    ["gallery.html", "갤러리", [["gallery.html", "병원 갤러리"]]],
-    ["faq.html", "자주 묻는 질문", [["faq.html", "FAQ"]]],
+  ["services", "진료안내", "mega"],
+  ["notice", "커뮤니티", [
+    ["notice", "공지·소식", [["notice#list", "공지사항"], ["notice#video", "유튜브 영상"]]],
+    ["gallery", "갤러리", [["gallery", "병원 갤러리"]]],
+    ["faq", "자주 묻는 질문", [["faq", "FAQ"]]],
   ]],
-  ["contact.html", "문의·예약", [
-    ["contact.html", "문의하기", [["contact.html#form", "문의 양식"], ["mailto:mdmiraecellclinic@gmail.com", "이메일 문의"]]],
-    ["reserve.html", "진료 예약", [["reserve.html#form", "온라인 예약 신청"], ["tel:027768768", "전화 예약 02-776-8768"]]],
+  ["contact", "문의·예약", [
+    ["contact", "문의하기", [["contact#form", "문의 양식"], ["mailto:mdmiraecellclinic@gmail.com", "이메일 문의"]]],
+    ["reserve", "진료 예약", [["reserve#form", "온라인 예약 신청"], ["tel:027768768", "전화 예약 02-776-8768"]]],
   ]],
 ];
 
@@ -117,7 +117,7 @@ document.getElementById("site-header").innerHTML = `
   <a href="mailto:${EMAIL}">✉ ${EMAIL}</a>
 </div></div>
 <header class="site"><div class="container nav-wrap">
-  <a class="brand" href="index.html"><img class="logo-img" src="images/logo.svg?v=2" alt="명동미래셀의원"></a>
+  <a class="brand" href="./"><img class="logo-img" src="images/logo.svg?v=2" alt="명동미래셀의원"></a>
   <nav class="main" id="main-nav"><ul>
     ${NAV_ITEMS.map(([href, label, sub], mi) => {
       /* .sub는 모바일 메뉴 전용 — 데스크톱은 메뉴별 메가 패널이 뜸 */
@@ -128,7 +128,7 @@ document.getElementById("site-header").innerHTML = `
         <ul class="sub">${mobileLinks.map(([h, l]) => `<li><a href="${h}">${l}</a></li>`).join("")}</ul></li>`;
     }).join("")}
   </ul></nav>
-  <a class="nav-cta" href="reserve.html">진료 예약</a>
+  <a class="nav-cta" href="reserve">진료 예약</a>
   <button id="menu-btn" aria-label="메뉴 열기">☰</button>
 </div>
 ${NAV_ITEMS.map(([href, label, sub], mi) => {
@@ -149,7 +149,7 @@ document.getElementById("site-footer").innerHTML = `
 <footer class="site"><div class="container">
   <div class="cols">
     <div>
-      <a class="brand" href="index.html" style="margin-bottom:16px"><img src="images/logo.svg?v=2" alt="명동미래셀의원" style="height:44px;filter:brightness(0) invert(1)"></a>
+      <a class="brand" href="./" style="margin-bottom:16px"><img src="images/logo.svg?v=2" alt="명동미래셀의원" style="height:44px;filter:brightness(0) invert(1)"></a>
       <p style="margin-top:14px">${ADDR}<br>대표자 박종윤 · Tel ${TEL} · ${EMAIL}</p>
       <div class="sns">
         <a href="#" aria-label="유튜브" title="YouTube">▶</a>
@@ -162,11 +162,11 @@ document.getElementById("site-footer").innerHTML = `
       ${SERVICES.slice(0, 5).map(s => `<li><a href="${svcHref(s)}">${s.title}</a></li>`).join("")}
     </ul></div>
     <div><h4>바로가기</h4><ul>
-      <li><a href="reserve.html">진료 예약</a></li>
-      <li><a href="contact.html">문의하기</a></li>
-      <li><a href="location.html">오시는 길</a></li>
-      <li><a href="notice.html">공지·소식</a></li>
-      <li><a href="faq.html">자주 묻는 질문</a></li>
+      <li><a href="reserve">진료 예약</a></li>
+      <li><a href="contact">문의하기</a></li>
+      <li><a href="location">오시는 길</a></li>
+      <li><a href="notice">공지·소식</a></li>
+      <li><a href="faq">자주 묻는 질문</a></li>
     </ul></div>
   </div>
   <div class="fine">
@@ -176,7 +176,7 @@ document.getElementById("site-footer").innerHTML = `
 </div></footer>
 <div class="quick">
   <a class="tel" href="tel:${TEL.replace(/-/g, "")}" title="전화 걸기" aria-label="전화 걸기">☎</a>
-  <a class="rsv" href="reserve.html" title="진료 예약" aria-label="진료 예약">✎</a>
+  <a class="rsv" href="reserve" title="진료 예약" aria-label="진료 예약">✎</a>
 </div>`;
 
 /* ---------- 진료 분야 개별 페이지 렌더링 (<main id="svc-page" data-svc="키">) ---------- */
@@ -220,7 +220,7 @@ if (svcPage) {
         <div style="background:var(--green-soft);border-radius:16px;padding:34px;text-align:center">
           <h3 style="font-size:20px;margin-bottom:8px">${cur.title} 진료가 궁금하신가요?</h3>
           <p style="color:var(--gray);margin-bottom:20px">전문 의료진이 자세히 상담해 드립니다. ☎ ${TEL}</p>
-          <a class="btn btn-green" href="reserve.html">상담 예약하기</a>
+          <a class="btn btn-green" href="reserve">상담 예약하기</a>
         </div>
       </div>
     </div>`;
@@ -262,7 +262,8 @@ if (svcIndex) {
 }
 
 /* 현재 페이지가 속한 대메뉴 활성화 */
-const here = location.pathname.split("/").pop() || "index.html";
+/* 로컬(.html 직접 접속)과 Pages(확장자 없음) 모두 대응 */
+const here = (location.pathname.split("/").pop() || "index").replace(/\.html$/, "");
 document.querySelectorAll("nav.main > ul > li").forEach(li => {
   const links = [...li.querySelectorAll("a")].map(a => a.getAttribute("href"));
   if (links.includes(here)) li.querySelector("a").classList.add("active");

@@ -159,7 +159,7 @@ document.getElementById("site-footer").innerHTML = `
       </div>
     </div>
     <div><h4>진료 안내</h4><ul>
-      ${SERVICES.slice(0, 5).map(s => `<li><a href="${svcHref(s)}">${s.title}</a></li>`).join("")}
+      ${SERVICES.slice(0, 4).map(s => `<li><a href="${svcHref(s)}">${s.title}</a></li>`).join("")}
     </ul></div>
     <div><h4>바로가기</h4><ul>
       <li><a href="reserve">진료 예약</a></li>

@@ -236,7 +236,7 @@ footer .fine a:hover{color:#fff}
   nav.main li.open > a{color:var(--green)}
   nav.main .sub{display:none}
   nav.main li.open .sub{display:flex;flex-direction:column;background:var(--bg-alt);border-top:1px solid var(--line);padding:6px 0}
-  nav.main .sub a{padding:12px 20px 12px 30px;font-size:15px;color:var(--gray)}
+  nav.main .sub a{display:block;padding:12px 20px 12px 30px;font-size:15px;color:var(--gray)}
   nav.main .sub a::before{content:"·";margin-right:9px;color:var(--green);font-weight:800}
   nav.main .sub a:active{color:var(--green)}
   .mega{display:none!important}

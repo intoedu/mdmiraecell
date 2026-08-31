@@ -31,17 +31,14 @@ ul{list-style:none}
 .container{max-width:1180px;margin:0 auto;padding:0 24px}
 
 /* ---------- Header ---------- */
-.top-bar{background:var(--green-deep);color:#dfe9e2;font-size:13px}
-.top-bar .container{display:flex;justify-content:flex-end;gap:20px;padding:7px 24px}
-.top-bar a:hover{color:#fff}
 header.site{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.96);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
-.nav-wrap{display:flex;align-items:center;justify-content:space-between;height:76px}
+.nav-wrap{display:flex;align-items:center;justify-content:space-between;height:92px}
 .brand{display:flex;align-items:center;gap:12px}
 .brand svg{width:44px;height:44px}
 .brand .logo-img{height:46px;display:block}
 .brand-name{font-weight:800;font-size:21px;letter-spacing:-.5px;color:var(--ink)}
 .brand-name span{color:var(--green)}
-nav.main ul{display:flex;align-items:stretch;height:76px}
+nav.main ul{display:flex;align-items:stretch;height:92px}
 nav.main > ul > li > a{display:flex;align-items:center;height:100%;padding:0 34px;font-weight:600;font-size:15.5px;border-radius:0;transition:.2s}
 nav.main a:hover,nav.main a.active{color:var(--green);background:var(--green-soft)}
 nav.main li{position:relative}
@@ -201,7 +198,8 @@ footer h4{color:#fff;font-size:15.5px;margin-bottom:14px}
 footer .brand-name{color:#fff}
 footer a:hover{color:#fff}
 footer li{margin-bottom:8px}
-footer .fine{border-top:1px solid rgba(255,255,255,.12);padding-top:22px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;font-size:13px}
+footer .fine{border-top:1px solid rgba(255,255,255,.12);padding-top:22px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px 24px;font-size:13px}
+footer .fine a:hover{color:#fff}
 .sns{display:flex;gap:12px;margin-top:16px}
 .sns a{width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;font-size:17px;transition:.2s}
 .sns a:hover{background:var(--green)}
@@ -225,7 +223,7 @@ footer .fine{border-top:1px solid rgba(255,255,255,.12);padding-top:22px;display
 }
 @media(max-width:768px){
   #menu-btn{display:block}
-  nav.main{display:none;position:absolute;top:76px;left:0;right:0;background:#fff;border-bottom:1px solid var(--line);box-shadow:var(--shadow)}
+  nav.main{display:none;position:absolute;top:92px;left:0;right:0;background:#fff;border-bottom:1px solid var(--line);box-shadow:var(--shadow)}
   nav.main.open{display:block}
   nav.main{max-height:calc(100vh - 110px);overflow-y:auto}
   nav.main ul{flex-direction:column;padding:0;height:auto}
@@ -250,5 +248,4 @@ footer .fine{border-top:1px solid rgba(255,255,255,.12);padding-top:22px;display
   .form-wrap{padding:30px 22px}
   .addr-box{grid-template-columns:1fr}
   footer .cols{grid-template-columns:1fr}
-  .top-bar .container{justify-content:center}
 }

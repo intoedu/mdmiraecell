@@ -112,10 +112,6 @@ const EMAIL = "mdmiraecellclinic@gmail.com";
 const ADDR = "서울특별시 중구 퇴계로 123, 7층 명동미래셀의원";
 
 document.getElementById("site-header").innerHTML = `
-<div class="top-bar"><div class="container">
-  <a href="tel:${TEL.replace(/-/g, "")}">☎ ${TEL}</a>
-  <a href="mailto:${EMAIL}">✉ ${EMAIL}</a>
-</div></div>
 <header class="site"><div class="container nav-wrap">
   <a class="brand" href="./"><img class="logo-img" src="images/logo.svg?v=2" alt="명동미래셀의원"></a>
   <nav class="main" id="main-nav"><ul>
@@ -170,6 +166,7 @@ document.getElementById("site-footer").innerHTML = `
     </ul></div>
   </div>
   <div class="fine">
+    <span><a href="tel:${TEL.replace(/-/g, "")}">☎ ${TEL}</a> · <a href="mailto:${EMAIL}">✉ ${EMAIL}</a></span>
     <span>© ${new Date().getFullYear()} 명동미래셀의원. All rights reserved.</span>
     <span>본 사이트의 콘텐츠는 의료광고 심의 기준을 준수합니다.</span>
   </div>

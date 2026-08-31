@@ -1,4 +1,10 @@
 /* ============ 명동미래셀의원 ============ */
+@font-face{
+  font-family:'SUIT';
+  src:url('../fonts/SUIT-Variable.woff2') format('woff2-variations');
+  font-weight:100 900;
+  font-display:swap;
+}
 :root{
   --green:#1e6b34;
   --green-dark:#14512655;
@@ -14,7 +20,7 @@
   --radius:14px;
   --shadow:0 10px 30px rgba(15,61,29,.08);
   --font-serif:'Nanum Myeongjo', serif;
-  --font-sans:'Noto Sans KR', sans-serif;
+  --font-sans:'SUIT','Apple SD Gothic Neo','Malgun Gothic',sans-serif;
 }
 *{margin:0;padding:0;box-sizing:border-box}
 html{scroll-behavior:smooth}

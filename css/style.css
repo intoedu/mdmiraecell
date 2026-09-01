@@ -131,6 +131,21 @@ section.block.alt{background:var(--bg-alt)}
 .tab-panel h5{font-size:16.5px;color:var(--green-deep);margin-bottom:6px}
 .tab-panel p{color:var(--gray);font-size:15px}
 
+/* 탭 패널·본문 아티클 (줄기세포 등 상세 원고) */
+.tab-desc p{margin-top:10px;line-height:1.8}
+.tab-desc h6{margin-top:16px;margin-bottom:2px;font-size:14.5px;font-weight:800;color:var(--green)}
+.tab-desc ul,.tab-desc ol{margin-top:10px;padding-left:20px;color:var(--gray);font-size:15px;line-height:1.8}
+.tab-desc ul li{list-style:disc}
+.tab-desc ol li{list-style:decimal}
+.tab-desc .fine-note{font-size:13.5px;color:var(--gray);opacity:.85;margin-top:14px}
+.svc-article{margin-top:26px}
+.svc-article h3{font-size:19px;font-weight:800;color:var(--green-deep);margin-bottom:10px}
+.svc-article p{color:var(--gray);font-size:15px;line-height:1.8;margin-top:8px}
+.svc-article ul,.svc-article ol{margin-top:10px;padding-left:20px;color:var(--gray);font-size:15px;line-height:1.9}
+.svc-article ul li{list-style:disc}
+.svc-article ol li{list-style:decimal}
+.svc-consent{margin-top:44px;background:var(--green-soft);border:1px solid #d5e6d9;border-radius:16px;padding:28px 30px}
+
 /* about */
 .about-flex{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center}
 /* 의료진 소개 */

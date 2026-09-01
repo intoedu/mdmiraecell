@@ -92,7 +92,7 @@ const svcHref = s => `${s.key}`;
    아니면 [컬럼링크, 컬럼제목, [[링크, 항목], ...]] 배열 → 메뉴별 메가 패널로 렌더 */
 const NAV_ITEMS = [
   ["about", "의원소개", [
-    ["about", "소개·인사말", [["about#greeting", "인사말"], ["about#values", "진료 철학"]]],
+    ["about", "소개·인사말", [["about#greeting", "인사말"], ["about#doctor", "의료진 소개"], ["about#values", "진료 철학"]]],
     ["location", "오시는 길", [["location#map", "위치·지도"], ["location#transport", "대중교통 안내"]]],
   ]],
   ["services", "진료안내", "mega"],

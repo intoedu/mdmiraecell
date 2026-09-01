@@ -133,6 +133,14 @@ section.block.alt{background:var(--bg-alt)}
 
 /* about */
 .about-flex{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center}
+/* 의료진 소개 */
+.doc-flex{display:grid;grid-template-columns:auto 1fr;gap:50px;align-items:start;max-width:900px;margin:0 auto}
+.doc-photo{width:280px;border-radius:16px;box-shadow:var(--shadow)}
+.doc-name{font-size:24px;font-weight:800;margin-bottom:18px}
+.doc-name small{font-size:15px;color:var(--green);font-weight:700;margin-left:6px}
+.doc-list li{padding:4px 0;color:var(--ink);font-size:15.5px}
+.doc-list li::before{content:"·";color:var(--green);font-weight:800;margin-right:9px}
+.doc-en{margin-top:20px;font-size:13.5px;color:var(--gray);line-height:1.75}
 .about-visual{background:linear-gradient(150deg,var(--green-soft),#fff);border:1px solid var(--line);border-radius:20px;padding:60px;display:flex;align-items:center;justify-content:center}
 .about-visual svg,.about-visual img{width:220px;height:220px}
 .about-txt .tag{color:var(--green);font-weight:700;letter-spacing:3px;font-size:13px}
@@ -216,6 +224,8 @@ footer .fine a:hover{color:#fff}
   .grid.c4{grid-template-columns:repeat(2,1fr)}
   .grid.c3{grid-template-columns:repeat(2,1fr)}
   .about-flex{grid-template-columns:1fr}
+  .doc-flex{grid-template-columns:1fr;justify-items:center}
+  .doc-flex > div{width:100%}
   .svc-layout{grid-template-columns:1fr}
   .svc-side{position:static}
   .svc-side ul{display:flex;flex-wrap:wrap;border:none;gap:8px}

@@ -134,7 +134,9 @@ section.block.alt{background:var(--bg-alt)}
 /* about */
 .about-flex{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center}
 /* 의료진 소개 */
-.doc-flex{display:grid;grid-template-columns:auto 1fr;gap:70px;align-items:center;max-width:1040px;margin:0 auto}
+#doctor{padding-bottom:0} /* 사진이 섹션 하단에 딱 붙도록 */
+.doc-flex{display:grid;grid-template-columns:auto 1fr;gap:70px;align-items:end;max-width:1040px;margin:0 auto}
+.doc-flex > div{padding-bottom:70px}
 .doc-photo{width:420px;max-width:100%}
 .doc-name{font-size:24px;font-weight:800;margin-bottom:18px}
 .doc-name small{font-size:15px;color:var(--green);font-weight:700;margin-left:6px}

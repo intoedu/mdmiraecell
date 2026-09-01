@@ -200,8 +200,7 @@ const SERVICES = [
     cta: `
       <h3 style="font-size:20px;margin-bottom:8px">어떤 방법이 맞는지, 함께 정하시면 됩니다</h3>
       <p style="color:var(--gray);margin-bottom:14px">PRP가 맞는 분도, 줄기세포가 맞는 분도, 지금은 다른 치료가 먼저인 분도 계십니다.<br>상태를 먼저 보고 솔직하게 말씀드리는 것부터 시작합니다.</p>
-      <p style="color:var(--ink);font-weight:700;margin-bottom:4px">☎ 02-776-8768&nbsp;&nbsp;|&nbsp;&nbsp;진료시간 : 월·화·수·금 10:00~19:00 / 토 09:00~14:00</p>
-      <p style="color:var(--gray);font-size:13.5px;margin-bottom:20px">※ 목요일 · 일요일 · 공휴일 휴진 / 점심시간 13:00~14:00 (토요일은 점심시간 없이 진료)</p>
+      <p style="color:var(--ink);font-weight:700;margin-bottom:20px">☎ 02-776-8768</p>
       <a class="btn btn-green" href="reserve">상담 예약하기</a>` },
   { key: "derma", no: 2, title: "피부과",
     desc: "피부 본연의 건강함과 아름다움을 되찾는 맞춤 피부 치료 프로그램입니다.",

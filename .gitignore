@@ -1,1 +1,7 @@
 fonts/SUIT-Variable-woff2/
+
+# 접속 정보·비밀 값은 저장소에 올리지 않습니다
+.env
+*.env
+.ftp-*
+deploy.local.*

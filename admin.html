@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>상담 신청 관리 | 명동미래셀의원</title>
+<link rel="icon" type="image/svg+xml" href="images/favicon.svg?v=2">
+<style>
+:root{
+  --green:#1e6b34; --green-deep:#0f3d1d; --green-soft:#e8f2ea; --green-mid:#3d8b52;
+  --ink:#1c2420; --gray:#5f6b64; --line:#e3e8e4; --bg:#f6f9f6;
+  --red:#c0392b; --amber:#b07d20; --blue:#245c8c;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'SUIT','Apple SD Gothic Neo','Malgun Gothic',sans-serif;background:var(--bg);color:var(--ink);line-height:1.6;font-size:15px}
+a{color:inherit}
+button,input,select,textarea{font-family:inherit;font-size:inherit}
+[hidden]{display:none !important}
+
+/* ---------- 로그인 ---------- */
+.login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
+.login-box{width:100%;max-width:380px;background:#fff;border:1px solid var(--line);border-radius:18px;padding:40px 34px;box-shadow:0 10px 30px rgba(15,61,29,.08)}
+.login-box h1{font-size:19px;color:var(--green-deep);margin-bottom:6px}
+.login-box .sub{font-size:13.5px;color:var(--gray);margin-bottom:26px}
+.login-box label{display:block;font-weight:700;font-size:13.5px;margin-bottom:7px}
+.login-box input{width:100%;padding:12px 14px;border:1px solid #ccd6cf;border-radius:10px;background:#fbfdfb;margin-bottom:16px}
+.login-box input:focus{outline:2px solid var(--green-mid);border-color:transparent}
+.btn{border:none;border-radius:999px;padding:13px 26px;font-weight:700;cursor:pointer;transition:.15s}
+.btn-green{background:var(--green);color:#fff;width:100%}
+.btn-green:hover{background:var(--green-deep)}
+.btn-green:disabled{background:#9db3a4;cursor:default}
+.msg{font-size:13.5px;border-radius:9px;padding:11px 14px;margin-bottom:16px}
+.msg.bad{background:#fdf1ef;border:1px solid #f0c7bf;color:#8c2d18}
+
+/* ---------- 상단 ---------- */
+.top{background:#fff;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:20}
+.top .in{max-width:1240px;margin:0 auto;padding:14px 22px;display:flex;align-items:center;gap:14px}
+.top h1{font-size:17px;color:var(--green-deep);font-weight:800}
+.top .who{margin-left:auto;font-size:13px;color:var(--gray);text-align:right;line-height:1.35}
+.top .who b{display:block;color:var(--ink)}
+.ghost{border:1px solid var(--line);background:#fff;border-radius:999px;padding:8px 16px;font-size:13.5px;font-weight:700;color:var(--gray);cursor:pointer}
+.ghost:hover{border-color:var(--green-mid);color:var(--green)}
+
+.page{max-width:1240px;margin:0 auto;padding:24px 22px 70px}
+
+/* ---------- 요약 ---------- */
+.tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px}
+.tile{background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px 20px}
+.tile .k{font-size:12.5px;color:var(--gray);font-weight:700;letter-spacing:.3px}
+.tile .v{font-size:27px;font-weight:800;color:var(--green-deep);margin-top:4px;font-variant-numeric:tabular-nums}
+.tile.hot .v{color:var(--red)}
+
+/* ---------- 필터 ---------- */
+.filters{background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px 18px;margin-bottom:18px;display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.filters input,.filters select{padding:9px 12px;border:1px solid #ccd6cf;border-radius:9px;background:#fbfdfb;font-size:14px}
+.filters input:focus,.filters select:focus{outline:2px solid var(--green-mid);border-color:transparent}
+.filters .search{flex:1;min-width:190px}
+.filters .spacer{flex:1}
+.filters .dash{color:var(--gray);font-size:13px}
+
+/* ---------- 목록 ---------- */
+.list{background:#fff;border:1px solid var(--line);border-radius:14px;overflow:hidden}
+table{width:100%;border-collapse:collapse}
+th,td{padding:13px 16px;text-align:left;border-bottom:1px solid var(--line);font-size:14px;vertical-align:middle}
+th{background:#fafcfa;font-size:12.5px;color:var(--gray);font-weight:700;letter-spacing:.3px;white-space:nowrap}
+tbody tr{cursor:pointer}
+tbody tr:hover{background:var(--green-soft)}
+tbody tr.unread td:first-child{box-shadow:inset 3px 0 0 var(--red)}
+td.nm{font-weight:700;white-space:nowrap}
+td.tel{white-space:nowrap;font-variant-numeric:tabular-nums}
+td.when{color:var(--gray);font-size:13px;white-space:nowrap}
+td.msg{color:var(--gray);max-width:340px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.empty{padding:56px 20px;text-align:center;color:var(--gray)}
+
+.pill{display:inline-block;padding:4px 11px;border-radius:999px;font-size:12.5px;font-weight:700;white-space:nowrap}
+.pill.new{background:#fdecea;color:var(--red)}
+.pill.contacted{background:#fdf4e3;color:var(--amber)}
+.pill.booked{background:var(--green-soft);color:var(--green)}
+.pill.done{background:#eef2f6;color:var(--blue)}
+.pill.canceled,.pill.noshow,.pill.spam{background:#f1f3f2;color:var(--gray)}
+.kind{display:inline-block;padding:3px 9px;border-radius:6px;font-size:12px;font-weight:700;background:#eef2f6;color:var(--blue)}
+.kind.reserve{background:var(--green-soft);color:var(--green)}
+
+.pager{display:flex;align-items:center;justify-content:center;gap:14px;padding:16px;color:var(--gray);font-size:13.5px}
+
+/* ---------- 상세 ---------- */
+.veil{position:fixed;inset:0;background:rgba(15,61,29,.34);z-index:40}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:min(520px,100%);background:#fff;z-index:41;overflow-y:auto;box-shadow:-10px 0 40px rgba(15,61,29,.16)}
+.drawer .head{position:sticky;top:0;background:#fff;border-bottom:1px solid var(--line);padding:18px 24px;display:flex;align-items:center;gap:12px}
+.drawer .head h2{font-size:18px;color:var(--green-deep)}
+.drawer .head .x{margin-left:auto;background:none;border:none;font-size:24px;color:var(--gray);cursor:pointer;line-height:1}
+.drawer .body{padding:22px 24px 40px}
+.row{display:flex;gap:14px;padding:11px 0;border-bottom:1px dashed var(--line);font-size:14.5px}
+.row .k{flex:0 0 96px;color:var(--gray);font-weight:700;font-size:13.5px}
+.row .v{flex:1;word-break:break-word}
+.row .v a{color:var(--green);font-weight:700}
+.note{white-space:pre-wrap;background:#fbfdfb;border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin-top:8px;font-size:14.5px}
+.drawer h3{font-size:14px;color:var(--green-deep);margin:26px 0 10px;font-weight:800}
+.drawer select,.drawer textarea{width:100%;padding:11px 14px;border:1px solid #ccd6cf;border-radius:10px;background:#fbfdfb}
+.drawer textarea{min-height:110px;resize:vertical}
+.drawer select:focus,.drawer textarea:focus{outline:2px solid var(--green-mid);border-color:transparent}
+.drawer .save{margin-top:16px}
+.warn{font-size:12.5px;color:var(--gray);margin-top:10px}
+.consent-no{color:var(--red);font-weight:700}
+
+@media (max-width:860px){
+  .tiles{grid-template-columns:repeat(2,1fr)}
+  .page{padding:18px 14px 60px}
+  th.hide,td.hide{display:none}
+  td.msg{max-width:130px}
+}
+</style>
+</head>
+<body>
+
+<!-- ================= 로그인 ================= -->
+<div class="login-wrap" id="view-login">
+  <form class="login-box" id="login-form">
+    <h1>상담 신청 관리</h1>
+    <p class="sub">명동미래셀의원 · 관리자 전용</p>
+    <div class="msg bad" id="login-msg" hidden></div>
+    <label for="lg-email">이메일</label>
+    <input id="lg-email" type="email" autocomplete="username" required>
+    <label for="lg-pw">비밀번호</label>
+    <input id="lg-pw" type="password" autocomplete="current-password" required>
+    <button class="btn btn-green" type="submit">로그인</button>
+  </form>
+</div>
+
+<!-- ================= 목록 ================= -->
+<div id="view-main" hidden>
+  <div class="top"><div class="in">
+    <h1>상담 신청 관리</h1>
+    <div class="who"><b id="me-name"></b><span id="me-email"></span></div>
+    <button class="ghost" id="btn-csv">엑셀 내보내기</button>
+    <button class="ghost" id="btn-out">로그아웃</button>
+  </div></div>
+
+  <div class="page">
+    <div class="tiles">
+      <div class="tile hot"><div class="k">확인 안 한 신규</div><div class="v" id="t-new">–</div></div>
+      <div class="tile"><div class="k">오늘 접수</div><div class="v" id="t-today">–</div></div>
+      <div class="tile"><div class="k">최근 7일</div><div class="v" id="t-week">–</div></div>
+      <div class="tile"><div class="k">전체 누적</div><div class="v" id="t-all">–</div></div>
+    </div>
+
+    <div class="filters">
+      <input class="search" id="f-q" type="search" placeholder="성함 또는 연락처 검색">
+      <select id="f-status">
+        <option value="">상태 전체</option>
+        <option value="new">신규</option>
+        <option value="contacted">연락완료</option>
+        <option value="booked">예약확정</option>
+        <option value="done">내원완료</option>
+        <option value="canceled">취소</option>
+        <option value="noshow">노쇼</option>
+        <option value="spam">스팸</option>
+      </select>
+      <select id="f-kind">
+        <option value="">구분 전체</option>
+        <option value="reserve">예약</option>
+        <option value="contact">문의</option>
+      </select>
+      <select id="f-topic"><option value="">분야 전체</option></select>
+      <input id="f-from" type="date" title="접수일 시작">
+      <span class="dash">~</span>
+      <input id="f-to" type="date" title="접수일 끝">
+      <button class="ghost" id="btn-reset">초기화</button>
+    </div>
+
+    <div class="list">
+      <table>
+        <thead><tr>
+          <th>접수일시</th><th>구분</th><th>성함</th><th>연락처</th>
+          <th class="hide">분야</th><th class="hide">희망일</th><th class="msg">내용</th><th>상태</th>
+        </tr></thead>
+        <tbody id="rows"></tbody>
+      </table>
+      <div class="empty" id="empty" hidden>조건에 맞는 신청이 없습니다.</div>
+      <div class="pager">
+        <button class="ghost" id="pg-prev">이전</button>
+        <span id="pg-info">–</span>
+        <button class="ghost" id="pg-next">다음</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= 상세 ================= -->
+<div class="veil" id="veil" hidden></div>
+<aside class="drawer" id="drawer" hidden>
+  <div class="head">
+    <h2 id="d-title">신청 상세</h2>
+    <button class="x" id="d-close" aria-label="닫기">×</button>
+  </div>
+  <div class="body" id="d-body"></div>
+</aside>
+
+<script src="js/config.js?v=44"></script>
+<script>
+/* ============================================================
+   관리자 패널
+   외부 라이브러리를 쓰지 않습니다. Supabase REST/Auth를 직접 호출합니다.
+   접근 권한은 이 화면이 아니라 데이터베이스(RLS)가 판정합니다.
+   ============================================================ */
+(function () {
+  "use strict";
+  var cfg = window.MIRAE_CONFIG || {};
+  var URL_BASE = (cfg.SUPABASE_URL || "").replace(/\/+$/, "");
+  var ANON = cfg.SUPABASE_ANON_KEY || "";
+  var PAGE_SIZE = 25;
+
+  var STATUS = {
+    new: "신규", contacted: "연락완료", booked: "예약확정", done: "내원완료",
+    canceled: "취소", noshow: "노쇼", spam: "스팸"
+  };
+  var TOPICS = ["줄기세포","피부과","성형외과","비뇨기과","에스테틱","내성발톱",
+                "두피케어","림프해독","월드투어","퀀텀 양자 진료치료","기타"];
+
+  var $ = function (id) { return document.getElementById(id); };
+  var session = null;   // { access_token, refresh_token, user }
+  var page = 0, total = 0, current = null;
+
+  /* ---------- 세션 보관 (탭을 닫으면 사라집니다) ---------- */
+  function saveSession(s) {
+    session = s;
+    try { sessionStorage.setItem("mirae_admin", JSON.stringify(s)); } catch (e) {}
+  }
+  function loadSession() {
+    try {
+      var raw = sessionStorage.getItem("mirae_admin");
+      if (raw) session = JSON.parse(raw);
+    } catch (e) { session = null; }
+  }
+  function clearSession() {
+    session = null;
+    try { sessionStorage.removeItem("mirae_admin"); } catch (e) {}
+  }
+
+  /* ---------- 통신 ---------- */
+  function authFetch(path, init) {
+    init = init || {};
+    init.headers = Object.assign({
+      apikey: ANON,
+      Authorization: "Bearer " + (session ? session.access_token : ANON),
+      "content-type": "application/json"
+    }, init.headers || {});
+    return fetch(URL_BASE + path, init).then(function (res) {
+      if (res.status !== 401) return res;
+      return refresh().then(function (ok) {
+        if (!ok) { signOut(); throw new Error("session_expired"); }
+        init.headers.Authorization = "Bearer " + session.access_token;
+        return fetch(URL_BASE + path, init);
+      });
+    });
+  }
+
+  function refresh() {
+    if (!session || !session.refresh_token) return Promise.resolve(false);
+    return fetch(URL_BASE + "/auth/v1/token?grant_type=refresh_token", {
+      method: "POST",
+      headers: { apikey: ANON, "content-type": "application/json" },
+      body: JSON.stringify({ refresh_token: session.refresh_token })
+    }).then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (out) {
+        if (!out || !out.access_token) return false;
+        saveSession({ access_token: out.access_token, refresh_token: out.refresh_token, user: out.user || session.user });
+        return true;
+      }).catch(function () { return false; });
+  }
+
+  function log(action, targetId, detail) {
+    if (!session) return;
+    authFetch("/rest/v1/access_logs", {
+      method: "POST",
+      headers: { Prefer: "return=minimal" },
+      body: JSON.stringify({
+        user_id: session.user && session.user.id,
+        email: session.user && session.user.email,
+        action: action, target_id: targetId || null, detail: detail || null
+      })
+    }).catch(function () {});
+  }
+
+  /* ---------- 로그인 ---------- */
+  $("login-form").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var btn = e.target.querySelector("button");
+    var box = $("login-msg");
+    box.hidden = true;
+
+    if (!URL_BASE || !ANON) {
+      box.textContent = "연결 설정이 비어 있습니다. js/config.js 를 먼저 채워 주십시오.";
+      box.hidden = false;
+      return;
+    }
+
+    btn.disabled = true; btn.textContent = "확인 중…";
+    fetch(URL_BASE + "/auth/v1/token?grant_type=password", {
+      method: "POST",
+      headers: { apikey: ANON, "content-type": "application/json" },
+      body: JSON.stringify({ email: $("lg-email").value.trim(), password: $("lg-pw").value })
+    }).then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); })
+      .then(function (res) {
+        if (!res.ok || !res.j.access_token) throw new Error("bad_login");
+        saveSession({ access_token: res.j.access_token, refresh_token: res.j.refresh_token, user: res.j.user });
+        return enter();
+      })
+      .catch(function (err) {
+        clearSession();
+        box.textContent = err.message === "not_admin"
+          ? "이 계정은 관리자로 등록돼 있지 않습니다. 담당자에게 등록을 요청해 주십시오."
+          : "이메일 또는 비밀번호가 올바르지 않습니다.";
+        box.hidden = false;
+      })
+      .then(function () { btn.disabled = false; btn.textContent = "로그인"; });
+  });
+
+  function signOut() {
+    if (session) {
+      fetch(URL_BASE + "/auth/v1/logout", {
+        method: "POST",
+        headers: { apikey: ANON, Authorization: "Bearer " + session.access_token }
+      }).catch(function () {});
+    }
+    clearSession();
+    $("view-main").hidden = true;
+    $("view-login").hidden = false;
+    $("lg-pw").value = "";
+  }
+  $("btn-out").addEventListener("click", signOut);
+
+  /* ---------- 진입 (관리자 명단 확인) ---------- */
+  function enter() {
+    return authFetch("/rest/v1/admin_users?select=email,name,role", {})
+      .then(function (r) { return r.ok ? r.json() : []; })
+      .then(function (rows) {
+        if (!rows.length) throw new Error("not_admin");
+        var me = rows[0];
+        $("me-name").textContent = (me.name || "관리자") + (me.role === "owner" ? " (대표)" : "");
+        $("me-email").textContent = me.email;
+        $("view-login").hidden = true;
+        $("view-main").hidden = false;
+        TOPICS.forEach(function (t) {
+          var o = document.createElement("option");
+          o.value = t; o.textContent = t;
+          $("f-topic").appendChild(o);
+        });
+        log("login");
+        loadTiles();
+        return loadRows();
+      });
+  }
+
+  /* ---------- 요약 숫자 ---------- */
+  function countOf(query) {
+    return authFetch("/rest/v1/consultations?select=id&" + query, {
+      headers: { Prefer: "count=exact", Range: "0-0" }
+    }).then(function (r) {
+      var cr = r.headers.get("content-range") || "/0";
+      return Number(cr.split("/")[1] || 0);
+    }).catch(function () { return 0; });
+  }
+  function isoDaysAgo(n) {
+    var d = new Date(); d.setHours(0, 0, 0, 0); d.setDate(d.getDate() - n);
+    return d.toISOString();
+  }
+  function loadTiles() {
+    countOf("status=eq.new").then(function (n) { $("t-new").textContent = n; });
+    countOf("created_at=gte." + isoDaysAgo(0)).then(function (n) { $("t-today").textContent = n; });
+    countOf("created_at=gte." + isoDaysAgo(6)).then(function (n) { $("t-week").textContent = n; });
+    countOf("status=neq.spam").then(function (n) { $("t-all").textContent = n; });
+  }
+
+  /* ---------- 목록 ---------- */
+  function filterQuery() {
+    var parts = [];
+    var q = $("f-q").value.trim();
+    if (q) {
+      var esc = q.replace(/[,()*]/g, " ").trim();
+      if (esc) parts.push("or=(name.ilike.*" + encodeURIComponent(esc) + "*,phone.ilike.*" + encodeURIComponent(esc) + "*)");
+    }
+    if ($("f-status").value) parts.push("status=eq." + $("f-status").value);
+    if ($("f-kind").value) parts.push("kind=eq." + $("f-kind").value);
+    if ($("f-topic").value) parts.push("topic=eq." + encodeURIComponent($("f-topic").value));
+    if ($("f-from").value) parts.push("created_at=gte." + $("f-from").value + "T00:00:00");
+    if ($("f-to").value) parts.push("created_at=lte." + $("f-to").value + "T23:59:59");
+    return parts.join("&");
+  }
+
+  function fmtWhen(iso) {
+    var d = new Date(iso);
+    return d.toLocaleString("ko-KR", { month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit" });
+  }
+
+  function loadRows() {
+    var from = page * PAGE_SIZE;
+    var q = filterQuery();
+    return authFetch("/rest/v1/consultations?select=*&order=created_at.desc" + (q ? "&" + q : ""), {
+      headers: { Prefer: "count=exact", Range: from + "-" + (from + PAGE_SIZE - 1) }
+    }).then(function (r) {
+      total = Number((r.headers.get("content-range") || "/0").split("/")[1] || 0);
+      return r.json();
+    }).then(function (rows) {
+      var tb = $("rows");
+      tb.innerHTML = "";
+      $("empty").hidden = rows.length > 0;
+
+      rows.forEach(function (row) {
+        var tr = document.createElement("tr");
+        if (row.status === "new") tr.className = "unread";
+        tr.appendChild(td("when", fmtWhen(row.created_at)));
+        tr.appendChild(html("", '<span class="kind ' + row.kind + '">' + (row.kind === "reserve" ? "예약" : "문의") + "</span>"));
+        tr.appendChild(td("nm", row.name));
+        tr.appendChild(td("tel", row.phone));
+        tr.appendChild(td("hide", row.topic || "–"));
+        tr.appendChild(td("hide", row.preferred_date || "–"));
+        tr.appendChild(td("msg", row.message || "–"));
+        tr.appendChild(html("", '<span class="pill ' + row.status + '">' + (STATUS[row.status] || row.status) + "</span>"));
+        tr.addEventListener("click", function () { openDetail(row); });
+        tb.appendChild(tr);
+      });
+
+      var shown = total === 0 ? 0 : from + 1;
+      $("pg-info").textContent = total === 0 ? "0건" : shown + "–" + Math.min(from + PAGE_SIZE, total) + " / 전체 " + total + "건";
+      $("pg-prev").disabled = page === 0;
+      $("pg-next").disabled = from + PAGE_SIZE >= total;
+      log("list", null, { filter: q, page: page });
+    }).catch(function (e) { console.error(e); });
+  }
+
+  function td(cls, text) {
+    var e = document.createElement("td");
+    e.className = cls; e.textContent = text == null ? "–" : text;
+    return e;
+  }
+  function html(cls, markup) {
+    var e = document.createElement("td");
+    e.className = cls; e.innerHTML = markup;
+    return e;
+  }
+  function esc(s) {
+    return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+    });
+  }
+
+  /* ---------- 상세 ---------- */
+  function openDetail(row) {
+    current = row;
+    $("d-title").textContent = row.name + " · " + (row.kind === "reserve" ? "예약 신청" : "문의");
+
+    var tel = String(row.phone || "").replace(/[^0-9+]/g, "");
+    var lines = [
+      ["접수일시", esc(new Date(row.created_at).toLocaleString("ko-KR"))],
+      ["구분", row.kind === "reserve" ? "예약 신청" : "문의"],
+      ["성함", esc(row.name)],
+      ["연락처", '<a href="tel:' + esc(tel) + '">' + esc(row.phone) + "</a>"],
+      ["이메일", row.email ? '<a href="mailto:' + esc(row.email) + '">' + esc(row.email) + "</a>" : "–"],
+      ["희망일", row.preferred_date ? esc(row.preferred_date) + " " + esc(row.preferred_time || "") : "–"],
+      ["분야", esc(row.topic || "–")]
+    ];
+
+    var body = lines.map(function (l) {
+      return '<div class="row"><div class="k">' + l[0] + '</div><div class="v">' + l[1] + "</div></div>";
+    }).join("");
+
+    body += '<h3>상담 내용</h3>';
+    if (row.consent_sensitive) {
+      body += '<div class="note">' + (row.message ? esc(row.message) : "(작성된 내용 없음)") + "</div>";
+    } else {
+      body += '<div class="note"><span class="consent-no">민감정보 수집에 동의하지 않으셨습니다.</span><br>' +
+              "상담 내용은 저장되지 않았습니다. 전화로 확인해 주십시오.</div>";
+    }
+
+    body += '<h3>처리 상태</h3><select id="d-status">' +
+      Object.keys(STATUS).map(function (k) {
+        return '<option value="' + k + '"' + (k === row.status ? " selected" : "") + ">" + STATUS[k] + "</option>";
+      }).join("") + "</select>";
+
+    body += '<h3>담당자 메모</h3><textarea id="d-memo" placeholder="통화 결과, 예약 일정 등을 적어 두십시오.">' +
+      esc(row.admin_memo || "") + "</textarea>";
+
+    body += '<button class="btn btn-green save" id="d-save">저장</button>' +
+      '<p class="warn">신청 원문(성함·연락처·상담 내용)은 수정할 수 없습니다. 상태와 메모만 저장됩니다.<br>' +
+      "이 화면의 열람·수정 기록은 자동으로 남습니다.</p>";
+
+    $("d-body").innerHTML = body;
+    $("drawer").hidden = false;
+    $("veil").hidden = false;
+    $("d-save").addEventListener("click", saveDetail);
+    log("view", row.id);
+  }
+
+  function closeDetail() {
+    $("drawer").hidden = true;
+    $("veil").hidden = true;
+    current = null;
+  }
+  $("d-close").addEventListener("click", closeDetail);
+  $("veil").addEventListener("click", closeDetail);
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape") closeDetail(); });
+
+  function saveDetail() {
+    if (!current) return;
+    var btn = $("d-save");
+    btn.disabled = true; btn.textContent = "저장 중…";
+    var patch = {
+      status: $("d-status").value,
+      admin_memo: $("d-memo").value,
+      handled_by: session.user && session.user.id,
+      handled_at: new Date().toISOString()
+    };
+    authFetch("/rest/v1/consultations?id=eq." + current.id, {
+      method: "PATCH",
+      headers: { Prefer: "return=minimal" },
+      body: JSON.stringify(patch)
+    }).then(function (r) {
+      if (!r.ok) throw new Error("save_failed");
+      log("update", current.id, { status: patch.status });
+      closeDetail();
+      loadTiles();
+      loadRows();
+    }).catch(function () {
+      btn.disabled = false; btn.textContent = "저장";
+      alert("저장하지 못했습니다. 잠시 후 다시 시도해 주십시오.");
+    });
+  }
+
+  /* ---------- 내보내기 ---------- */
+  $("btn-csv").addEventListener("click", function () {
+    if (!confirm("현재 조건의 신청 내역을 파일로 내려받습니다.\n환자 개인정보가 담긴 파일이므로 보관과 폐기에 주의해 주십시오.")) return;
+    var q = filterQuery();
+    authFetch("/rest/v1/consultations?select=*&order=created_at.desc" + (q ? "&" + q : ""), {
+      headers: { Range: "0-4999" }
+    }).then(function (r) { return r.json(); }).then(function (rows) {
+      var head = ["접수일시","구분","성함","연락처","이메일","희망일","희망시간","분야","상담내용","상태","담당자메모","민감정보동의"];
+      var body = rows.map(function (r) {
+        return [
+          new Date(r.created_at).toLocaleString("ko-KR"),
+          r.kind === "reserve" ? "예약" : "문의",
+          r.name, r.phone, r.email || "", r.preferred_date || "", r.preferred_time || "",
+          r.topic || "", r.message || "", STATUS[r.status] || r.status, r.admin_memo || "",
+          r.consent_sensitive ? "동의" : "미동의"
+        ];
+      });
+      var csv = [head].concat(body).map(function (cols) {
+        return cols.map(function (c) { return '"' + String(c).replace(/"/g, '""') + '"'; }).join(",");
+      }).join("\r\n");
+
+      var blob = new Blob(["﻿" + csv], { type: "text/csv;charset=utf-8;" });
+      var a = document.createElement("a");
+      a.href = window.URL.createObjectURL(blob);
+      a.download = "명동미래셀_상담신청_" + new Date().toISOString().slice(0, 10) + ".csv";
+      a.click();
+      window.URL.revokeObjectURL(a.href);
+      log("export", null, { count: rows.length });
+    });
+  });
+
+  /* ---------- 필터 동작 ---------- */
+  var timer;
+  ["f-q","f-status","f-kind","f-topic","f-from","f-to"].forEach(function (id) {
+    $(id).addEventListener("input", function () {
+      clearTimeout(timer);
+      timer = setTimeout(function () { page = 0; loadRows(); }, 280);
+    });
+  });
+  $("btn-reset").addEventListener("click", function () {
+    ["f-q","f-status","f-kind","f-topic","f-from","f-to"].forEach(function (id) { $(id).value = ""; });
+    page = 0; loadRows();
+  });
+  $("pg-prev").addEventListener("click", function () { if (page > 0) { page--; loadRows(); } });
+  $("pg-next").addEventListener("click", function () {
+    if ((page + 1) * PAGE_SIZE < total) { page++; loadRows(); }
+  });
+
+  /* ---------- 시작 ---------- */
+  loadSession();
+  if (session) enter().catch(function () { clearSession(); });
+})();
+</script>
+</body>
+</html>

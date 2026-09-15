@@ -220,6 +220,36 @@ section.block.alt{background:var(--bg-alt)}
 .form-note{font-size:13.5px;color:var(--gray);margin:6px 0 20px}
 .form-wrap .btn{width:100%;border:none;cursor:pointer;font-family:inherit}
 
+/* 개인정보 동의 */
+.consent{border:1px solid var(--line);border-radius:12px;padding:20px 22px;margin:4px 0 20px;background:#fbfdfb}
+.consent legend{font-weight:800;font-size:14.5px;color:var(--green-deep);padding:0 8px}
+.consent .chk{display:flex;gap:11px;align-items:flex-start;margin-bottom:14px;cursor:pointer;font-size:14px;line-height:1.6}
+.consent .chk:last-of-type{margin-bottom:6px}
+.consent .chk input{width:19px;height:19px;flex:0 0 19px;margin-top:2px;accent-color:var(--green);cursor:pointer}
+.consent .chk b{color:var(--green);font-weight:800}
+.consent .chk em{display:block;margin-top:4px;font-style:normal;font-size:12.8px;color:var(--gray);line-height:1.55}
+.consent-link{font-size:13px;margin-top:10px}
+.consent-link a{color:var(--green);font-weight:700;text-decoration:underline}
+
+/* 허니팟 — 화면과 스크린리더 모두에서 감춥니다 */
+.hp{position:absolute;left:-9999px;top:-9999px;width:1px;height:1px;overflow:hidden;opacity:0;pointer-events:none}
+.hp input{width:1px;height:1px;border:none;padding:0}
+
+/* 접수 결과 안내 */
+.form-result{max-width:720px;margin:0 auto 20px;border-radius:14px;padding:18px 22px;font-size:15px;line-height:1.6}
+.form-result.bad{background:#fdf1ef;border:1px solid #f0c7bf;color:#8c2d18}
+.form-result .sub{display:block;margin-top:6px;font-size:13.5px;color:var(--gray)}
+.form-result a{color:var(--green);font-weight:800;text-decoration:underline}
+
+/* 접수 완료 */
+.form-done{text-align:center;padding:26px 6px}
+.form-done .mark{width:62px;height:62px;margin:0 auto 20px;border-radius:50%;background:var(--green-soft);color:var(--green);font-size:30px;font-weight:800;display:flex;align-items:center;justify-content:center}
+.form-done h3{font-family:var(--font-serif);font-size:23px;color:var(--green-deep);margin-bottom:12px}
+.form-done p{color:var(--gray);font-size:15px}
+.form-done .tel{margin-top:16px;color:var(--ink);font-weight:700}
+.form-done .tel a{color:var(--green);font-weight:800}
+
+
 /* gallery */
 .gal{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
 .gal .ph{aspect-ratio:4/3;border-radius:14px;background:linear-gradient(140deg,var(--green-soft),#d9e8dd);display:flex;align-items:center;justify-content:center;color:var(--green);font-weight:700;border:1px solid var(--line);flex-direction:column;gap:8px}

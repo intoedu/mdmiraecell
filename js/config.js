@@ -7,10 +7,10 @@
    ============================================================ */
 window.MIRAE_CONFIG = {
   /* Supabase 프로젝트 주소. 예: https://abcdefgh.supabase.co */
-  SUPABASE_URL: "",
+  SUPABASE_URL: "https://ghfoffpgkftudwfpldua.supabase.co",
 
   /* 공개(anon) 키. 대시보드 > Project Settings > API Keys */
-  SUPABASE_ANON_KEY: "",
+  SUPABASE_ANON_KEY: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdoZm9mZnBna2Z0dWR3ZnBsZHVhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk0OTg3NTEsImV4cCI6MjEwNTA3NDc1MX0.1WxZ_fSDcSVcn088G2CjlHyzUYS2k3qVNYOdRXGD6-k",
 
   /* 접수 함수 이름 — 바꾸지 마십시오 */
   SUBMIT_FUNCTION: "submit-consultation",

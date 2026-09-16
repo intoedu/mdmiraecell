@@ -59,7 +59,7 @@ create index if not exists consultations_kind_idx    on public.consultations (ki
 
 -- updated_at 자동 갱신
 create or replace function public.touch_updated_at()
-returns trigger language plpgsql as $$
+returns trigger language plpgsql security invoker set search_path = public as $$
 begin
   new.updated_at := now();
   return new;
@@ -137,6 +137,19 @@ grant delete on public.consultations to authenticated;   -- 실제 허용 여부
 grant select on public.admin_users   to authenticated;
 grant insert, select on public.access_logs to authenticated;
 
+-- 접수 함수(Edge Function)가 쓰는 service_role 권한.
+-- 프로젝트 생성 시 '새 표 자동 노출'을 끄면 이 권한이 자동으로 붙지 않으므로 명시적으로 부여합니다.
+-- 이게 없으면 홈페이지 접수가 저장되지 않습니다. 필요한 최소한만 줍니다.
+grant select, insert on public.consultations   to service_role;
+grant select, insert on public.submit_rate_log to service_role;
+
+-- 관리자 판정 함수는 로그인하지 않은 방문자가 호출하지 못하게 막습니다.
+-- 단, RLS 정책이 이 함수를 쓰므로 authenticated 의 실행 권한은 반드시 남겨 두어야 합니다.
+revoke execute on function public.is_admin() from public;
+revoke execute on function public.is_owner() from public;
+grant  execute on function public.is_admin() to authenticated;
+grant  execute on function public.is_owner() to authenticated;
+
 -- ------------------------------------------------------------
 -- 6. 행 단위 접근통제 (RLS)
 --    정책이 없는 역할은 아무것도 못 합니다 = 홈페이지 방문자는 접근 불가
@@ -145,6 +158,9 @@ alter table public.consultations   enable row level security;
 alter table public.admin_users     enable row level security;
 alter table public.access_logs     enable row level security;
 alter table public.submit_rate_log enable row level security;
+-- submit_rate_log 에는 일부러 정책을 만들지 않습니다.
+-- 정책이 없으면 아무도 접근할 수 없고, RLS를 우회하는 service_role(접수 함수)만 쓸 수 있습니다.
+-- 보안 점검 도구가 'RLS Enabled No Policy' 로 알려 주는데, 이 표에서는 의도된 상태입니다.
 
 drop policy if exists consultations_select_admin on public.consultations;
 create policy consultations_select_admin on public.consultations

@@ -63,6 +63,24 @@
   }
   window.TSVC = svc;
 
+  /* ---------- 진료 상세 본문 번역 불러오기 ----------
+     본문은 분량이 커서 언어팩과 따로 두었습니다(js/svc-<언어>.js).
+     진료 상세 페이지에서, 한국어가 아닐 때만 한 개 불러옵니다.
+
+     document.write 를 쓰는 이유: main.js 가 본문을 그리기 전에
+     번역이 준비돼 있어야 하기 때문입니다. 나중에 비동기로 받아
+     다시 그리면 한국어가 한 번 번쩍 보였다 바뀝니다.
+     같은 서버(same-origin)의 작은 파일이라 브라우저가 막지 않습니다. */
+  function loadSvcPack() {
+    if (lang === "ko") return;
+    if (document.readyState !== "loading") return;   /* 이미 다 읽은 뒤면 늦었습니다 */
+    if (!document.getElementById("svc-page")) return;
+    document.write(
+      '<scr' + 'ipt src="js/svc-' + lang + '.js?v=' + (window.MIRAE_VER || "48") + '"></scr' + 'ipt>'
+    );
+  }
+  loadSvcPack();
+
   /* ---------- HTML 안의 번역 적용 ---------- */
   function applyDom(root) {
     (root || document).querySelectorAll("[data-i18n]").forEach(function (el) {

@@ -427,3 +427,8 @@ footer .fine a:hover{color:#fff}
   .gal img:hover{transform:none!important}
   .lightbox{transition:none!important}
 }
+
+/* 번역본 안내 — 아직 번역이 없다는 안내(.lang-notice)보다 한 단계 옅게 */
+.lang-notice.soft{background:var(--bg-alt);border-color:var(--line);font-size:13.5px}
+.lang-notice.soft a{background:none;color:var(--green);border:1px solid var(--green);padding:7px 14px}
+.lang-notice.soft a:hover{background:var(--green);color:#fff}

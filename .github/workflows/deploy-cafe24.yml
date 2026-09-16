@@ -1,0 +1,67 @@
+# 카페24 웹호스팅으로 홈페이지 올리기
+#
+# 이 워크플로는 자동으로 돌지 않습니다. Actions 탭에서 직접 눌러야만 실행됩니다.
+# (실수로 운영 홈페이지가 덮어써지는 일을 막기 위해서입니다.
+#  push 할 때마다 자동 배포하고 싶으시면 아래 on: 에 push 를 추가하십시오.)
+#
+# 준비: 저장소 Settings > Secrets and variables > Actions 에 등록
+#   CAFE24_FTP_HOST      예) 계정아이디.mycafe24.com
+#   CAFE24_FTP_USER      FTP 아이디
+#   CAFE24_FTP_PASSWORD  FTP 비밀번호
+#   CAFE24_FTP_DIR       (선택) 올릴 위치. 비우면 /www
+#
+# ※ 비밀번호는 반드시 위 Secrets 에만 넣으십시오. 파일에 적거나 메신저로 주고받지 마십시오.
+
+name: Deploy to Cafe24
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: '운영 홈페이지에 반영합니다. 확인하셨으면 "deploy" 를 입력하십시오.'
+        required: true
+        default: ''
+
+jobs:
+  upload:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 확인 문구 검사
+        run: |
+          if [ "${{ github.event.inputs.confirm }}" != "deploy" ]; then
+            echo '확인 문구가 "deploy" 가 아닙니다. 중단합니다.'
+            exit 1
+          fi
+
+      - uses: actions/checkout@v4
+
+      - name: lftp 설치
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq lftp
+
+      - name: 업로드
+        env:
+          HOST: ${{ secrets.CAFE24_FTP_HOST }}
+          USER: ${{ secrets.CAFE24_FTP_USER }}
+          PASS: ${{ secrets.CAFE24_FTP_PASSWORD }}
+          DIR: ${{ secrets.CAFE24_FTP_DIR }}
+        run: |
+          set -e
+          TARGET="${DIR:-/www}"
+          echo "올릴 위치: $TARGET"
+          # --delete 를 쓰지 않습니다. 서버에만 있는 파일은 지우지 않고 덮어쓰기만 합니다.
+          lftp -u "$USER","$PASS" "ftp://$HOST" <<EOF
+            set ftp:ssl-allow true
+            set ssl:verify-certificate no
+            set net:max-retries 3
+            mirror --reverse --verbose --parallel=4 \
+              --exclude-glob .git/ \
+              --exclude-glob .github/ \
+              --exclude-glob docs/ \
+              --exclude-glob supabase/ \
+              --exclude-glob serve.py \
+              --exclude-glob .claude/ \
+              --exclude-glob .gitignore \
+              . "$TARGET"
+            bye
+          EOF
+          echo "완료했습니다. https://mdmiraecell.com 에서 확인하십시오."

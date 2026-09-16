@@ -1798,7 +1798,7 @@ document.getElementById("site-footer").innerHTML = `
   <div class="fine">
     <span><a href="tel:${TEL.replace(/-/g, "")}">☎ ${TEL}</a> · <a href="mailto:${EMAIL}">✉ ${EMAIL}</a></span>
     <span>© ${new Date().getFullYear()} 명동미래셀의원. All rights reserved.</span>
-    <span>본 사이트의 콘텐츠는 의료광고 심의 기준을 준수합니다.</span>
+    <span><a href="privacy" style="font-weight:800;text-decoration:underline">개인정보처리방침</a> · 본 사이트의 콘텐츠는 의료광고 심의 기준을 준수합니다.</span>
   </div>
 </div></footer>
 <div class="quick">
@@ -1929,16 +1929,5 @@ megaPanels.forEach(m => m.addEventListener("click", e => {
   if (e.target.closest("a")) openMega(null);
 }));
 
-/* 문의/예약 폼: 서버 없이 메일 클라이언트로 전송 (ponytail: 백엔드 확정 전 임시 — Formspree/자체 API 연결 시 교체) */
-function mailtoSubmit(form, subject) {
-  form.addEventListener("submit", e => {
-    e.preventDefault();
-    const d = new FormData(form);
-    const body = [...d.entries()].map(([k, v]) => `${k}: ${v}`).join("\n");
-    location.href = `mailto:${EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-  });
-}
-const cf = document.getElementById("contact-form");
-if (cf) mailtoSubmit(cf, "[홈페이지 문의] 명동미래셀의원");
-const rf = document.getElementById("reserve-form");
-if (rf) mailtoSubmit(rf, "[진료 예약 신청] 명동미래셀의원");
+/* 문의/예약 폼 전송은 js/form.js 로 옮겼습니다.
+   (Supabase Edge Function 접수 + 개인정보 동의 처리 — reserve/contact 페이지에서만 불러옵니다) */

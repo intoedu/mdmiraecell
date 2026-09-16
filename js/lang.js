@@ -65,6 +65,7 @@ en: { name: "English", short: "EN", htmlLang: "en", s: {
   "svc.quantum.desc": "Cells have batteries too. A supportive care programme that uses light and energy to help the body's own recovery.",
   "svc.konly.h": "The detail below is in Korean only.",
   "page.konly.h": "This page is available in Korean only for now.",
+  "gal.close": "Close", "gal.prev": "Previous photo", "gal.next": "Next photo",
   "page.konly.p": "A reviewed English version is being prepared. Please write to us in English — we will answer you directly.",
   "svc.konly.p": "A reviewed English version of this treatment page is being prepared. In the meantime, please contact us in English and we will answer you directly.",
 
@@ -206,6 +207,7 @@ zh: { name: "简体中文", short: "中文", htmlLang: "zh-CN", s: {
   "svc.quantum.desc": "细胞也有电池。以光与能量帮助身体自身恢复力的辅助护理项目。",
   "svc.konly.h": "以下详细内容目前仅提供韩文。",
   "page.konly.h": "本页目前仅提供韩文内容。",
+  "gal.close": "关闭", "gal.prev": "上一张", "gal.next": "下一张",
   "page.konly.p": "中文审校版本正在准备中。欢迎用中文联系我们，我们会直接为您解答。",
   "svc.konly.p": "该诊疗页面的中文审校版本正在准备中。在此期间，欢迎用中文联系我们，我们会直接为您解答。",
 
@@ -347,6 +349,7 @@ ja: { name: "日本語", short: "日本語", htmlLang: "ja", s: {
   "svc.quantum.desc": "細胞にもバッテリーがあります。光とエネルギーでからだ本来の回復力を助ける、補助的なケアプログラムです。",
   "svc.konly.h": "以下の詳細は現在、韓国語のみのご提供です。",
   "page.konly.h": "このページは現在、韓国語のみのご提供です。",
+  "gal.close": "閉じる", "gal.prev": "前の写真", "gal.next": "次の写真",
   "page.konly.p": "日本語版は監修中です。日本語でお問い合わせいただければ、直接ご回答いたします。",
   "svc.konly.p": "この診療ページの日本語版は監修中です。その間は日本語でお問い合わせいただければ、直接ご回答いたします。",
 
@@ -488,6 +491,7 @@ ru: { name: "Русский", short: "RU", htmlLang: "ru", s: {
   "svc.quantum.desc": "У клеток тоже есть «батарейка». Вспомогательная программа, которая с помощью света и энергии поддерживает собственное восстановление организма.",
   "svc.konly.h": "Подробности ниже пока доступны только на корейском.",
   "page.konly.h": "Эта страница пока доступна только на корейском.",
+  "gal.close": "Закрыть", "gal.prev": "Предыдущее фото", "gal.next": "Следующее фото",
   "page.konly.p": "Проверенная русская версия готовится. Напишите нам по-русски — мы ответим вам напрямую.",
   "svc.konly.p": "Проверенная русская версия этой страницы готовится. Пока что напишите нам по-русски — мы ответим вам напрямую.",
 

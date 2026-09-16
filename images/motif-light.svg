@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" width="1200" height="800" role="img" aria-hidden="true">
+<defs>
+<linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+  <stop offset="0" stop-color="#0f3d1d"/><stop offset=".55" stop-color="#1e6b34"/>
+  <stop offset="1" stop-color="#3d8b52"/>
+</linearGradient>
+<radialGradient id="src" cx="50%" cy="50%" r="50%">
+  <stop offset="0" stop-color="#ffffff" stop-opacity=".55"/>
+  <stop offset=".45" stop-color="#ffffff" stop-opacity=".14"/>
+  <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
+</radialGradient>
+</defs>
+
+<rect width="1200" height="800" fill="url(#bg)"/>
+<path d="M880 150 L2008 -388 L2035 -328 Z" fill="#fff" fill-opacity="0.024"/>
+<path d="M880 150 L2060 -263 L2090 -163 Z" fill="#fff" fill-opacity="0.033"/>
+<path d="M880 150 L2097 -133 L2122 8 Z" fill="#fff" fill-opacity="0.042"/>
+<path d="M880 150 L2121 -0 L2130 183 Z" fill="#fff" fill-opacity="0.051"/>
+<path d="M880 150 L2128 213 L2123 278 Z" fill="#fff" fill-opacity="0.060"/>
+<path d="M880 150 L2114 348 L2093 450 Z" fill="#fff" fill-opacity="0.024"/>
+<path d="M880 150 L2086 480 L2040 616 Z" fill="#fff" fill-opacity="0.033"/>
+<path d="M880 150 L2043 608 L1964 773 Z" fill="#fff" fill-opacity="0.042"/>
+<path d="M880 150 L1948 799 L1913 854 Z" fill="#fff" fill-opacity="0.051"/>
+<path d="M880 150 L1872 911 L1805 991 Z" fill="#fff" fill-opacity="0.060"/>
+<path d="M880 150 L1784 1014 L1678 1112 Z" fill="#fff" fill-opacity="0.024"/>
+<path d="M880 150 L1685 1106 L1537 1214 Z" fill="#fff" fill-opacity="0.033"/>
+<path d="M880 150 L1511 1229 L1453 1261 Z" fill="#fff" fill-opacity="0.042"/>
+<path d="M880 150 L1390 1291 L1293 1330 Z" fill="#fff" fill-opacity="0.051"/>
+<path d="M880 150 L1264 1339 L1125 1376 Z" fill="#fff" fill-opacity="0.060"/>
+<path d="M880 150 L1133 1374 L952 1398 Z" fill="#fff" fill-opacity="0.024"/>
+<path d="M880 150 L921 1399 L856 1400 Z" fill="#fff" fill-opacity="0.033"/>
+<path d="M880 150 L786 1396 L682 1384 Z" fill="#fff" fill-opacity="0.042"/>
+<path d="M880 150 L652 1379 L512 1345 Z" fill="#fff" fill-opacity="0.051"/>
+<path d="M880 150 L521 1347 L350 1282 Z" fill="#fff" fill-opacity="0.060"/>
+<path d="M880 150 L322 1269 L264 1238 Z" fill="#fff" fill-opacity="0.024"/>
+<path d="M880 150 L205 1202 L119 1142 Z" fill="#fff" fill-opacity="0.033"/>
+<path d="M880 150 L95 1123 L-12 1026 Z" fill="#fff" fill-opacity="0.042"/>
+<path d="M880 150 L-5 1032 L-125 894 Z" fill="#fff" fill-opacity="0.051"/>
+<path d="M880 150 L-143 869 L-179 814 Z" fill="#fff" fill-opacity="0.060"/>
+<path d="M880 150 L-214 754 L-261 660 Z" fill="#fff" fill-opacity="0.024"/>
+<path d="M880 150 L-273 632 L-321 497 Z" fill="#fff" fill-opacity="0.033"/>
+<path d="M880 150 L-319 505 L-358 326 Z" fill="#fff" fill-opacity="0.042"/>
+<path d="M880 150 L-361 296 L-367 231 Z" fill="#fff" fill-opacity="0.051"/>
+<path d="M880 150 L-370 161 L-366 56 Z" fill="#fff" fill-opacity="0.060"/>
+<circle cx="880" cy="150" r="90" fill="none" stroke="#fff" stroke-opacity="0.15" stroke-width="1.2"/>
+<circle cx="880" cy="150" r="152" fill="none" stroke="#fff" stroke-opacity="0.14" stroke-width="1.2"/>
+<circle cx="880" cy="150" r="214" fill="none" stroke="#fff" stroke-opacity="0.12" stroke-width="1.2"/>
+<circle cx="880" cy="150" r="276" fill="none" stroke="#fff" stroke-opacity="0.10" stroke-width="1.2"/>
+<circle cx="880" cy="150" r="338" fill="none" stroke="#fff" stroke-opacity="0.08" stroke-width="1.2"/>
+<circle cx="880" cy="150" r="400" fill="none" stroke="#fff" stroke-opacity="0.06" stroke-width="1.2"/>
+<circle cx="880" cy="150" r="462" fill="none" stroke="#fff" stroke-opacity="0.04" stroke-width="1.2"/>
+<circle cx="880" cy="150" r="524" fill="none" stroke="#fff" stroke-opacity="0.03" stroke-width="1.2"/>
+<circle cx="880" cy="150" r="586" fill="none" stroke="#fff" stroke-opacity="0.03" stroke-width="1.2"/>
+<circle cx="880" cy="150" r="648" fill="none" stroke="#fff" stroke-opacity="0.03" stroke-width="1.2"/>
+<circle cx="880" cy="150" r="710" fill="none" stroke="#fff" stroke-opacity="0.03" stroke-width="1.2"/>
+<circle cx="880" cy="150" r="772" fill="none" stroke="#fff" stroke-opacity="0.03" stroke-width="1.2"/>
+<circle cx="880" cy="150" r="420" fill="url(#src)"/>
+<circle cx="880" cy="150" r="11" fill="#fff" fill-opacity=".8"/>
+<circle cx="880" cy="150" r="28" fill="none" stroke="#b99a5b" stroke-opacity=".45" stroke-width="1.6"/>
+</svg>

@@ -1835,6 +1835,30 @@ document.getElementById("site-footer").innerHTML = `
   <a class="rsv" href="reserve" title="${t("quick.reserve", "진료 예약")}" aria-label="${t("quick.reserve", "진료 예약")}">✎</a>
 </div>`;
 
+/* ---------- 페이지 상단 띠의 개념 무늬 ----------
+   images/motif-*.svg 는 사진이 아니라 도형입니다.
+   병원 시설이나 환자 사진으로 오해될 수 없으므로 의료광고 규정에서 자유롭고,
+   저작권 문제도 없습니다. 실제 사진이 준비되면 갤러리부터 채우시면 됩니다. */
+const MOTIF_BY_PAGE = {
+  services: "cell", about: "leaf", location: "flow", notice: "flow",
+  gallery: "form", faq: "form", contact: "flow", reserve: "light", privacy: "form",
+};
+const MOTIF_BY_SVC = {
+  stemcell: "cell", derma: "light", plastic: "form", urology: "flow", esthetic: "light",
+  toenail: "leaf", scalp: "leaf", lymph: "flow", worldtour: "leaf", quantum: "light",
+};
+
+function paintHeroMotif(name) {
+  const hero = document.querySelector(".page-hero");
+  if (!hero || !name || hero.querySelector(".motif-bg")) return;
+  const img = document.createElement("img");
+  img.className = "motif-bg";
+  img.src = `images/motif-${name}.svg?v=1`;
+  img.alt = "";
+  img.setAttribute("aria-hidden", "true");
+  hero.insertBefore(img, hero.firstChild);
+}
+
 /* ---------- 진료 분야 개별 페이지 렌더링 (<main id="svc-page" data-svc="키">) ---------- */
 const svcPage = document.getElementById("svc-page");
 if (svcPage) {
@@ -1912,6 +1936,7 @@ if (svcPage) {
         else window.addEventListener("load", go, { once: true });
       }
     };
+    paintHeroMotif(MOTIF_BY_SVC[cur.key]);
     openHashTab();
     window.addEventListener("hashchange", openHashTab);
   }
@@ -1923,15 +1948,16 @@ if (svcIndex) {
   svcIndex.innerHTML = SERVICES.map(s => `
     <a class="card" href="${svcHref(s)}">
       <div class="icon">${s.no}</div>
-      <h3>${s.title}</h3>
-      <p>${s.desc}</p>
-      <span class="more">자세히 보기 →</span>
+      <h3>${svcTitle(s)}</h3>
+      <p>${svcDesc(s)}</p>
+      <span class="more">${t("home.more", "자세히 보기 →")}</span>
     </a>`).join("");
 }
 
 /* 현재 페이지가 속한 대메뉴 활성화 */
 /* 로컬(.html 직접 접속)과 Pages(확장자 없음) 모두 대응 */
 const here = (location.pathname.split("/").pop() || "index").replace(/\.html$/, "");
+if (!svcPage) paintHeroMotif(MOTIF_BY_PAGE[here]);
 document.querySelectorAll("nav.main > ul > li").forEach(li => {
   const links = [...li.querySelectorAll("a")].map(a => a.getAttribute("href"));
   if (links.includes(here)) li.querySelector("a").classList.add("active");
@@ -1969,3 +1995,70 @@ megaPanels.forEach(m => m.addEventListener("click", e => {
 
 /* 문의/예약 폼 전송은 js/form.js 로 옮겼습니다.
    (Supabase Edge Function 접수 + 개인정보 동의 처리 — reserve/contact 페이지에서만 불러옵니다) */
+
+/* ---------- 갤러리 크게 보기 ----------
+   .gal 안의 <img> 를 누르면 화면 가득 펼쳐집니다.
+   지금은 빈 자리(.ph)뿐이라 아무 일도 하지 않고, 실제 사진을
+   <img src="images/파일명.jpg" alt="설명"> 로 바꿔 넣으시면 바로 동작합니다.
+   ------------------------------------------------------------
+   갤러리에는 실제 병원 사진만 넣어 주십시오.
+   무료 스톡 사진이나 AI로 만든 그림을 "우리 진료실"처럼 올리면
+   의료광고 규정 위반이자 환자분들을 속이는 일이 됩니다. */
+(function () {
+  const gal = document.querySelector(".gal");
+  if (!gal) return;
+
+  const shots = [...gal.querySelectorAll("img")];
+  if (!shots.length) return;
+
+  let box = null, idx = 0;
+
+  function open(i) {
+    idx = (i + shots.length) % shots.length;
+    if (!box) {
+      box = document.createElement("div");
+      box.className = "lightbox";
+      box.innerHTML = `
+        <button class="lb-close" aria-label="${t("gal.close", "닫기")}">✕</button>
+        <button class="lb-prev"  aria-label="${t("gal.prev", "이전 사진")}">‹</button>
+        <button class="lb-next"  aria-label="${t("gal.next", "다음 사진")}">›</button>
+        <figure><img alt=""><figcaption></figcaption></figure>`;
+      document.body.appendChild(box);
+      box.querySelector(".lb-close").addEventListener("click", close);
+      box.querySelector(".lb-prev").addEventListener("click", e => { e.stopPropagation(); open(idx - 1); });
+      box.querySelector(".lb-next").addEventListener("click", e => { e.stopPropagation(); open(idx + 1); });
+      box.addEventListener("click", e => { if (e.target === box || e.target.tagName === "FIGURE") close(); });
+    }
+    const src = shots[idx];
+    const img = box.querySelector("img");
+    img.src = src.currentSrc || src.src;
+    img.alt = src.alt || "";
+    box.querySelector("figcaption").textContent = src.alt || "";
+    box.classList.add("on");
+    document.body.style.overflow = "hidden";
+    box.querySelector(".lb-close").focus();
+  }
+
+  function close() {
+    if (!box) return;
+    box.classList.remove("on");
+    document.body.style.overflow = "";
+    shots[idx].focus();
+  }
+
+  shots.forEach((im, i) => {
+    im.tabIndex = 0;
+    im.style.cursor = "zoom-in";
+    im.addEventListener("click", () => open(i));
+    im.addEventListener("keydown", e => {
+      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); open(i); }
+    });
+  });
+
+  document.addEventListener("keydown", e => {
+    if (!box || !box.classList.contains("on")) return;
+    if (e.key === "Escape") close();
+    if (e.key === "ArrowLeft") open(idx - 1);
+    if (e.key === "ArrowRight") open(idx + 1);
+  });
+})();

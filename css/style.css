@@ -324,3 +324,106 @@ footer .fine a:hover{color:#fff}
   .addr-box{grid-template-columns:1fr}
   footer .cols{grid-template-columns:1fr}
 }
+
+/* ============================================================
+   언어 선택
+   ------------------------------------------------------------
+   좁은 화면에서도 남겨 둡니다. 한국어를 못 읽는 분에게는
+   예약 버튼보다 이쪽이 먼저 필요합니다.
+   ============================================================ */
+.lang-pick{position:relative;margin-right:10px}
+.lang-btn{display:flex;align-items:center;gap:6px;background:none;border:1px solid var(--line);
+  border-radius:999px;padding:7px 13px;font:inherit;font-size:13.5px;font-weight:700;
+  color:var(--gray);cursor:pointer;transition:.2s;white-space:nowrap}
+.lang-btn:hover{border-color:var(--green);color:var(--green)}
+.lang-btn .globe{font-size:14px;line-height:1}
+.lang-list{position:absolute;top:calc(100% + 8px);right:0;min-width:150px;background:#fff;
+  border:1px solid var(--line);border-radius:12px;box-shadow:0 12px 30px rgba(15,61,29,.12);
+  padding:6px;list-style:none;margin:0;opacity:0;visibility:hidden;transform:translateY(-6px);
+  transition:opacity .18s ease,transform .18s ease,visibility .18s;z-index:60}
+.lang-pick.open .lang-list{opacity:1;visibility:visible;transform:none}
+.lang-list a{display:block;padding:9px 13px;border-radius:8px;font-size:14px;color:var(--ink);transition:.15s}
+.lang-list a:hover{background:var(--green-soft);color:var(--green)}
+.lang-list a.on{background:var(--green);color:#fff;font-weight:700}
+
+/* 아직 한국어만 있는 페이지에 붙는 안내.
+   번역된 척하지 않고 먼저 말씀드립니다. */
+.lang-notice{max-width:1180px;margin:22px auto 0;padding:16px 20px;
+  background:var(--green-soft);border:1px solid #cfe3d4;border-radius:12px;
+  display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;
+  font-size:14.5px;line-height:1.65;color:var(--ink)}
+.lang-notice b{font-weight:800}
+.lang-notice span{color:var(--gray)}
+.lang-notice a{margin-left:auto;flex-shrink:0;background:var(--green);color:#fff;
+  padding:8px 16px;border-radius:999px;font-size:13.5px;font-weight:700;transition:.2s}
+.lang-notice a:hover{background:var(--green-deep)}
+
+@media (max-width:980px){
+  .lang-pick{margin-right:6px}
+  .lang-btn{padding:6px 11px;font-size:13px}
+  .lang-notice{margin:18px 16px 0;padding:14px 16px;font-size:13.5px}
+  .lang-notice a{margin-left:0;width:100%;text-align:center}
+}
+
+/* ============================================================
+   개념 그래픽 (images/motif-*.svg)
+   ------------------------------------------------------------
+   사진이 아니라 도형입니다. 병원 시설·환자 사진으로 오해될 수 없어
+   의료광고 규정에서 자유롭고, 저작권 문제도 없습니다.
+   실제 병원 사진이 준비되면 갤러리부터 채우시면 됩니다.
+   ============================================================ */
+
+/* 홈·소개의 좌측 비주얼 — 네모 상자 대신 화면을 가득 채웁니다 */
+.about-visual{padding:0;overflow:hidden;aspect-ratio:4/3}
+.about-visual img.motif{width:100%;height:100%;object-fit:cover}
+
+/* 홈 히어로 뒤에 깔리는 빛 — 아주 옅게, 글씨를 방해하지 않도록 */
+.hero .motif-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
+  opacity:.42;mix-blend-mode:screen;pointer-events:none;z-index:0}
+
+/* 진료 페이지 상단 띠의 무늬 — 오른쪽에서 서서히 사라집니다 */
+.page-hero{position:relative;overflow:hidden}
+.page-hero > *{position:relative;z-index:1}
+.page-hero .motif-bg{position:absolute;right:0;top:0;height:100%;width:min(58%,720px);
+  object-fit:cover;opacity:.30;pointer-events:none;z-index:0;
+  -webkit-mask-image:linear-gradient(to right,transparent,#000 55%);
+          mask-image:linear-gradient(to right,transparent,#000 55%)}
+
+@media (max-width:768px){
+  .hero .motif-bg{opacity:.30}
+  .page-hero .motif-bg{width:100%;opacity:.20;
+    -webkit-mask-image:linear-gradient(to bottom,transparent,#000 70%);
+            mask-image:linear-gradient(to bottom,transparent,#000 70%)}
+}
+
+/* 동작 줄이기와 무관하게 정지 이미지라 그대로 둡니다 */
+
+/* ---------- 갤러리 크게 보기 ---------- */
+.gal img{aspect-ratio:4/3;object-fit:cover;width:100%;border-radius:14px;border:1px solid var(--line);
+  transition:transform .3s cubic-bezier(.22,.61,.36,1),box-shadow .3s ease}
+.gal img:hover{transform:scale(1.02);box-shadow:var(--shadow)}
+.gal img:focus-visible{outline:3px solid var(--green);outline-offset:3px}
+
+.lightbox{position:fixed;inset:0;z-index:200;background:rgba(12,28,18,.92);
+  display:flex;align-items:center;justify-content:center;padding:40px 20px;
+  opacity:0;visibility:hidden;transition:opacity .25s ease,visibility .25s}
+.lightbox.on{opacity:1;visibility:visible}
+.lightbox figure{max-width:1100px;max-height:100%;display:flex;flex-direction:column;gap:14px;margin:0}
+.lightbox img{max-width:100%;max-height:78vh;object-fit:contain;border-radius:12px}
+.lightbox figcaption{color:#e3eee6;text-align:center;font-size:15px}
+.lightbox button{position:absolute;background:rgba(255,255,255,.12);border:none;color:#fff;
+  width:52px;height:52px;border-radius:50%;font-size:26px;line-height:1;cursor:pointer;transition:.2s}
+.lightbox button:hover{background:rgba(255,255,255,.26)}
+.lb-close{top:22px;right:22px;font-size:20px}
+.lb-prev{left:22px;top:50%;transform:translateY(-50%)}
+.lb-next{right:22px;top:50%;transform:translateY(-50%)}
+@media (max-width:768px){
+  .lightbox{padding:20px 12px}
+  .lightbox button{width:44px;height:44px;font-size:22px}
+  .lb-prev{left:8px} .lb-next{right:8px}
+}
+@media (prefers-reduced-motion: reduce){
+  .gal img{transition:none!important}
+  .gal img:hover{transform:none!important}
+  .lightbox{transition:none!important}
+}

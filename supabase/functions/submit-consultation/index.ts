@@ -110,8 +110,21 @@ async function verifyTurnstile(token: string, ip: string): Promise<boolean> {
   }
 }
 
+/**
+ * 알림 메일 발송.
+ * 알림이 실패해도 접수는 성공으로 처리합니다. 다만 결과는 반드시 남깁니다.
+ * 알림이 말없이 죽으면 운영 중에 아무도 모르기 때문입니다.
+ */
 async function notify(row: Record<string, unknown>) {
-  if (!RESEND_KEY || !NOTIFY_TO || !NOTIFY_FROM) return;
+  if (!RESEND_KEY || !NOTIFY_TO || !NOTIFY_FROM) {
+    console.log(JSON.stringify({
+      notify: "skipped",
+      reason: "missing_env",
+      has_key: !!RESEND_KEY, has_to: !!NOTIFY_TO, has_from: !!NOTIFY_FROM,
+    }));
+    return;
+  }
+
   const kindLabel = row.kind === "reserve" ? "예약 신청" : "문의";
   const lines = [
     `구분: ${kindLabel}`,
@@ -126,7 +139,7 @@ async function notify(row: Record<string, unknown>) {
   ].filter(Boolean).join("\n");
 
   try {
-    await fetch("https://api.resend.com/emails", {
+    const res = await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: { Authorization: `Bearer ${RESEND_KEY}`, "content-type": "application/json" },
       body: JSON.stringify({
@@ -136,8 +149,16 @@ async function notify(row: Record<string, unknown>) {
         text: `${lines}\n\n관리자 패널: https://mdmiraecell.com/admin`,
       }),
     });
-  } catch (_err) {
-    /* 알림 실패가 접수 실패가 되어서는 안 됩니다 */
+    const body = await res.text();
+    console.log(JSON.stringify({
+      notify: res.ok ? "sent" : "failed",
+      status: res.status,
+      response: body.slice(0, 500),
+      from: NOTIFY_FROM,
+      to: NOTIFY_TO,
+    }));
+  } catch (err) {
+    console.log(JSON.stringify({ notify: "error", message: String(err).slice(0, 300) }));
   }
 }
 
@@ -187,14 +208,19 @@ Deno.serve(async (req) => {
   const ipHash = await sha256(IP_SALT + "|" + ip);
 
   if (ip) {
-    const since10 = new Date(Date.now() - 10 * 60 * 1000).toISOString();
-    const since24 = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+    /* 두 조회를 동시에 보내면 간헐적으로 인증이 틀어져 한쪽이 401을 받습니다.
+       그러면 건수가 0으로 집계돼 제한이 걸리지 않으므로 순차로 확인합니다. */
     const counted = { headers: { Prefer: "count=exact", Range: "0-0" } };
-    const [r10, r24] = await Promise.all([
-      db(`submit_rate_log?ip_hash=eq.${ipHash}&at=gte.${since10}&select=id`, counted),
-      db(`submit_rate_log?ip_hash=eq.${ipHash}&at=gte.${since24}&select=id`, counted),
-    ]);
     const count = (res: Response) => Number(res.headers.get("content-range")?.split("/")[1] ?? 0);
+
+    const since10 = new Date(Date.now() - 10 * 60 * 1000).toISOString();
+    const r10 = await db(`submit_rate_log?ip_hash=eq.${ipHash}&at=gte.${since10}&select=id`, counted);
+    const since24 = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+    const r24 = await db(`submit_rate_log?ip_hash=eq.${ipHash}&at=gte.${since24}&select=id`, counted);
+
+    if (!r10.ok || !r24.ok) {
+      console.log(JSON.stringify({ ratelimit: "check_failed", s10: r10.status, s24: r24.status }));
+    }
     if (count(r10) >= LIMIT_10MIN || count(r24) >= LIMIT_DAY) {
       return json({ error: "rate_limited" }, 429, origin);
     }

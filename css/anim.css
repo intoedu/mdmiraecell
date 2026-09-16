@@ -1,0 +1,191 @@
+/* ============================================================
+   명동미래셀의원 · 동작(애니메이션)
+   ------------------------------------------------------------
+   원칙
+   · 의료기관입니다. 화려함보다 차분함이 신뢰를 만듭니다.
+     움직임은 짧고(0.5~0.8초), 부드럽고, 한 번만 일어납니다.
+   · 어지럼증·전정기능 문제가 있는 분이 기기에서 '동작 줄이기'를
+     켜두셨다면 모든 움직임을 끕니다. (맨 아래 블록)
+   · 자바스크립트가 막힌 환경에서도 내용은 전부 보여야 합니다.
+     그래서 감추는 규칙은 전부 html.js 안에서만 적용합니다.
+   ============================================================ */
+
+/* ---------- 페이지 진입 ---------- */
+html.js body { opacity: 0; }
+html.js body.ready { opacity: 1; transition: opacity .45s ease; }
+
+/* ---------- 스크롤 등장 ----------
+   .reveal 이 붙은 요소는 화면에 들어올 때 한 번 떠오릅니다.
+   --d 는 순서대로 터지게 하는 지연값입니다(JS가 넣어 줍니다). */
+html.js .reveal {
+  opacity: 0;
+  transform: translateY(26px);
+}
+html.js .reveal.in {
+  opacity: 1;
+  transform: none;
+  transition:
+    opacity .7s cubic-bezier(.22, .61, .36, 1) var(--d, 0s),
+    transform .7s cubic-bezier(.22, .61, .36, 1) var(--d, 0s);
+}
+
+/* 옆에서 들어오는 변형 — 소개 섹션처럼 좌우로 나뉜 곳에 씁니다 */
+html.js .reveal-left  { opacity: 0; transform: translateX(-34px); }
+html.js .reveal-right { opacity: 0; transform: translateX(34px); }
+html.js .reveal-left.in,
+html.js .reveal-right.in {
+  opacity: 1;
+  transform: none;
+  transition:
+    opacity .75s cubic-bezier(.22,.61,.36,1) var(--d, 0s),
+    transform .75s cubic-bezier(.22,.61,.36,1) var(--d, 0s);
+}
+
+/* 좌우 등장은 가로로 삐져나가 화면을 밀 수 있습니다.
+   섹션 안에서 잘라내고, 좁은 화면에서는 아예 위아래 움직임으로 바꿉니다. */
+html.js section.block,
+html.js .info-strip { overflow-x: clip; }
+
+@media (max-width: 768px) {
+  html.js .reveal-left,
+  html.js .reveal-right { transform: translateY(26px); }
+}
+
+/* 살짝 커지며 나타나는 변형 — 사진·지도처럼 면적이 큰 요소 */
+html.js .reveal-zoom { opacity: 0; transform: scale(.955); }
+html.js .reveal-zoom.in {
+  opacity: 1;
+  transform: none;
+  transition:
+    opacity .8s ease var(--d, 0s),
+    transform .8s cubic-bezier(.22,.61,.36,1) var(--d, 0s);
+}
+
+/* ---------- 홈 히어로 진입 ----------
+   문구가 순서대로 떠오릅니다. 페이지를 연 직후 한 번만. */
+@keyframes rise {
+  from { opacity: 0; transform: translateY(22px); }
+  to   { opacity: 1; transform: none; }
+}
+html.js .hero .eyebrow,
+html.js .hero h1,
+html.js .hero p,
+html.js .hero .btns { opacity: 0; }
+html.js body.ready .hero .eyebrow { animation: rise .7s cubic-bezier(.22,.61,.36,1) .10s forwards; }
+html.js body.ready .hero h1       { animation: rise .8s cubic-bezier(.22,.61,.36,1) .22s forwards; }
+html.js body.ready .hero p        { animation: rise .8s cubic-bezier(.22,.61,.36,1) .36s forwards; }
+html.js body.ready .hero .btns    { animation: rise .8s cubic-bezier(.22,.61,.36,1) .50s forwards; }
+
+/* 페이지 상단 띠(하위 페이지)도 같은 방식으로 */
+html.js .page-hero .crumb,
+html.js .page-hero h1,
+html.js .page-hero > p { opacity: 0; }
+html.js body.ready .page-hero .crumb { animation: rise .6s ease .08s forwards; }
+html.js body.ready .page-hero h1     { animation: rise .7s cubic-bezier(.22,.61,.36,1) .18s forwards; }
+html.js body.ready .page-hero > p    { animation: rise .7s ease .30s forwards; }
+
+/* ---------- 히어로 배경: 재생(세포) 모티프 ----------
+   기존 두 개의 원을 아주 느리게 떠다니게 합니다.
+   14초·19초로 주기를 어긋나게 두어 규칙적으로 보이지 않게 합니다. */
+@keyframes drift-a {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50%      { transform: translate(-26px, 24px) scale(1.06); }
+}
+@keyframes drift-b {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50%      { transform: translate(30px, -20px) scale(1.08); }
+}
+.hero::after  { animation: drift-a 19s ease-in-out infinite; }
+.hero::before { animation: drift-b 14s ease-in-out infinite; }
+
+/* 히어로 위에 얹는 부드러운 광점 — 숨 쉬듯 아주 천천히 */
+.hero .glow {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  filter: blur(46px);
+  background: rgba(255, 255, 255, .10);
+}
+.hero .glow.g1 { width: 300px; height: 300px; left: 12%;  top: 16%; animation: breathe 11s ease-in-out infinite; }
+.hero .glow.g2 { width: 220px; height: 220px; right: 22%; bottom: 8%; animation: breathe 15s ease-in-out infinite 2s; }
+@keyframes breathe {
+  0%, 100% { opacity: .45; transform: scale(1); }
+  50%      { opacity: .85; transform: scale(1.15); }
+}
+
+/* ---------- 헤더: 스크롤하면 얇아지고 그림자가 생김 ---------- */
+header.site { transition: box-shadow .3s ease, background .3s ease; }
+header.site.scrolled { box-shadow: 0 6px 22px rgba(15, 61, 29, .10); }
+header.site.scrolled .nav-wrap { padding-top: 10px; padding-bottom: 10px; }
+header.site .nav-wrap { transition: padding .3s ease; }
+
+/* ---------- 카드: 조금 더 살아 있게 ---------- */
+.card { transition: transform .3s cubic-bezier(.22,.61,.36,1), box-shadow .3s ease, border-color .3s ease; }
+.card .icon { transition: transform .35s cubic-bezier(.22,.61,.36,1), background .3s ease; }
+.card:hover .icon { transform: scale(1.12) rotate(-6deg); }
+.card .more { transition: transform .25s ease; display: inline-block; }
+.card:hover .more { transform: translateX(6px); }
+
+/* 버튼 — 눌리는 느낌 */
+.btn { will-change: transform; }
+.btn:active { transform: scale(.97); }
+.btn-green:hover, .nav-cta:hover { box-shadow: 0 8px 20px rgba(30, 107, 52, .28); }
+
+/* ---------- 숫자 세기 ---------- */
+.countup { font-variant-numeric: tabular-nums; }
+
+/* ---------- 진료 분야 탭 전환 ---------- */
+.tab-panel { animation: none; }
+.tab-panel.on { animation: fade-in .4s ease; }
+@keyframes fade-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+/* ---------- 폼 ---------- */
+.field input, .field select, .field textarea { transition: border-color .2s ease, box-shadow .2s ease, background .2s ease; }
+.field input:focus, .field select:focus, .field textarea:focus { background: #fff; }
+.form-done .mark { animation: pop .55s cubic-bezier(.34, 1.56, .64, 1); }
+@keyframes pop { from { opacity: 0; transform: scale(.5); } to { opacity: 1; transform: none; } }
+.form-result { animation: fade-in .3s ease; }
+
+/* ---------- 빠른 연락 버튼 ---------- */
+.quick a { transition: transform .25s cubic-bezier(.34,1.56,.64,1), box-shadow .25s ease; }
+.quick a:hover { transform: scale(1.12) translateY(-2px); }
+
+/* ============================================================
+   동작 줄이기를 켜신 분 — 모든 움직임을 끕니다.
+   내용은 그대로 보이고, 자리 이동만 사라집니다.
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  html.js body,
+  html.js body.ready { opacity: 1 !important; transition: none !important; }
+
+  html.js .reveal,
+  html.js .reveal-left,
+  html.js .reveal-right,
+  html.js .reveal-zoom,
+  html.js .hero .eyebrow,
+  html.js .hero h1,
+  html.js .hero p,
+  html.js .hero .btns,
+  html.js .page-hero .crumb,
+  html.js .page-hero h1,
+  html.js .page-hero > p {
+    opacity: 1 !important;
+    transform: none !important;
+    animation: none !important;
+    transition: none !important;
+  }
+
+  .hero::before, .hero::after, .hero .glow,
+  .tab-panel.on, .form-done .mark, .form-result {
+    animation: none !important;
+  }
+  .hero .glow { opacity: .6; }
+
+  .card, .card .icon, .card .more, .btn, .quick a, header.site .nav-wrap {
+    transition: none !important;
+  }
+  .card:hover { transform: none !important; }
+  .card:hover .icon { transform: none !important; }
+  .card:hover .more { transform: none !important; }
+  .quick a:hover { transform: none !important; }
+}

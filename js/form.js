@@ -10,7 +10,6 @@
 
   const kind = form.dataset.consultForm; // "reserve" | "contact"
   const btn = form.querySelector("button[type=submit]");
-  const btnLabel = btn ? btn.textContent : "";
   const box = document.getElementById("form-result");
 
   /* ---------- 캡차 ---------- */
@@ -24,7 +23,7 @@
     window.onTurnstileReady = function () {
       turnstileId = window.turnstile.render("#turnstile-holder", {
         sitekey: cfg.TURNSTILE_SITE_KEY,
-        language: "ko",
+        language: (window.MIRAE_I18N && window.MIRAE_I18N.lang) || "ko",
       });
     };
     const s = document.createElement("script");
@@ -43,24 +42,28 @@
     box.scrollIntoView({ block: "center", behavior: "smooth" });
   }
 
-  const MESSAGES = {
-    name_invalid: "성함을 정확히 입력해 주십시오.",
-    phone_invalid: "연락처 형식을 확인해 주십시오. (예: 010-0000-0000)",
-    email_invalid: "이메일 주소를 확인해 주십시오.",
-    date_invalid: "희망 날짜를 확인해 주십시오.",
-    date_required: "희망 날짜를 선택해 주십시오.",
-    message_required: "문의 내용을 입력해 주십시오.",
-    consent_required: "개인정보 수집·이용에 동의해 주셔야 접수가 가능합니다.",
-    captcha_failed: "자동입력 방지 확인에 실패했습니다. 잠시 후 다시 시도해 주십시오.",
-    rate_limited: "짧은 시간에 여러 번 접수하셨습니다. 잠시 후 다시 시도해 주시거나 전화로 연락 주십시오.",
-    origin_not_allowed: "접수 경로를 확인할 수 없습니다. 홈페이지 주소로 다시 접속해 주십시오.",
-  };
+  /* 번역 도우미 — i18n.js 가 없거나 한국어면 한국어 원문이 그대로 나옵니다 */
+  const t = (key, ko) => (window.T ? window.T(key, ko) : ko);
+
+  const MESSAGES = () => ({
+    name_invalid: t("msg.name_invalid", "성함을 정확히 입력해 주십시오."),
+    phone_invalid: t("msg.phone_invalid", "연락처 형식을 확인해 주십시오. (예: 010-0000-0000)"),
+    email_invalid: t("msg.email_invalid", "이메일 주소를 확인해 주십시오."),
+    date_invalid: t("msg.date_invalid", "희망 날짜를 확인해 주십시오."),
+    date_required: t("msg.date_required", "희망 날짜를 선택해 주십시오."),
+    message_required: t("msg.message_required", "문의 내용을 입력해 주십시오."),
+    consent_required: t("msg.consent_required", "개인정보 수집·이용에 동의해 주셔야 접수가 가능합니다."),
+    captcha_failed: t("msg.captcha_failed", "자동입력 방지 확인에 실패했습니다. 잠시 후 다시 시도해 주십시오."),
+    rate_limited: t("msg.rate_limited", "짧은 시간에 여러 번 접수하셨습니다. 잠시 후 다시 시도해 주시거나 전화로 연락 주십시오."),
+    origin_not_allowed: t("msg.origin_not_allowed", "접수 경로를 확인할 수 없습니다. 홈페이지 주소로 다시 접속해 주십시오."),
+  });
 
   function failHtml(code) {
     const tel = cfg.TEL || "02-776-8768";
-    const msg = MESSAGES[code] || "접수 중 문제가 발생했습니다.";
-    return `<b>접수되지 않았습니다.</b><br>${msg}<br>
-      <span class="sub">계속 같은 문제가 생기면 <a href="tel:${tel.replace(/-/g, "")}">${tel}</a> 로 전화 주십시오.</span>`;
+    const msg = MESSAGES()[code] || t("msg.generic", "접수 중 문제가 발생했습니다.");
+    return `<b>${t("msg.failhead", "접수되지 않았습니다.")}</b><br>${msg}<br>
+      <span class="sub">${t("msg.failtail1", "계속 같은 문제가 생기면")}
+        <a href="tel:${tel.replace(/-/g, "")}">${tel}</a>${t("msg.failtail2", " 로 전화 주십시오.")}</span>`;
   }
 
   /* ---------- 전송 ---------- */
@@ -97,7 +100,9 @@
       return;
     }
 
-    if (btn) { btn.disabled = true; btn.textContent = "접수 중입니다…"; }
+    /* 번역은 DOMContentLoaded 때 적용되므로, 라벨은 이 시점에 기억합니다 */
+    const btnLabel = btn ? btn.textContent : "";
+    if (btn) { btn.disabled = true; btn.textContent = t("msg.sending", "접수 중입니다…"); }
     if (box) box.hidden = true;
 
     try {
@@ -120,10 +125,12 @@
         form.innerHTML = `
           <div class="form-done">
             <div class="mark">✓</div>
-            <h3>${kind === "reserve" ? "예약 신청이 접수되었습니다" : "문의가 접수되었습니다"}</h3>
-            <p>확인 후 남겨 주신 연락처로 담당자가 연락드리겠습니다.<br>
-               진료시간 내 접수 건은 당일, 이후 접수 건은 다음 진료일에 연락드립니다.</p>
-            <p class="tel">급하신 경우 <a href="tel:${tel.replace(/-/g, "")}">${tel}</a></p>
+            <h3>${kind === "reserve"
+              ? t("msg.done.r", "예약 신청이 접수되었습니다")
+              : t("msg.done.c", "문의가 접수되었습니다")}</h3>
+            <p>${t("msg.done.p",
+              "확인 후 남겨 주신 연락처로 담당자가 연락드리겠습니다.<br>진료시간 내 접수 건은 당일, 이후 접수 건은 다음 진료일에 연락드립니다.")}</p>
+            <p class="tel">${t("msg.done.tel", "급하신 경우")} <a href="tel:${tel.replace(/-/g, "")}">${tel}</a></p>
           </div>`;
         return;
       }

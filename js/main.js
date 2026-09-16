@@ -1718,52 +1718,80 @@ const SERVICES = [
 ];
 const svcHref = s => `${s.key}`;
 
+/* ---------- 번역 도우미 ----------
+   js/i18n.js 가 없거나 한국어면 두 번째 인자(한국어 원문)가 그대로 나옵니다.
+   그래서 번역 파일이 빠져도 사이트는 지금과 똑같이 동작합니다. */
+const t = (key, ko) => (window.T ? window.T(key, ko) : ko);
+const svcTitle = s => (window.TSVC ? window.TSVC(s.key, "title", s.title) : s.title);
+const svcDesc  = s => (window.TSVC ? window.TSVC(s.key, "desc",  s.desc)  : s.desc);
+const isKo = () => !window.MIRAE_I18N || window.MIRAE_I18N.lang === "ko";
+
 /* 대메뉴 4개: [대표링크, 라벨, 하위]. 하위가 "mega"면 진료안내(10개 분야),
    아니면 [컬럼링크, 컬럼제목, [[링크, 항목], ...]] 배열 → 메뉴별 메가 패널로 렌더 */
 const NAV_ITEMS = [
-  ["about", "의원소개", [
-    ["about", "소개·인사말", [["about#greeting", "인사말"], ["about#doctor", "의료진 소개"], ["about#values", "진료 철학"]]],
-    ["location", "오시는 길", [["location#map", "위치·지도"], ["location#transport", "대중교통 안내"]]],
+  ["about", t("nav.about", "의원소개"), [
+    ["about", t("nav.about.intro", "소개·인사말"), [
+      ["about#greeting", t("nav.about.greeting", "인사말")],
+      ["about#doctor",   t("nav.about.doctor", "의료진 소개")],
+      ["about#values",   t("nav.about.values", "진료 철학")]]],
+    ["location", t("nav.about.location", "오시는 길"), [
+      ["location#map",       t("nav.about.map", "위치·지도")],
+      ["location#transport", t("nav.about.transport", "대중교통 안내")]]],
   ]],
-  ["services", "진료안내", "mega"],
-  ["notice", "커뮤니티", [
-    ["notice", "공지·소식", [["notice#list", "공지사항"], ["notice#video", "유튜브 영상"]]],
-    ["gallery", "갤러리", [["gallery", "병원 갤러리"]]],
-    ["faq", "자주 묻는 질문", [["faq", "FAQ"]]],
+  ["services", t("nav.services", "진료안내"), "mega"],
+  ["notice", t("nav.community", "커뮤니티"), [
+    ["notice", t("nav.community.notice", "공지·소식"), [
+      ["notice#list",  t("nav.community.list", "공지사항")],
+      ["notice#video", t("nav.community.video", "유튜브 영상")]]],
+    ["gallery", t("nav.community.gallery", "갤러리"), [
+      ["gallery", t("nav.community.galleryItem", "병원 갤러리")]]],
+    ["faq", t("nav.community.faq", "자주 묻는 질문"), [
+      ["faq", t("nav.community.faqItem", "FAQ")]]],
   ]],
-  ["contact", "문의·예약", [
-    ["contact", "문의하기", [["contact#form", "문의 양식"], ["mailto:mdmiraecellclinic@gmail.com", "이메일 문의"]]],
-    ["reserve", "진료 예약", [["reserve#form", "온라인 예약 신청"], ["tel:027768768", "전화 예약 02-776-8768"]]],
+  ["contact", t("nav.contact", "문의·예약"), [
+    ["contact", t("nav.contact.inquiry", "문의하기"), [
+      ["contact#form", t("nav.contact.form", "문의 양식")],
+      ["mailto:mdmiraecellclinic@gmail.com", t("nav.contact.email", "이메일 문의")]]],
+    ["reserve", t("nav.contact.reserve", "진료 예약"), [
+      ["reserve#form", t("nav.contact.online", "온라인 예약 신청")],
+      ["tel:027768768", t("nav.contact.phone", "전화 예약 02-776-8768")]]],
   ]],
 ];
 
 const TEL = "02-776-8768";
 const EMAIL = "mdmiraecellclinic@gmail.com";
-const ADDR = "서울특별시 중구 퇴계로 123, 7층 명동미래셀의원";
+const ADDR = t("site.addr", "서울특별시 중구 퇴계로 123, 7층 명동미래셀의원");
+const CLINIC = t("site.name", "명동미래셀의원");
 
 document.getElementById("site-header").innerHTML = `
 <header class="site"><div class="container nav-wrap">
-  <a class="brand" href="./"><img class="logo-img" src="images/logo.svg?v=2" alt="명동미래셀의원"></a>
+  <a class="brand" href="./"><img class="logo-img" src="images/logo.svg?v=2" alt="${CLINIC}"></a>
   <nav class="main" id="main-nav"><ul>
     ${NAV_ITEMS.map(([href, label, sub], mi) => {
       /* .sub는 모바일 메뉴 전용 — 데스크톱은 메뉴별 메가 패널이 뜸 */
       const mobileLinks = sub === "mega"
-        ? SERVICES.map(s => [svcHref(s), s.title])
+        ? SERVICES.map(s => [svcHref(s), svcTitle(s)])
         : sub.map(([h, l]) => [h, l]);
       return `<li data-mi="${mi}"><a href="${href}">${label}<span class="caret">▼</span></a>
         <ul class="sub">${mobileLinks.map(([h, l]) => `<li><a href="${h}">${l}</a></li>`).join("")}</ul></li>`;
     }).join("")}
   </ul></nav>
-  <a class="nav-cta" href="reserve">진료 예약</a>
-  <button id="menu-btn" aria-label="메뉴 열기">☰</button>
+  <a class="nav-cta" href="reserve">${t("nav.cta", "진료 예약")}</a>
+  <button id="menu-btn" aria-label="${t("nav.menu", "메뉴 열기")}">☰</button>
 </div>
 ${NAV_ITEMS.map(([href, label, sub], mi) => {
   const cols = sub === "mega"
     ? SERVICES.map(s => {
-        const items = s.groups.flatMap((g, gi) => g.tags.map((t, ti) =>
-          typeof t === "object" ? [`${svcHref(s)}#t${gi}-${ti}`, t.n] : [svcHref(s), t]));
-        return `<div class="mega-col"><h5><a href="${svcHref(s)}">${s.title}</a></h5>
-          ${items.map(([h, l]) => `<a href="${h}">${l}</a>`).join("")}</div>`;
+        /* 세부 항목명은 아직 한국어만 있습니다.
+           다른 언어에서는 한국어를 늘어놓는 대신 분야 이름만 보여 줍니다. */
+        const items = isKo()
+          ? s.groups.flatMap((g, gi) => g.tags.map((tg, ti) =>
+              typeof tg === "object" ? [`${svcHref(s)}#t${gi}-${ti}`, tg.n] : [svcHref(s), tg]))
+          : [];
+        return `<div class="mega-col"><h5><a href="${svcHref(s)}">${svcTitle(s)}</a></h5>
+          ${items.length
+            ? items.map(([h, l]) => `<a href="${h}">${l}</a>`).join("")
+            : `<a href="${svcHref(s)}">${svcDesc(s)}</a>`}</div>`;
       }).join("")
     : sub.map(([ch, ct, items]) => `<div class="mega-col"><h5><a href="${ch}">${ct}</a></h5>
         ${items.map(([h, l]) => `<a href="${h}">${l}</a>`).join("")}</div>`).join("");
@@ -1775,8 +1803,8 @@ document.getElementById("site-footer").innerHTML = `
 <footer class="site"><div class="container">
   <div class="cols">
     <div>
-      <a class="brand" href="./" style="margin-bottom:16px"><img src="images/logo.svg?v=2" alt="명동미래셀의원" style="height:44px;filter:brightness(0) invert(1)"></a>
-      <p style="margin-top:14px">${ADDR}<br>대표자 박종윤 · Tel ${TEL} · ${EMAIL}</p>
+      <a class="brand" href="./" style="margin-bottom:16px"><img src="images/logo.svg?v=2" alt="${CLINIC}" style="height:44px;filter:brightness(0) invert(1)"></a>
+      <p style="margin-top:14px">${ADDR}<br>${t("footer.ceoline", "대표자 박종윤 · Tel")} ${TEL} · ${EMAIL}</p>
       <div class="sns">
         <a href="#" aria-label="유튜브" title="YouTube">▶</a>
         <a href="#" aria-label="인스타그램" title="Instagram">◉</a>
@@ -1784,48 +1812,82 @@ document.getElementById("site-footer").innerHTML = `
         <a href="#" aria-label="카카오톡 채널" title="KakaoTalk">K</a>
       </div>
     </div>
-    <div><h4>진료 안내</h4><ul>
-      ${SERVICES.slice(0, 4).map(s => `<li><a href="${svcHref(s)}">${s.title}</a></li>`).join("")}
+    <div><h4>${t("footer.services", "진료 안내")}</h4><ul>
+      ${SERVICES.slice(0, 4).map(s => `<li><a href="${svcHref(s)}">${svcTitle(s)}</a></li>`).join("")}
     </ul></div>
-    <div><h4>바로가기</h4><ul>
-      <li><a href="reserve">진료 예약</a></li>
-      <li><a href="contact">문의하기</a></li>
-      <li><a href="location">오시는 길</a></li>
-      <li><a href="notice">공지·소식</a></li>
-      <li><a href="faq">자주 묻는 질문</a></li>
+    <div><h4>${t("footer.quick", "바로가기")}</h4><ul>
+      <li><a href="reserve">${t("footer.reserve", "진료 예약")}</a></li>
+      <li><a href="contact">${t("footer.contact", "문의하기")}</a></li>
+      <li><a href="location">${t("footer.location", "오시는 길")}</a></li>
+      <li><a href="notice">${t("footer.notice", "공지·소식")}</a></li>
+      <li><a href="faq">${t("footer.faq", "자주 묻는 질문")}</a></li>
     </ul></div>
   </div>
   <div class="fine">
     <span><a href="tel:${TEL.replace(/-/g, "")}">☎ ${TEL}</a> · <a href="mailto:${EMAIL}">✉ ${EMAIL}</a></span>
-    <span>© ${new Date().getFullYear()} 명동미래셀의원. All rights reserved.</span>
-    <span><a href="privacy" style="font-weight:800;text-decoration:underline">개인정보처리방침</a> · 본 사이트의 콘텐츠는 의료광고 심의 기준을 준수합니다.</span>
+    <span>© ${new Date().getFullYear()} ${t("footer.rights", "명동미래셀의원. All rights reserved.")}</span>
+    <span><a href="privacy" style="font-weight:800;text-decoration:underline">${t("footer.privacy", "개인정보처리방침")}</a> · ${t("footer.compliance", "본 사이트의 콘텐츠는 의료광고 심의 기준을 준수합니다.")}</span>
+    ${isKo() ? "" : `<span>${t("footer.langnote", "")}</span>`}
   </div>
 </div></footer>
 <div class="quick">
-  <a class="tel" href="tel:${TEL.replace(/-/g, "")}" title="전화 걸기" aria-label="전화 걸기">☎</a>
-  <a class="rsv" href="reserve" title="진료 예약" aria-label="진료 예약">✎</a>
+  <a class="tel" href="tel:${TEL.replace(/-/g, "")}" title="${t("quick.call", "전화 걸기")}" aria-label="${t("quick.call", "전화 걸기")}">☎</a>
+  <a class="rsv" href="reserve" title="${t("quick.reserve", "진료 예약")}" aria-label="${t("quick.reserve", "진료 예약")}">✎</a>
 </div>`;
+
+/* ---------- 페이지 상단 띠의 개념 무늬 ----------
+   images/motif-*.svg 는 사진이 아니라 도형입니다.
+   병원 시설이나 환자 사진으로 오해될 수 없으므로 의료광고 규정에서 자유롭고,
+   저작권 문제도 없습니다. 실제 사진이 준비되면 갤러리부터 채우시면 됩니다. */
+const MOTIF_BY_PAGE = {
+  services: "cell", about: "leaf", location: "flow", notice: "flow",
+  gallery: "form", faq: "form", contact: "flow", reserve: "light", privacy: "form",
+};
+const MOTIF_BY_SVC = {
+  stemcell: "cell", derma: "light", plastic: "form", urology: "flow", esthetic: "light",
+  toenail: "leaf", scalp: "leaf", lymph: "flow", worldtour: "leaf", quantum: "light",
+};
+
+function paintHeroMotif(name) {
+  const hero = document.querySelector(".page-hero");
+  if (!hero || !name || hero.querySelector(".motif-bg")) return;
+  const img = document.createElement("img");
+  img.className = "motif-bg";
+  img.src = `images/motif-${name}.svg?v=1`;
+  img.alt = "";
+  img.setAttribute("aria-hidden", "true");
+  hero.insertBefore(img, hero.firstChild);
+}
 
 /* ---------- 진료 분야 개별 페이지 렌더링 (<main id="svc-page" data-svc="키">) ---------- */
 const svcPage = document.getElementById("svc-page");
 if (svcPage) {
   const cur = SERVICES.find(s => s.key === svcPage.dataset.svc);
   if (cur) {
-    document.title = `${cur.title} | 명동미래셀의원`;
+    document.title = `${svcTitle(cur)} | ${CLINIC}`;
+    /* 진료 상세 본문은 아직 한국어만 있습니다. 다른 언어로 보고 계시면
+       "번역된 것처럼" 보이지 않도록 먼저 솔직하게 알려 드립니다. */
+    const koOnly = isKo() ? "" : `
+      <div class="lang-notice">
+        <b>${t("svc.konly.h", "")}</b>
+        <span>${t("svc.konly.p", "")}</span>
+        <a href="contact">${t("nav.contact.inquiry", "문의하기")}</a>
+      </div>`;
     svcPage.innerHTML = `
     <div class="page-hero">
-      <p class="crumb">HOME &gt; 진료안내 &gt; ${cur.title}</p>
-      <h1>${cur.title}</h1>
-      ${cur.hero || `<p>${cur.desc}</p>`}
+      <p class="crumb">HOME &gt; ${t("nav.services", "진료안내")} &gt; ${svcTitle(cur)}</p>
+      <h1>${svcTitle(cur)}</h1>
+      ${isKo() ? (cur.hero || `<p>${cur.desc}</p>`) : `<p>${svcDesc(cur)}</p>`}
     </div>
+    ${koOnly}
     <div class="container svc-layout">
       <aside class="svc-side"><ul>
-        ${SERVICES.map(s => `<li><a href="${svcHref(s)}" class="${s.key === cur.key ? "on" : ""}">${s.no}. ${s.title}</a></li>`).join("")}
+        ${SERVICES.map(s => `<li><a href="${svcHref(s)}" class="${s.key === cur.key ? "on" : ""}">${s.no}. ${svcTitle(s)}</a></li>`).join("")}
       </ul></aside>
       <div class="svc-main">
         <section class="svc-sec">
-          <h2>${cur.no}. ${cur.title}</h2>
-          <p class="desc">${cur.desc}</p>
+          <h2>${cur.no}. ${svcTitle(cur)}</h2>
+          <p class="desc">${svcDesc(cur)}</p>
           ${cur.intro || ""}
           ${cur.groups.map((g, gi) => {
             const hasDesc = g.tags.some(t => typeof t === "object");
@@ -1874,6 +1936,7 @@ if (svcPage) {
         else window.addEventListener("load", go, { once: true });
       }
     };
+    paintHeroMotif(MOTIF_BY_SVC[cur.key]);
     openHashTab();
     window.addEventListener("hashchange", openHashTab);
   }
@@ -1885,15 +1948,16 @@ if (svcIndex) {
   svcIndex.innerHTML = SERVICES.map(s => `
     <a class="card" href="${svcHref(s)}">
       <div class="icon">${s.no}</div>
-      <h3>${s.title}</h3>
-      <p>${s.desc}</p>
-      <span class="more">자세히 보기 →</span>
+      <h3>${svcTitle(s)}</h3>
+      <p>${svcDesc(s)}</p>
+      <span class="more">${t("home.more", "자세히 보기 →")}</span>
     </a>`).join("");
 }
 
 /* 현재 페이지가 속한 대메뉴 활성화 */
 /* 로컬(.html 직접 접속)과 Pages(확장자 없음) 모두 대응 */
 const here = (location.pathname.split("/").pop() || "index").replace(/\.html$/, "");
+if (!svcPage) paintHeroMotif(MOTIF_BY_PAGE[here]);
 document.querySelectorAll("nav.main > ul > li").forEach(li => {
   const links = [...li.querySelectorAll("a")].map(a => a.getAttribute("href"));
   if (links.includes(here)) li.querySelector("a").classList.add("active");
@@ -1931,3 +1995,70 @@ megaPanels.forEach(m => m.addEventListener("click", e => {
 
 /* 문의/예약 폼 전송은 js/form.js 로 옮겼습니다.
    (Supabase Edge Function 접수 + 개인정보 동의 처리 — reserve/contact 페이지에서만 불러옵니다) */
+
+/* ---------- 갤러리 크게 보기 ----------
+   .gal 안의 <img> 를 누르면 화면 가득 펼쳐집니다.
+   지금은 빈 자리(.ph)뿐이라 아무 일도 하지 않고, 실제 사진을
+   <img src="images/파일명.jpg" alt="설명"> 로 바꿔 넣으시면 바로 동작합니다.
+   ------------------------------------------------------------
+   갤러리에는 실제 병원 사진만 넣어 주십시오.
+   무료 스톡 사진이나 AI로 만든 그림을 "우리 진료실"처럼 올리면
+   의료광고 규정 위반이자 환자분들을 속이는 일이 됩니다. */
+(function () {
+  const gal = document.querySelector(".gal");
+  if (!gal) return;
+
+  const shots = [...gal.querySelectorAll("img")];
+  if (!shots.length) return;
+
+  let box = null, idx = 0;
+
+  function open(i) {
+    idx = (i + shots.length) % shots.length;
+    if (!box) {
+      box = document.createElement("div");
+      box.className = "lightbox";
+      box.innerHTML = `
+        <button class="lb-close" aria-label="${t("gal.close", "닫기")}">✕</button>
+        <button class="lb-prev"  aria-label="${t("gal.prev", "이전 사진")}">‹</button>
+        <button class="lb-next"  aria-label="${t("gal.next", "다음 사진")}">›</button>
+        <figure><img alt=""><figcaption></figcaption></figure>`;
+      document.body.appendChild(box);
+      box.querySelector(".lb-close").addEventListener("click", close);
+      box.querySelector(".lb-prev").addEventListener("click", e => { e.stopPropagation(); open(idx - 1); });
+      box.querySelector(".lb-next").addEventListener("click", e => { e.stopPropagation(); open(idx + 1); });
+      box.addEventListener("click", e => { if (e.target === box || e.target.tagName === "FIGURE") close(); });
+    }
+    const src = shots[idx];
+    const img = box.querySelector("img");
+    img.src = src.currentSrc || src.src;
+    img.alt = src.alt || "";
+    box.querySelector("figcaption").textContent = src.alt || "";
+    box.classList.add("on");
+    document.body.style.overflow = "hidden";
+    box.querySelector(".lb-close").focus();
+  }
+
+  function close() {
+    if (!box) return;
+    box.classList.remove("on");
+    document.body.style.overflow = "";
+    shots[idx].focus();
+  }
+
+  shots.forEach((im, i) => {
+    im.tabIndex = 0;
+    im.style.cursor = "zoom-in";
+    im.addEventListener("click", () => open(i));
+    im.addEventListener("keydown", e => {
+      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); open(i); }
+    });
+  });
+
+  document.addEventListener("keydown", e => {
+    if (!box || !box.classList.contains("on")) return;
+    if (e.key === "Escape") close();
+    if (e.key === "ArrowLeft") open(idx - 1);
+    if (e.key === "ArrowRight") open(idx + 1);
+  });
+})();

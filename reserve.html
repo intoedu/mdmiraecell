@@ -14,15 +14,17 @@
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image"><link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=44">
+<script>document.documentElement.classList.add("js")</script>
+<link rel="stylesheet" href="css/style.css?v=46">
+<link rel="stylesheet" href="css/anim.css?v=46">
 </head>
-<body>
+<body data-i18n-title="page.reserve.h1">
 <div id="site-header"></div>
 
 <div class="page-hero">
-  <p class="crumb">HOME &gt; 신청·예약</p>
-  <h1>진료 예약 신청</h1>
-  <p>원하시는 일정을 남겨 주시면 확인 후 연락드립니다.</p>
+  <p class="crumb" data-i18n="page.reserve.crumb">HOME &gt; 신청·예약</p>
+  <h1 data-i18n="page.reserve.h1">진료 예약 신청</h1>
+  <p data-i18n="page.reserve.p">원하시는 일정을 남겨 주시면 확인 후 연락드립니다.</p>
 </div>
 
 <section class="block alt" id="form">
@@ -30,53 +32,64 @@
     <div class="form-result" id="form-result" hidden></div>
     <form class="form-wrap" data-consult-form="reserve">
       <div class="form-row">
-        <div class="field"><label for="rv-name">성함 <em>*</em></label><input id="rv-name" name="name" required maxlength="50" autocomplete="name" placeholder="홍길동"></div>
-        <div class="field"><label for="rv-phone">연락처 <em>*</em></label><input id="rv-phone" name="phone" type="tel" required maxlength="20" autocomplete="tel" placeholder="010-0000-0000"></div>
+        <div class="field"><label for="rv-name"><span data-i18n="form.name">성함</span> <em>*</em></label><input id="rv-name" name="name" required maxlength="50" autocomplete="name" placeholder="홍길동" data-i18n-attr="placeholder:form.name.ph"></div>
+        <div class="field"><label for="rv-phone"><span data-i18n="form.phone">연락처</span> <em>*</em></label><input id="rv-phone" name="phone" type="tel" required maxlength="20" autocomplete="tel" placeholder="010-0000-0000"></div>
       </div>
       <div class="form-row">
-        <div class="field"><label for="rv-date">희망 날짜 <em>*</em></label><input id="rv-date" name="preferred_date" type="date" required></div>
-        <div class="field"><label for="rv-time">희망 시간대</label>
-          <select id="rv-time" name="preferred_time"><option>오전</option><option>오후</option><option>상관없음</option></select>
+        <div class="field"><label for="rv-date"><span data-i18n="form.date">희망 날짜</span> <em>*</em></label><input id="rv-date" name="preferred_date" type="date" required></div>
+        <div class="field"><label for="rv-time" data-i18n="form.time">희망 시간대</label>
+          <select id="rv-time" name="preferred_time"><option value="오전" data-i18n="form.time.am">오전</option><option value="오후" data-i18n="form.time.pm">오후</option><option value="상관없음" data-i18n="form.time.any">상관없음</option></select>
         </div>
       </div>
-      <div class="field"><label for="rv-topic">진료 분야 <em>*</em></label>
+      <div class="field"><label for="rv-topic"><span data-i18n="form.topic.r">진료 분야</span> <em>*</em></label>
         <select id="rv-topic" name="topic" required>
-          <option>줄기세포</option><option>피부과</option><option>성형외과</option><option>비뇨기과</option>
-          <option>에스테틱</option><option>내성발톱</option><option>두피케어</option><option>림프해독</option>
-          <option>월드투어</option><option>퀀텀 양자 진료치료</option><option>기타</option>
+          <option value="줄기세포" data-i18n="svc.stemcell">줄기세포</option>
+          <option value="피부과" data-i18n="svc.derma">피부과</option>
+          <option value="성형외과" data-i18n="svc.plastic">성형외과</option>
+          <option value="비뇨기과" data-i18n="svc.urology">비뇨기과</option>
+          <option value="에스테틱" data-i18n="svc.esthetic">에스테틱</option>
+          <option value="내성발톱" data-i18n="svc.toenail">내성발톱</option>
+          <option value="두피케어" data-i18n="svc.scalp">두피케어</option>
+          <option value="림프해독" data-i18n="svc.lymph">림프해독</option>
+          <option value="월드투어" data-i18n="svc.worldtour">월드투어</option>
+          <option value="퀀텀 양자 진료치료" data-i18n="svc.quantum">퀀텀 양자 진료치료</option>
+          <option value="기타" data-i18n="form.topic.etc">기타</option>
         </select>
       </div>
-      <div class="field"><label for="rv-msg">상담 내용</label><textarea id="rv-msg" name="message" maxlength="2000" placeholder="증상이나 궁금하신 점을 적어 주시면 상담에 도움이 됩니다."></textarea></div>
+      <div class="field"><label for="rv-msg" data-i18n="form.msg.r">상담 내용</label><textarea id="rv-msg" name="message" maxlength="2000" placeholder="증상이나 궁금하신 점을 적어 주시면 상담에 도움이 됩니다." data-i18n-attr="placeholder:form.msg.r.ph"></textarea></div>
 
       <!-- 사람에게는 보이지 않는 칸입니다. 자동 프로그램 차단용이니 지우지 마십시오. -->
       <div class="hp" aria-hidden="true"><label>홈페이지<input name="website" tabindex="-1" autocomplete="off"></label></div>
 
       <fieldset class="consent">
-        <legend>개인정보 수집·이용 동의</legend>
+        <legend data-i18n="consent.legend">개인정보 수집·이용 동의</legend>
         <label class="chk">
           <input type="checkbox" name="consent_privacy" required>
-          <span><b>[필수]</b> 예약 상담을 위한 개인정보 수집·이용에 동의합니다.
-            <em>수집 항목: 성함, 연락처, 희망 일정 · 이용 목적: 예약 확인 및 상담 연락 · 보유 기간: 3년
+          <span><b data-i18n="consent.req">[필수]</b> <span data-i18n="consent.req.r">예약 상담을 위한 개인정보 수집·이용에 동의합니다.</span>
+            <em data-i18n="consent.req.r.d">수집 항목: 성함, 연락처, 희망 일정 · 이용 목적: 예약 확인 및 상담 연락 · 보유 기간: 3년
             (동의를 거부하실 수 있으나, 이 경우 온라인 예약 접수가 어렵습니다.)</em></span>
         </label>
         <label class="chk">
           <input type="checkbox" name="consent_sensitive">
-          <span><b>[선택]</b> 상담 내용에 포함된 건강 관련 정보(민감정보)의 수집·이용에 동의합니다.
-            <em>동의하지 않으셔도 접수는 가능하며, 이 경우 상담 내용은 저장되지 않고 연락처만 접수됩니다.</em></span>
+          <span><b data-i18n="consent.opt">[선택]</b> <span data-i18n="consent.opt.r">상담 내용에 포함된 건강 관련 정보(민감정보)의 수집·이용에 동의합니다.</span>
+            <em data-i18n="consent.opt.r.d">동의하지 않으셔도 접수는 가능하며, 이 경우 상담 내용은 저장되지 않고 연락처만 접수됩니다.</em></span>
         </label>
-        <p class="consent-link"><a href="privacy">개인정보처리방침 전문 보기</a></p>
+        <p class="consent-link"><a href="privacy" data-i18n="consent.link">개인정보처리방침 전문 보기</a></p>
       </fieldset>
 
-      <p class="form-note">※ 접수 후 진료시간 내에 담당자가 남겨 주신 연락처로 전화드려 예약을 확정해 드립니다.</p>
-      <button class="btn btn-green" type="submit">예약 신청하기</button>
+      <p class="form-note" data-i18n="form.note.r">※ 접수 후 진료시간 내에 담당자가 남겨 주신 연락처로 전화드려 예약을 확정해 드립니다.</p>
+      <button class="btn btn-green" type="submit" data-i18n="form.submit.r">예약 신청하기</button>
     </form>
-    <p style="text-align:center;margin-top:26px;color:var(--gray)">급하신 경우 <a href="tel:027768768" style="color:var(--green);font-weight:800">02-776-8768</a> 로 전화 주세요.</p>
+    <p style="text-align:center;margin-top:26px;color:var(--gray)"><span data-i18n="form.urgent1">급하신 경우</span> <a href="tel:027768768" style="color:var(--green);font-weight:800">02-776-8768</a><span data-i18n="form.urgent2"> 로 전화 주세요.</span></p>
   </div>
 </section>
 
 <div id="site-footer"></div>
-<script src="js/config.js?v=44"></script>
-<script src="js/form.js?v=44"></script>
-<script src="js/main.js?v=44"></script>
+<script src="js/config.js?v=46"></script>
+<script src="js/form.js?v=46"></script>
+<script src="js/lang.js?v=46"></script>
+<script src="js/i18n.js?v=46"></script>
+<script src="js/main.js?v=46"></script>
+<script src="js/anim.js?v=46"></script>
 </body>
 </html>

@@ -66,12 +66,13 @@ for (const lang of LANGS) {
       hangul:   /[가-힣]+/g,                       // 한글
       kana:     /[\u3040-\u30ff]+/g,               // 히라가나·가타카나
       cyrillic: /[\u0400-\u04ff]+/g,               // 키릴
+      han:      /[\u4e00-\u9fff]+/g,               // 한자
     };
     const FORBIDDEN = {                            // 언어별로 나오면 안 되는 문자
-      en: ["hangul", "kana", "cyrillic"],
-      zh: ["hangul", "kana", "cyrillic"],
-      ja: ["hangul", "cyrillic"],                  // 가나는 당연히 허용
-      ru: ["hangul", "kana"],                      // 키릴은 당연히 허용
+      en: ["hangul", "kana", "cyrillic", "han"],
+      zh: ["hangul", "kana", "cyrillic"],           // 한자는 당연히 허용
+      ja: ["hangul", "cyrillic"],                   // 한자·가나는 당연히 허용
+      ru: ["hangul", "kana", "han"],                // 키릴은 당연히 허용
     };
     for (const name of FORBIDDEN[lang]) {
       const hit = raw.match(SCRIPTS[name]);

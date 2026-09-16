@@ -432,3 +432,26 @@ footer .fine a:hover{color:#fff}
 .lang-notice.soft{background:var(--bg-alt);border-color:var(--line);font-size:13.5px}
 .lang-notice.soft a{background:none;color:var(--green);border:1px solid var(--green);padding:7px 14px}
 .lang-notice.soft a:hover{background:var(--green);color:#fff}
+
+/* ============================================================
+   좁은 화면에서 가로로 삐져나가지 않게
+   ------------------------------------------------------------
+   격자(grid)의 칸은 기본적으로 '내용보다 작아지지 않습니다'.
+   그래서 러시아어처럼 한 단어가 긴 언어에서는 칸이 화면보다
+   넓어져 페이지 전체가 옆으로 밀립니다. min-width:0 으로
+   칸이 줄어들 수 있게 풀어 줍니다.
+   ============================================================ */
+.svc-layout > *,
+.about-flex > *,
+.grid > *,
+.cols > * { min-width: 0; }
+
+/* 긴 단어는 줄바꿈을 허용합니다 (한국어에는 영향이 없습니다) */
+.svc-main, .svc-side, .svc-article, .tab-desc, .card, .lang-notice { overflow-wrap: break-word; }
+
+/* 표는 페이지를 밀어내는 대신, 표 안에서만 옆으로 넘깁니다 */
+.svc-article table, .tab-desc table { display: block; overflow-x: auto; max-width: 100%; }
+@media (min-width: 769px) {
+  /* 넓은 화면에서는 원래대로 표답게 */
+  .svc-article table, .tab-desc table { display: table; }
+}

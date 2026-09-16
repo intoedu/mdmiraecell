@@ -59,10 +59,25 @@ for (const lang of LANGS) {
        번역하다 한 글자씩 빠뜨리는 일이 실제로 생깁니다.
        (사람 이름·주소 등 일부러 남긴 한글이 있으면 "ko:" 를 앞에 붙이십시오) */
     const raw = JSON.stringify(v);
-    const hangul = raw.match(/[가-힣]+/g);
-    if (hangul) {
-      const uniq = [...new Set(hangul)].slice(0, 8);
-      console.log(`⚠ ${lang}/${key}: 한글이 남아 있습니다 → ${uniq.join(", ")}${hangul.length > 8 ? " …" : ""}`);
+
+    /* 그 언어에 있어서는 안 되는 문자가 섞였는지 봅니다.
+       한글을 빠뜨리는 일도, 다른 언어 문장이 끼어드는 일도 실제로 생깁니다. */
+    const SCRIPTS = {
+      hangul:   /[가-힣]+/g,                       // 한글
+      kana:     /[\u3040-\u30ff]+/g,               // 히라가나·가타카나
+      cyrillic: /[\u0400-\u04ff]+/g,               // 키릴
+    };
+    const FORBIDDEN = {                            // 언어별로 나오면 안 되는 문자
+      en: ["hangul", "kana", "cyrillic"],
+      zh: ["hangul", "kana", "cyrillic"],
+      ja: ["hangul", "cyrillic"],                  // 가나는 당연히 허용
+      ru: ["hangul", "kana"],                      // 키릴은 당연히 허용
+    };
+    for (const name of FORBIDDEN[lang]) {
+      const hit = raw.match(SCRIPTS[name]);
+      if (!hit) continue;
+      const uniq = [...new Set(hit)].slice(0, 8);
+      console.log(`⚠ ${lang}/${key}: ${name} 문자가 섞여 있습니다 → ${uniq.join(", ")}${hit.length > 8 ? " …" : ""}`);
       problems++;
     }
 

@@ -30,6 +30,15 @@ button,input,select,textarea{font-family:inherit;font-size:inherit}
 .btn-green{background:var(--green);color:#fff;width:100%}
 .btn-green:hover{background:var(--green-deep)}
 .btn-green:disabled{background:#9db3a4;cursor:default}
+.btn-danger{background:#fff;color:var(--red);border:1.5px solid var(--red);width:100%}
+.btn-danger:hover{background:var(--red);color:#fff}
+.btn-danger:disabled{border-color:#d9a8a2;color:#d9a8a2;background:#fff;cursor:default}
+.danger-zone{margin-top:30px;padding-top:20px;border-top:1px dashed var(--line)}
+.danger-zone h3{color:var(--red)}
+.danger-zone .warn{margin:0 0 12px}
+.danger-zone .confirm{display:none;margin-bottom:10px}
+.danger-zone.armed .confirm{display:block}
+.danger-zone .confirm input{width:100%;padding:11px 13px;border:1.5px solid var(--red);border-radius:10px}
 .msg{font-size:13.5px;border-radius:9px;padding:11px 14px;margin-bottom:16px}
 .msg.bad{background:#fdf1ef;border:1px solid #f0c7bf;color:#8c2d18}
 
@@ -146,7 +155,7 @@ td.msg{color:var(--gray);max-width:340px;overflow:hidden;text-overflow:ellipsis;
     </div>
 
     <div class="filters">
-      <input class="search" id="f-q" type="search" placeholder="성함 또는 연락처 검색">
+      <input class="search" id="f-q" type="search" placeholder="성함 · 연락처 · 담당자 메모 검색">
       <select id="f-status">
         <option value="">상태 전체</option>
         <option value="new">신규</option>
@@ -221,6 +230,7 @@ td.msg{color:var(--gray);max-width:340px;overflow:hidden;text-overflow:ellipsis;
   var $ = function (id) { return document.getElementById(id); };
   var session = null;   // { access_token, refresh_token, user }
   var page = 0, total = 0, current = null;
+  var myRole = "staff";   /* 삭제는 대표(owner) 계정만 — 실제 판정은 데이터베이스가 합니다 */
 
   /* ---------- 세션 보관 (탭을 닫으면 사라집니다) ---------- */
   function saveSession(s) {
@@ -338,6 +348,7 @@ td.msg{color:var(--gray);max-width:340px;overflow:hidden;text-overflow:ellipsis;
       .then(function (rows) {
         if (!rows.length) throw new Error("not_admin");
         var me = rows[0];
+        myRole = me.role;
         $("me-name").textContent = (me.name || "관리자") + (me.role === "owner" ? " (대표)" : "");
         $("me-email").textContent = me.email;
         $("view-login").hidden = true;
@@ -362,9 +373,13 @@ td.msg{color:var(--gray);max-width:340px;overflow:hidden;text-overflow:ellipsis;
       return Number(cr.split("/")[1] || 0);
     }).catch(function () { return 0; });
   }
+  /* 한국 시간 기준 n일 전 자정(00:00 KST)의 실제 시각.
+     담당자가 해외에서 접속하셔도 '오늘'은 한국의 오늘이어야 합니다. */
   function isoDaysAgo(n) {
-    var d = new Date(); d.setHours(0, 0, 0, 0); d.setDate(d.getDate() - n);
-    return d.toISOString();
+    var shifted = new Date(Date.now() + 9 * 3600000);  /* 시계를 KST 로 당겨 놓고 */
+    shifted.setUTCHours(0, 0, 0, 0);
+    shifted.setUTCDate(shifted.getUTCDate() - n);
+    return new Date(shifted.getTime() - 9 * 3600000).toISOString();  /* 다시 실제 시각으로 */
   }
   function loadTiles() {
     countOf("status=eq.new").then(function (n) { $("t-new").textContent = n; });
@@ -374,19 +389,50 @@ td.msg{color:var(--gray);max-width:340px;overflow:hidden;text-overflow:ellipsis;
   }
 
   /* ---------- 목록 ---------- */
+
+  /* 날짜 칸에 적은 하루는 '한국 시간 기준의 그 날'입니다.
+     데이터베이스는 세계표준시(UTC)로 돌아가므로, 시간대를 적지 않고 보내면
+     9시간이 밀립니다. 예를 들어 9월 16일을 고르면 실제로는
+     9/16 09:00 ~ 9/17 08:59(한국시간) 구간을 조회하게 되어,
+     그날 아침에 들어온 신청이 빠지고 다음 날 새벽 건이 잘못 들어옵니다.
+     그래서 +09:00 을 반드시 붙입니다. (주소에서 + 는 공백으로 읽히므로 인코딩합니다) */
+  var KST = "+09:00";
+  function kstFrom(date) { return encodeURIComponent(date + "T00:00:00" + KST); }
+  function kstTo(date)   { return encodeURIComponent(date + "T23:59:59.999" + KST); }
+
   function filterQuery() {
     var parts = [];
     var q = $("f-q").value.trim();
     if (q) {
       var esc = q.replace(/[,()*]/g, " ").trim();
-      if (esc) parts.push("or=(name.ilike.*" + encodeURIComponent(esc) + "*,phone.ilike.*" + encodeURIComponent(esc) + "*)");
+      if (esc) {
+        var like = "*" + encodeURIComponent(esc) + "*";
+        /* 성함 · 연락처 · 담당자 메모를 함께 찾습니다.
+           메모는 직원이 남긴 글이라 열람에 추가 위험이 없고,
+           "그때 그 환자분" 을 다시 찾을 때 실제로 가장 쓸모 있는 단서입니다.
+           환자분이 적어 보낸 상담 내용(message)은 민감정보라 검색 대상에서 뺐습니다. */
+        parts.push("or=(name.ilike." + like + ",phone.ilike." + like + ",admin_memo.ilike." + like + ")");
+      }
     }
     if ($("f-status").value) parts.push("status=eq." + $("f-status").value);
     if ($("f-kind").value) parts.push("kind=eq." + $("f-kind").value);
     if ($("f-topic").value) parts.push("topic=eq." + encodeURIComponent($("f-topic").value));
-    if ($("f-from").value) parts.push("created_at=gte." + $("f-from").value + "T00:00:00");
-    if ($("f-to").value) parts.push("created_at=lte." + $("f-to").value + "T23:59:59");
+    if ($("f-from").value) parts.push("created_at=gte." + kstFrom($("f-from").value));
+    if ($("f-to").value) parts.push("created_at=lte." + kstTo($("f-to").value));
     return parts.join("&");
+  }
+
+  /* 지금 걸려 있는 조건을 사람이 읽는 문장으로. 내보내기 확인창과 파일 이름에 씁니다. */
+  function filterSummary() {
+    var s = [];
+    var from = $("f-from").value, to = $("f-to").value;
+    if (from || to) s.push("기간 " + (from || "처음") + " ~ " + (to || "마지막"));
+    if ($("f-kind").value) s.push("구분 " + ($("f-kind").value === "reserve" ? "예약" : "문의"));
+    if ($("f-status").value) s.push("상태 " + (STATUS[$("f-status").value] || $("f-status").value));
+    if ($("f-topic").value) s.push("분야 " + $("f-topic").value);
+    var q = $("f-q").value.trim();
+    if (q) s.push("검색어 \u0022" + q + "\u0022");
+    return s.length ? s.join("\n· ") : "조건 없음 (전체)";
   }
 
   function fmtWhen(iso) {
@@ -486,11 +532,94 @@ td.msg{color:var(--gray);max-width:340px;overflow:hidden;text-overflow:ellipsis;
       '<p class="warn">신청 원문(성함·연락처·상담 내용)은 수정할 수 없습니다. 상태와 메모만 저장됩니다.<br>' +
       "이 화면의 열람·수정 기록은 자동으로 남습니다.</p>";
 
+    /* ---- 삭제 ----
+       되돌릴 수 없으므로 대표 계정에만 보여 드리고, 성함을 직접 입력받습니다.
+       (실제 허용 여부는 이 화면이 아니라 데이터베이스가 판정합니다) */
+    if (myRole === "owner") {
+      body += '<div class="danger-zone" id="d-zone">' +
+        "<h3>신청 삭제</h3>" +
+        '<p class="warn">이 신청을 데이터베이스에서 완전히 지웁니다. <b>되돌릴 수 없습니다.</b><br>' +
+        "더 이상 필요 없는 개인정보는 지우는 것이 맞습니다. 다만 잘못 지운 것은 복구할 수 없으니,<br>" +
+        "취소·노쇼처럼 <b>기록은 남겨야 하는 건이라면 상태 변경</b>을 써 주십시오.</p>" +
+        '<div class="confirm">' +
+          '<p class="warn">확인을 위해 신청자 성함 <b>' + esc(row.name) + '</b> 을(를) 그대로 입력해 주십시오.</p>' +
+          '<input id="d-del-name" type="text" autocomplete="off" placeholder="' + esc(row.name) + '">' +
+        "</div>" +
+        '<button class="btn btn-danger" id="d-delete">삭제</button>' +
+      "</div>";
+    } else {
+      body += '<p class="warn">신청 삭제는 대표 계정에서만 가능합니다.</p>';
+    }
+
     $("d-body").innerHTML = body;
     $("drawer").hidden = false;
     $("veil").hidden = false;
     $("d-save").addEventListener("click", saveDetail);
+    if ($("d-delete")) $("d-delete").addEventListener("click", deleteDetail);
     log("view", row.id);
+  }
+
+  /* 한 번에 지우지 않습니다. 먼저 성함 입력칸을 열고, 두 번째 눌렀을 때 지웁니다. */
+  function deleteDetail() {
+    if (!current) return;
+    var zone = $("d-zone"), btn = $("d-delete"), input = $("d-del-name");
+
+    if (!zone.classList.contains("armed")) {
+      zone.classList.add("armed");
+      btn.textContent = "확인했습니다 · 완전히 삭제";
+      input.focus();
+      return;
+    }
+
+    if (input.value.trim() !== String(current.name).trim()) {
+      alert("성함이 일치하지 않습니다.\n\n삭제하려는 신청자는 \u0022" + current.name + "\u0022 입니다.");
+      input.focus();
+      return;
+    }
+    if (!confirm("\u0022" + current.name + "\u0022 님의 신청을 완전히 삭제합니다.\n\n" +
+                 "되돌릴 수 없습니다. 진행할까요?")) return;
+
+    btn.disabled = true; btn.textContent = "삭제 중…";
+    var victim = current;
+
+    /* return=representation 을 붙이는 이유:
+       권한이 없으면 데이터베이스는 오류가 아니라 '0건 삭제' 로 조용히 끝냅니다.
+       실제로 지워진 행을 돌려받아야 성공 여부를 정확히 알 수 있습니다. */
+    authFetch("/rest/v1/consultations?id=eq." + victim.id, {
+      method: "DELETE",
+      headers: { Prefer: "return=representation" }
+    }).then(function (r) {
+      if (!r.ok) throw new Error("http_" + r.status);
+      return r.json();
+    }).then(function (gone) {
+      if (!gone || !gone.length) throw new Error("not_deleted");
+
+      /* 파기 기록. 지운 사실을 남기되, 지운 개인정보를 다시 적어 두지는 않습니다.
+         연락처·이메일·상담 내용을 여기 옮겨 적으면 파기한 의미가 없어집니다. */
+      log("delete", victim.id, {
+        name_masked: maskName(victim.name),
+        created_at: victim.created_at,
+        kind: victim.kind,
+        status: victim.status
+      });
+
+      closeDetail();
+      loadTiles();
+      loadRows();
+    }).catch(function (e) {
+      btn.disabled = false; btn.textContent = "확인했습니다 · 완전히 삭제";
+      alert(String(e.message) === "not_deleted"
+        ? "삭제되지 않았습니다.\n\n대표 계정만 삭제할 수 있습니다. 권한을 확인해 주십시오."
+        : "삭제하지 못했습니다. 잠시 후 다시 시도해 주십시오.");
+    });
+  }
+
+  /* 홍길동 → 홍*동 · 김철 → 김* (파기 기록에 남길 최소한의 단서) */
+  function maskName(name) {
+    var s = String(name || "").trim();
+    if (s.length <= 1) return s;
+    if (s.length === 2) return s[0] + "*";
+    return s[0] + new Array(s.length - 1).join("*") + s[s.length - 1];
   }
 
   function closeDetail() {
@@ -528,12 +657,43 @@ td.msg{color:var(--gray);max-width:340px;overflow:hidden;text-overflow:ellipsis;
     });
   }
 
-  /* ---------- 내보내기 ---------- */
+  /* ---------- 내보내기 ----------
+     목록과 똑같은 조건(filterQuery)으로 내려받습니다.
+     다만 "정말 그 조건대로 나갔는지" 를 눈으로 확인하실 수 있도록,
+     내려받기 전에 조건과 건수를 먼저 세어 보여 드립니다. */
+  var EXPORT_MAX = 5000;
+
   $("btn-csv").addEventListener("click", function () {
-    if (!confirm("현재 조건의 신청 내역을 파일로 내려받습니다.\n환자 개인정보가 담긴 파일이므로 보관과 폐기에 주의해 주십시오.")) return;
     var q = filterQuery();
-    authFetch("/rest/v1/consultations?select=*&order=created_at.desc" + (q ? "&" + q : ""), {
-      headers: { Range: "0-4999" }
+    var base = "/rest/v1/consultations?order=created_at.desc" + (q ? "&" + q : "");
+
+    /* 먼저 몇 건인지 셉니다 */
+    authFetch(base + "&select=id", { headers: { Prefer: "count=exact", Range: "0-0" } })
+      .then(function (r) {
+        return Number((r.headers.get("content-range") || "/0").split("/")[1] || 0);
+      })
+      .then(function (count) {
+        if (count === 0) {
+          alert("지금 조건에 해당하는 신청이 없습니다.\n\n· " + filterSummary());
+          return;
+        }
+        var cut = count > EXPORT_MAX;
+        var msg =
+          "아래 조건으로 내려받습니다.\n\n· " + filterSummary() +
+          "\n\n총 " + count.toLocaleString("ko-KR") + "건" +
+          (cut ? " 중 최근 " + EXPORT_MAX.toLocaleString("ko-KR") + "건" : "") +
+          "\n\n환자 개인정보가 담긴 파일입니다. 보관과 폐기에 주의해 주십시오.";
+        if (cut) msg += "\n\n※ " + EXPORT_MAX.toLocaleString("ko-KR") +
+          "건을 넘어 나머지는 빠집니다. 기간을 나누어 두 번에 받아 주십시오.";
+        if (!confirm(msg)) return;
+        return doExport(base, count);
+      })
+      .catch(function () { alert("건수를 세지 못했습니다. 잠시 후 다시 시도해 주십시오."); });
+  });
+
+  function doExport(base, count) {
+    return authFetch(base + "&select=*", {
+      headers: { Range: "0-" + (EXPORT_MAX - 1) }
     }).then(function (r) { return r.json(); }).then(function (rows) {
       var head = ["접수일시","구분","성함","연락처","이메일","희망일","희망시간","분야","상담내용","상태","담당자메모","민감정보동의"];
       var body = rows.map(function (r) {
@@ -550,14 +710,31 @@ td.msg{color:var(--gray);max-width:340px;overflow:hidden;text-overflow:ellipsis;
       }).join("\r\n");
 
       var blob = new Blob(["﻿" + csv], { type: "text/csv;charset=utf-8;" });
+      var url = window.URL.createObjectURL(blob);
       var a = document.createElement("a");
-      a.href = window.URL.createObjectURL(blob);
-      a.download = "명동미래셀_상담신청_" + new Date().toISOString().slice(0, 10) + ".csv";
+      a.href = url;
+
+      /* 파일 이름에 기간을 넣습니다. 나중에 파일만 봐도 어느 구간인지 알 수 있도록. */
+      var from = $("f-from").value, to = $("f-to").value;
+      var span = (from || to) ? ((from || "처음") + "_" + (to || "마지막")) : "전체기간";
+      a.download = "명동미래셀_상담신청_" + span + "_" + rows.length + "건.csv";
+
+      /* 문서에 붙였다 떼어야 정한 파일 이름이 적용됩니다.
+         주소 회수도 바로 하면 내려받기가 끊길 수 있어 한 박자 뒤에 합니다. */
+      document.body.appendChild(a);
       a.click();
-      window.URL.revokeObjectURL(a.href);
-      log("export", null, { count: rows.length });
+      document.body.removeChild(a);
+      setTimeout(function () { window.URL.revokeObjectURL(url); }, 1000);
+
+      /* 어떤 조건으로 누가 언제 내려받았는지 열람기록에 남깁니다 */
+      log("export", null, {
+        count: rows.length, matched: count,
+        from: from || null, to: to || null,
+        status: $("f-status").value || null, kind: $("f-kind").value || null,
+        topic: $("f-topic").value || null, q: $("f-q").value.trim() || null
+      });
     });
-  });
+  }
 
   /* ---------- 필터 동작 ---------- */
   var timer;

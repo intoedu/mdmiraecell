@@ -251,7 +251,10 @@ section.block.alt{background:var(--bg-alt)}
 
 
 /* gallery */
-.gal{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+/* minmax(0,1fr) 로 적는 이유: 1fr 은 속으로 minmax(auto,1fr) 이고,
+   auto 최소값이 사진의 원본 가로폭(1600px)이 되어 칸이 그만큼 벌어집니다.
+   빈 자리(.ph)만 있을 때는 드러나지 않다가 실제 사진을 넣는 순간 깨집니다. */
+.gal{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
 .gal .ph{aspect-ratio:4/3;border-radius:14px;background:linear-gradient(140deg,var(--green-soft),#d9e8dd);display:flex;align-items:center;justify-content:center;color:var(--green);font-weight:700;border:1px solid var(--line);flex-direction:column;gap:8px}
 .gal .ph .ic{font-size:34px}
 
@@ -318,7 +321,7 @@ footer .fine a:hover{color:#fff}
   .nav-cta{display:none}
   .grid.c3,.grid.c4{grid-template-columns:1fr}
   .info-strip .container{grid-template-columns:1fr}
-  .gal{grid-template-columns:1fr 1fr}
+  .gal{grid-template-columns:repeat(2,minmax(0,1fr))}
   .form-row{grid-template-columns:1fr}
   .form-wrap{padding:30px 22px}
   .addr-box{grid-template-columns:1fr}
@@ -401,7 +404,10 @@ footer .fine a:hover{color:#fff}
 /* 동작 줄이기와 무관하게 정지 이미지라 그대로 둡니다 */
 
 /* ---------- 갤러리 크게 보기 ---------- */
-.gal img{aspect-ratio:4/3;object-fit:cover;width:100%;border-radius:14px;border:1px solid var(--line);
+/* height:auto 가 필요한 이유: <img> 에 적은 width/height 값은 브라우저가
+   기본 스타일처럼 취급해 height:1200px 로 잡아 버립니다.
+   그러면 위의 aspect-ratio 가 무시되어 사진이 세로로 늘어납니다. */
+.gal img{aspect-ratio:4/3;object-fit:cover;width:100%;height:auto;border-radius:14px;border:1px solid var(--line);
   transition:transform .3s cubic-bezier(.22,.61,.36,1),box-shadow .3s ease}
 .gal img:hover{transform:scale(1.02);box-shadow:var(--shadow)}
 .gal img:focus-visible{outline:3px solid var(--green);outline-offset:3px}

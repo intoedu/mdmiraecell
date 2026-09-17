@@ -1865,19 +1865,34 @@ if (svcPage) {
   const cur = SERVICES.find(s => s.key === svcPage.dataset.svc);
   if (cur) {
     document.title = `${svcTitle(cur)} | ${CLINIC}`;
-    /* 진료 상세 본문은 아직 한국어만 있습니다. 다른 언어로 보고 계시면
-       "번역된 것처럼" 보이지 않도록 먼저 솔직하게 알려 드립니다. */
-    const koOnly = isKo() ? "" : `
+
+    /* ---------- 본문 번역 골라 쓰기 ----------
+       js/svc-<언어>.js 가 있으면 그 내용을, 없으면 한국어 원문을 씁니다.
+       칸 하나씩 따로 보므로 일부만 번역돼 있어도 나머지는 한국어로 나옵니다. */
+    const tr = (window.MIRAE_SVC && window.MIRAE_SVC[cur.key]) || {};
+    const F = (name) => (isKo() ? cur[name] : (tr[name] !== undefined ? tr[name] : cur[name]));
+    const groups = (isKo() || !tr.groups) ? cur.groups : tr.groups;
+    const translated = !isKo() && Object.keys(tr).length > 0;
+
+    /* 번역본을 보고 계실 때의 안내.
+       아직 번역이 없으면 "한국어만 있습니다", 있으면 "참고용 번역이며
+       정본은 한국어입니다" 를 알려 드립니다. 둘 다 정직해야 합니다. */
+    const koOnly = isKo() ? "" : (translated ? `
+      <div class="lang-notice soft">
+        <b>${t("svc.tr.h", "")}</b>
+        <span>${t("svc.tr.p", "")}</span>
+        <a href="?lang=ko">${t("svc.tr.a", "한국어 원문")}</a>
+      </div>` : `
       <div class="lang-notice">
         <b>${t("svc.konly.h", "")}</b>
         <span>${t("svc.konly.p", "")}</span>
         <a href="contact">${t("nav.contact.inquiry", "문의하기")}</a>
-      </div>`;
+      </div>`);
     svcPage.innerHTML = `
     <div class="page-hero">
       <p class="crumb">HOME &gt; ${t("nav.services", "진료안내")} &gt; ${svcTitle(cur)}</p>
       <h1>${svcTitle(cur)}</h1>
-      ${isKo() ? (cur.hero || `<p>${cur.desc}</p>`) : `<p>${svcDesc(cur)}</p>`}
+      ${F("hero") || `<p>${svcDesc(cur)}</p>`}
     </div>
     ${koOnly}
     <div class="container svc-layout">
@@ -1888,8 +1903,8 @@ if (svcPage) {
         <section class="svc-sec">
           <h2>${cur.no}. ${svcTitle(cur)}</h2>
           <p class="desc">${svcDesc(cur)}</p>
-          ${cur.intro || ""}
-          ${cur.groups.map((g, gi) => {
+          ${F("intro") || ""}
+          ${groups.map((g, gi) => {
             const hasDesc = g.tags.some(t => typeof t === "object");
             if (!hasDesc) {
               return `<div class="svc-group">
@@ -1906,13 +1921,13 @@ if (svcPage) {
                 `<div class="tab-panel${ti === 0 ? " on" : ""}" data-panel="${gi}-${ti}"><h5>${t.n}</h5><div class="tab-desc">${t.d}</div></div>`).join("")}
             </div>`;
           }).join("")}
-          ${cur.note ? `<p class="svc-note">${cur.note}</p>` : ""}
-          ${cur.outro || ""}
+          ${F("note") ? `<p class="svc-note">${F("note")}</p>` : ""}
+          ${F("outro") || ""}
         </section>
         <div style="background:var(--green-soft);border-radius:16px;padding:34px;text-align:center">
-          ${cur.cta || `<h3 style="font-size:20px;margin-bottom:8px">${cur.title} 진료가 궁금하신가요?</h3>
-          <p style="color:var(--gray);margin-bottom:20px">전문 의료진이 자세히 상담해 드립니다. ☎ ${TEL}</p>
-          <a class="btn btn-green" href="reserve">상담 예약하기</a>`}
+          ${F("cta") || `<h3 style="font-size:20px;margin-bottom:8px">${t("svc.cta.h", `${svcTitle(cur)} 진료가 궁금하신가요?`)}</h3>
+          <p style="color:var(--gray);margin-bottom:20px">${t("svc.cta.p", "전문 의료진이 자세히 상담해 드립니다.")} ☎ ${TEL}</p>
+          <a class="btn btn-green" href="reserve">${t("svc.cta.a", "상담 예약하기")}</a>`}
         </div>
       </div>
     </div>`;

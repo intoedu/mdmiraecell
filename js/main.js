@@ -1860,12 +1860,12 @@ const MOTIF_BY_SVC = {
    무료 스톡 사진이라 병원 시설로 소개하면 안 되므로, 글씨 뒤에 흐리게 깔리는
    분위기 배경으로만 씁니다. 나머지 페이지는 그대로 도형 무늬를 씁니다. */
 const PHOTO_BY_PAGE = {
-  about: "about-leaves",
-  reserve: "reserve-desk",
+  about: "px-about-leaves",
+  reserve: "px-reserve-desk",
 };
 const PHOTO_BY_SVC = {
-  esthetic: "esthetic-leaves",
-  lymph: "lymph-palm",
+  esthetic: "px-esthetic-leaves",
+  lymph: "px-lymph-palm",
 };
 
 function paintHeroMotif(name, photo) {

@@ -76,7 +76,7 @@
     if (document.readyState !== "loading") return;   /* 이미 다 읽은 뒤면 늦었습니다 */
     if (!document.getElementById("svc-page")) return;
     document.write(
-      '<scr' + 'ipt src="js/svc-' + lang + '.js?v=' + (window.MIRAE_VER || "51") + '"></scr' + 'ipt>'
+      '<scr' + 'ipt src="js/svc-' + lang + '.js?v=' + (window.MIRAE_VER || "52") + '"></scr' + 'ipt>'
     );
   }
   loadSvcPack();

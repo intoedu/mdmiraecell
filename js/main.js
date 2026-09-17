@@ -2008,9 +2008,26 @@ document.querySelectorAll("nav.main > ul > li > a").forEach(a => {
 const siteHeader = document.querySelector("header.site");
 const megaPanels = [...siteHeader.querySelectorAll(".mega")];
 const openMega = mi => megaPanels.forEach(m => m.classList.toggle("on", m.dataset.mi === mi));
+/* 언어 목록은 i18n.js 가 나중에 헤더에 끼워 넣으므로, 여기서는 그때그때 찾습니다 */
+const closeLang = () => {
+  const box = siteHeader.querySelector(".lang-pick.open");
+  if (!box) return;
+  box.classList.remove("open");
+  const btn = box.querySelector(".lang-btn");
+  if (btn) btn.setAttribute("aria-expanded", "false");
+};
+
 document.querySelectorAll("nav.main > ul > li").forEach(li =>
-  li.addEventListener("mouseenter", () => openMega(li.dataset.mi)));
+  li.addEventListener("mouseenter", () => { openMega(li.dataset.mi); closeLang(); }));
 siteHeader.addEventListener("mouseleave", () => openMega(null));
+
+/* 언어 목록을 펼치면 메가 패널을 닫습니다. 둘이 겹쳐 보이면 안 됩니다.
+   버튼은 i18n.js 가 만들어 넣으므로 헤더에서 위임으로 받되, 그쪽 처리기가
+   stopPropagation 을 쓰기 때문에 올라오는 단계로는 닿지 않습니다.
+   그래서 내려가는 단계(캡처)에서 받습니다. */
+siteHeader.addEventListener("click", e => {
+  if (e.target.closest(".lang-btn")) openMega(null);
+}, true);
 megaPanels.forEach(m => m.addEventListener("click", e => {
   /* 같은 페이지 내 해시 이동은 리로드가 없어 패널이 남으므로, 클릭 즉시 닫는다 */
   if (e.target.closest("a")) openMega(null);

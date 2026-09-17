@@ -340,7 +340,9 @@ footer .fine a:hover{color:#fff}
 .lang-list{position:absolute;top:calc(100% + 8px);right:0;min-width:150px;background:#fff;
   border:1px solid var(--line);border-radius:12px;box-shadow:0 12px 30px rgba(15,61,29,.12);
   padding:6px;list-style:none;margin:0;opacity:0;visibility:hidden;transform:translateY(-6px);
-  transition:opacity .18s ease,transform .18s ease,visibility .18s;z-index:60}
+  transition:opacity .18s ease,transform .18s ease,visibility .18s;
+  /* 메가 패널(z-index:110)보다 위에 있어야 가려지지 않습니다 */
+  z-index:120}
 .lang-pick.open .lang-list{opacity:1;visibility:visible;transform:none}
 .lang-list a{display:block;padding:9px 13px;border-radius:8px;font-size:14px;color:var(--ink);transition:.15s}
 .lang-list a:hover{background:var(--green-soft);color:var(--green)}

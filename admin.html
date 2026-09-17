@@ -30,6 +30,15 @@ button,input,select,textarea{font-family:inherit;font-size:inherit}
 .btn-green{background:var(--green);color:#fff;width:100%}
 .btn-green:hover{background:var(--green-deep)}
 .btn-green:disabled{background:#9db3a4;cursor:default}
+.btn-danger{background:#fff;color:var(--red);border:1.5px solid var(--red);width:100%}
+.btn-danger:hover{background:var(--red);color:#fff}
+.btn-danger:disabled{border-color:#d9a8a2;color:#d9a8a2;background:#fff;cursor:default}
+.danger-zone{margin-top:30px;padding-top:20px;border-top:1px dashed var(--line)}
+.danger-zone h3{color:var(--red)}
+.danger-zone .warn{margin:0 0 12px}
+.danger-zone .confirm{display:none;margin-bottom:10px}
+.danger-zone.armed .confirm{display:block}
+.danger-zone .confirm input{width:100%;padding:11px 13px;border:1.5px solid var(--red);border-radius:10px}
 .msg{font-size:13.5px;border-radius:9px;padding:11px 14px;margin-bottom:16px}
 .msg.bad{background:#fdf1ef;border:1px solid #f0c7bf;color:#8c2d18}
 
@@ -221,6 +230,7 @@ td.msg{color:var(--gray);max-width:340px;overflow:hidden;text-overflow:ellipsis;
   var $ = function (id) { return document.getElementById(id); };
   var session = null;   // { access_token, refresh_token, user }
   var page = 0, total = 0, current = null;
+  var myRole = "staff";   /* 삭제는 대표(owner) 계정만 — 실제 판정은 데이터베이스가 합니다 */
 
   /* ---------- 세션 보관 (탭을 닫으면 사라집니다) ---------- */
   function saveSession(s) {
@@ -338,6 +348,7 @@ td.msg{color:var(--gray);max-width:340px;overflow:hidden;text-overflow:ellipsis;
       .then(function (rows) {
         if (!rows.length) throw new Error("not_admin");
         var me = rows[0];
+        myRole = me.role;
         $("me-name").textContent = (me.name || "관리자") + (me.role === "owner" ? " (대표)" : "");
         $("me-email").textContent = me.email;
         $("view-login").hidden = true;
@@ -521,11 +532,94 @@ td.msg{color:var(--gray);max-width:340px;overflow:hidden;text-overflow:ellipsis;
       '<p class="warn">신청 원문(성함·연락처·상담 내용)은 수정할 수 없습니다. 상태와 메모만 저장됩니다.<br>' +
       "이 화면의 열람·수정 기록은 자동으로 남습니다.</p>";
 
+    /* ---- 삭제 ----
+       되돌릴 수 없으므로 대표 계정에만 보여 드리고, 성함을 직접 입력받습니다.
+       (실제 허용 여부는 이 화면이 아니라 데이터베이스가 판정합니다) */
+    if (myRole === "owner") {
+      body += '<div class="danger-zone" id="d-zone">' +
+        "<h3>신청 삭제</h3>" +
+        '<p class="warn">이 신청을 데이터베이스에서 완전히 지웁니다. <b>되돌릴 수 없습니다.</b><br>' +
+        "더 이상 필요 없는 개인정보는 지우는 것이 맞습니다. 다만 잘못 지운 것은 복구할 수 없으니,<br>" +
+        "취소·노쇼처럼 <b>기록은 남겨야 하는 건이라면 상태 변경</b>을 써 주십시오.</p>" +
+        '<div class="confirm">' +
+          '<p class="warn">확인을 위해 신청자 성함 <b>' + esc(row.name) + '</b> 을(를) 그대로 입력해 주십시오.</p>' +
+          '<input id="d-del-name" type="text" autocomplete="off" placeholder="' + esc(row.name) + '">' +
+        "</div>" +
+        '<button class="btn btn-danger" id="d-delete">삭제</button>' +
+      "</div>";
+    } else {
+      body += '<p class="warn">신청 삭제는 대표 계정에서만 가능합니다.</p>';
+    }
+
     $("d-body").innerHTML = body;
     $("drawer").hidden = false;
     $("veil").hidden = false;
     $("d-save").addEventListener("click", saveDetail);
+    if ($("d-delete")) $("d-delete").addEventListener("click", deleteDetail);
     log("view", row.id);
+  }
+
+  /* 한 번에 지우지 않습니다. 먼저 성함 입력칸을 열고, 두 번째 눌렀을 때 지웁니다. */
+  function deleteDetail() {
+    if (!current) return;
+    var zone = $("d-zone"), btn = $("d-delete"), input = $("d-del-name");
+
+    if (!zone.classList.contains("armed")) {
+      zone.classList.add("armed");
+      btn.textContent = "확인했습니다 · 완전히 삭제";
+      input.focus();
+      return;
+    }
+
+    if (input.value.trim() !== String(current.name).trim()) {
+      alert("성함이 일치하지 않습니다.\n\n삭제하려는 신청자는 \u0022" + current.name + "\u0022 입니다.");
+      input.focus();
+      return;
+    }
+    if (!confirm("\u0022" + current.name + "\u0022 님의 신청을 완전히 삭제합니다.\n\n" +
+                 "되돌릴 수 없습니다. 진행할까요?")) return;
+
+    btn.disabled = true; btn.textContent = "삭제 중…";
+    var victim = current;
+
+    /* return=representation 을 붙이는 이유:
+       권한이 없으면 데이터베이스는 오류가 아니라 '0건 삭제' 로 조용히 끝냅니다.
+       실제로 지워진 행을 돌려받아야 성공 여부를 정확히 알 수 있습니다. */
+    authFetch("/rest/v1/consultations?id=eq." + victim.id, {
+      method: "DELETE",
+      headers: { Prefer: "return=representation" }
+    }).then(function (r) {
+      if (!r.ok) throw new Error("http_" + r.status);
+      return r.json();
+    }).then(function (gone) {
+      if (!gone || !gone.length) throw new Error("not_deleted");
+
+      /* 파기 기록. 지운 사실을 남기되, 지운 개인정보를 다시 적어 두지는 않습니다.
+         연락처·이메일·상담 내용을 여기 옮겨 적으면 파기한 의미가 없어집니다. */
+      log("delete", victim.id, {
+        name_masked: maskName(victim.name),
+        created_at: victim.created_at,
+        kind: victim.kind,
+        status: victim.status
+      });
+
+      closeDetail();
+      loadTiles();
+      loadRows();
+    }).catch(function (e) {
+      btn.disabled = false; btn.textContent = "확인했습니다 · 완전히 삭제";
+      alert(String(e.message) === "not_deleted"
+        ? "삭제되지 않았습니다.\n\n대표 계정만 삭제할 수 있습니다. 권한을 확인해 주십시오."
+        : "삭제하지 못했습니다. 잠시 후 다시 시도해 주십시오.");
+    });
+  }
+
+  /* 홍길동 → 홍*동 · 김철 → 김* (파기 기록에 남길 최소한의 단서) */
+  function maskName(name) {
+    var s = String(name || "").trim();
+    if (s.length <= 1) return s;
+    if (s.length === 2) return s[0] + "*";
+    return s[0] + new Array(s.length - 1).join("*") + s[s.length - 1];
   }
 
   function closeDetail() {

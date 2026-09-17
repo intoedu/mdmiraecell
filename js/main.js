@@ -1799,6 +1799,15 @@ ${NAV_ITEMS.map(([href, label, sub], mi) => {
 }).join("")}
 </header>`;
 
+/* 병원 운영 SNS 채널. 주소가 바뀌면 여기만 고치면 푸터 전체에 반영됩니다.
+   새 창으로 열되, rel 로 원본 페이지 정보가 넘어가지 않게 막습니다. */
+const SNS = [
+  ["https://www.youtube.com/@%EB%AA%85%EB%8F%99%EB%AF%B8%EB%9E%98%EC%85%80%EC%9D%98%EC%9B%90", "유튜브", "\u25B6"],
+  ["https://www.instagram.com/mdmiraecellclinic/", "인스타그램", "\u25C9"],
+  ["https://blog.naver.com/mdmiraecellclinic", "네이버 블로그", "B"],
+  ["https://pf.kakao.com/_KffSX", "카카오톡 채널", "K"],
+];
+
 document.getElementById("site-footer").innerHTML = `
 <footer class="site"><div class="container">
   <div class="cols">
@@ -1806,10 +1815,9 @@ document.getElementById("site-footer").innerHTML = `
       <a class="brand" href="./" style="margin-bottom:16px"><img src="images/logo.svg?v=2" alt="${CLINIC}" style="height:44px;filter:brightness(0) invert(1)"></a>
       <p style="margin-top:14px">${ADDR}<br>${t("footer.ceoline", "대표자 박종윤 · Tel")} ${TEL} · ${EMAIL}</p>
       <div class="sns">
-        <a href="#" aria-label="유튜브" title="YouTube">▶</a>
-        <a href="#" aria-label="인스타그램" title="Instagram">◉</a>
-        <a href="#" aria-label="블로그" title="Blog">B</a>
-        <a href="#" aria-label="카카오톡 채널" title="KakaoTalk">K</a>
+        ${SNS.map(([href, label, icon]) =>
+          `<a href="${href}" target="_blank" rel="noopener noreferrer" aria-label="${label}" title="${label}">${icon}</a>`
+        ).join("")}
       </div>
     </div>
     <div><h4>${t("footer.services", "진료 안내")}</h4><ul>

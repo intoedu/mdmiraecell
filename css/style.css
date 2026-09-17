@@ -382,9 +382,28 @@ footer .fine a:hover{color:#fff}
 .about-visual{padding:0;overflow:hidden;aspect-ratio:4/3}
 .about-visual img.motif{width:100%;height:100%;object-fit:cover}
 
-/* 홈 히어로 뒤에 깔리는 빛 — 아주 옅게, 글씨를 방해하지 않도록 */
+/* 홈 히어로 배경 사진 — .hero 의 초록 그라데이션 위에 옅게 겹칩니다.
+   opacity 로만 눌러 둡니다. 여기서 ::after 로 막을 덮으면 위쪽(66행)의
+   장식 원과 규칙이 섞여 원이 커져 버립니다. */
+.hero .hero-photo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
+  opacity:.22;pointer-events:none;z-index:0}
+
+/* 글씨가 놓이는 왼쪽만 눌러 주는 막. 오른쪽으로 갈수록 사라져 잎사귀가 그대로 보입니다.
+   사진을 넣기 전에도 제목 대비가 3.23 : 1 로 빠듯했는데, 이 막으로 함께 올라갑니다. */
+.hero .hero-scrim{position:absolute;inset:0;z-index:0;pointer-events:none;
+  background:linear-gradient(100deg,rgba(8,38,21,.62) 0%,rgba(8,38,21,.44) 42%,rgba(8,38,21,0) 78%)}
+
+/* 히어로 뒤에 깔리는 빛 — 아주 옅게, 글씨를 방해하지 않도록 */
 .hero .motif-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
   opacity:.42;mix-blend-mode:screen;pointer-events:none;z-index:0}
+
+/* 상단 띠의 배경 사진 — 도형 무늬(.motif-bg)와 같은 자리, 같은 방식으로 사라집니다.
+   사진은 무늬보다 정보가 많아 더 옅게 깔고, 초록 쪽으로 살짝 눌러 둡니다. */
+.page-hero .photo-bg{position:absolute;right:0;top:0;height:100%;width:min(58%,720px);
+  object-fit:cover;opacity:.34;pointer-events:none;z-index:0;
+  filter:saturate(.8) brightness(1.05);mix-blend-mode:luminosity;
+  -webkit-mask-image:linear-gradient(to right,transparent,#000 60%);
+          mask-image:linear-gradient(to right,transparent,#000 60%)}
 
 /* 진료 페이지 상단 띠의 무늬 — 오른쪽에서 서서히 사라집니다 */
 .page-hero{position:relative;overflow:hidden}
@@ -396,6 +415,13 @@ footer .fine a:hover{color:#fff}
 
 @media (max-width:768px){
   .hero .motif-bg{opacity:.30}
+  /* 좁은 화면에서는 글씨가 가로 전체를 쓰므로, 왼쪽만 눌러서는 모자랍니다.
+     막을 위아래 방향으로 바꿔 글씨 영역 전체를 고르게 덮습니다. */
+  .hero .hero-photo{opacity:.18}
+  .hero .hero-scrim{background:linear-gradient(180deg,rgba(8,38,21,.66) 0%,rgba(8,38,21,.62) 74%,rgba(8,38,21,.34) 100%)}
+  .page-hero .photo-bg{width:100%;opacity:.22;
+    -webkit-mask-image:linear-gradient(to bottom,transparent,#000 70%);
+            mask-image:linear-gradient(to bottom,transparent,#000 70%)}
   .page-hero .motif-bg{width:100%;opacity:.20;
     -webkit-mask-image:linear-gradient(to bottom,transparent,#000 70%);
             mask-image:linear-gradient(to bottom,transparent,#000 70%)}

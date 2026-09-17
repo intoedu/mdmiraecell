@@ -1856,14 +1856,36 @@ const MOTIF_BY_SVC = {
   toenail: "leaf", scalp: "leaf", lymph: "flow", worldtour: "leaf", quantum: "light",
 };
 
-function paintHeroMotif(name) {
+/* 몇몇 페이지의 상단 띠에는 무늬 대신 사진을 깝니다 (images/stock/).
+   무료 스톡 사진이라 병원 시설로 소개하면 안 되므로, 글씨 뒤에 흐리게 깔리는
+   분위기 배경으로만 씁니다. 나머지 페이지는 그대로 도형 무늬를 씁니다. */
+const PHOTO_BY_PAGE = {
+  about: "px-about-leaves",
+  reserve: "px-reserve-desk",
+};
+const PHOTO_BY_SVC = {
+  esthetic: "px-esthetic-leaves",
+  lymph: "px-lymph-palm",
+};
+
+function paintHeroMotif(name, photo) {
   const hero = document.querySelector(".page-hero");
-  if (!hero || !name || hero.querySelector(".motif-bg")) return;
+  if (!hero || hero.querySelector(".motif-bg, .photo-bg")) return;
+
   const img = document.createElement("img");
-  img.className = "motif-bg";
-  img.src = `images/motif-${name}.svg?v=1`;
+  if (photo) {
+    img.className = "photo-bg";
+    img.src = `images/stock/${photo}.jpg?v=1`;
+  } else if (name) {
+    img.className = "motif-bg";
+    img.src = `images/motif-${name}.svg?v=1`;
+  } else {
+    return;
+  }
   img.alt = "";
   img.setAttribute("aria-hidden", "true");
+  img.loading = "lazy";
+  img.decoding = "async";
   hero.insertBefore(img, hero.firstChild);
 }
 
@@ -1959,7 +1981,7 @@ if (svcPage) {
         else window.addEventListener("load", go, { once: true });
       }
     };
-    paintHeroMotif(MOTIF_BY_SVC[cur.key]);
+    paintHeroMotif(MOTIF_BY_SVC[cur.key], PHOTO_BY_SVC[cur.key]);
     openHashTab();
     window.addEventListener("hashchange", openHashTab);
   }
@@ -1980,7 +2002,7 @@ if (svcIndex) {
 /* 현재 페이지가 속한 대메뉴 활성화 */
 /* 로컬(.html 직접 접속)과 Pages(확장자 없음) 모두 대응 */
 const here = (location.pathname.split("/").pop() || "index").replace(/\.html$/, "");
-if (!svcPage) paintHeroMotif(MOTIF_BY_PAGE[here]);
+if (!svcPage) paintHeroMotif(MOTIF_BY_PAGE[here], PHOTO_BY_PAGE[here]);
 document.querySelectorAll("nav.main > ul > li").forEach(li => {
   const links = [...li.querySelectorAll("a")].map(a => a.getAttribute("href"));
   if (links.includes(here)) li.querySelector("a").classList.add("active");

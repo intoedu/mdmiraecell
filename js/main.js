@@ -1862,10 +1862,15 @@ const MOTIF_BY_SVC = {
 const PHOTO_BY_PAGE = {
   about: "px-about-leaves",
   reserve: "px-reserve-desk",
+  contact: "contact-desk",
 };
 const PHOTO_BY_SVC = {
   esthetic: "px-esthetic-leaves",
   lymph: "px-lymph-palm",
+  stemcell: "stemcell-bubbles",
+  scalp: "scalp-mint",
+  worldtour: "worldtour-palm",
+  quantum: "quantum-fronds",
 };
 
 function paintHeroMotif(name, photo) {

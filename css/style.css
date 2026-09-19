@@ -400,10 +400,11 @@ footer .fine a:hover{color:#fff}
 /* 상단 띠의 배경 사진 — 도형 무늬(.motif-bg)와 같은 자리, 같은 방식으로 사라집니다.
    사진은 무늬보다 정보가 많아 더 옅게 깔고, 초록 쪽으로 살짝 눌러 둡니다. */
 .page-hero .photo-bg{position:absolute;right:0;top:0;height:100%;width:min(58%,720px);
-  object-fit:cover;opacity:.34;pointer-events:none;z-index:0;
-  filter:saturate(.8) brightness(1.05);mix-blend-mode:luminosity;
-  -webkit-mask-image:linear-gradient(to right,transparent,#000 60%);
-          mask-image:linear-gradient(to right,transparent,#000 60%)}
+  object-fit:cover;opacity:.24;pointer-events:none;z-index:0;
+  /* brightness 를 1 아래로 둡니다. 밝은 사진이 오면 띠가 환해져서 흰 글씨가 묻힙니다. */
+  filter:saturate(.8) brightness(.82);mix-blend-mode:luminosity;
+  -webkit-mask-image:linear-gradient(to right,transparent,#000 72%);
+          mask-image:linear-gradient(to right,transparent,#000 72%)}
 
 /* 진료 페이지 상단 띠의 무늬 — 오른쪽에서 서서히 사라집니다 */
 .page-hero{position:relative;overflow:hidden}
@@ -419,9 +420,9 @@ footer .fine a:hover{color:#fff}
      막을 위아래 방향으로 바꿔 글씨 영역 전체를 고르게 덮습니다. */
   .hero .hero-photo{opacity:.18}
   .hero .hero-scrim{background:linear-gradient(180deg,rgba(8,38,21,.66) 0%,rgba(8,38,21,.62) 74%,rgba(8,38,21,.34) 100%)}
-  .page-hero .photo-bg{width:100%;opacity:.22;
-    -webkit-mask-image:linear-gradient(to bottom,transparent,#000 70%);
-            mask-image:linear-gradient(to bottom,transparent,#000 70%)}
+  .page-hero .photo-bg{width:100%;opacity:.16;
+    -webkit-mask-image:linear-gradient(to bottom,transparent,#000 80%);
+            mask-image:linear-gradient(to bottom,transparent,#000 80%)}
   .page-hero .motif-bg{width:100%;opacity:.20;
     -webkit-mask-image:linear-gradient(to bottom,transparent,#000 70%);
             mask-image:linear-gradient(to bottom,transparent,#000 70%)}

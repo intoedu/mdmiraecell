@@ -1868,6 +1868,8 @@ const PHOTO_BY_SVC = {
   esthetic: "px-esthetic-leaves",
   lymph: "px-lymph-palm",
   stemcell: "kb-stemcell-bubbles",
+  derma: "kb-derma-glass",
+  plastic: "kb-plastic-light",
   scalp: "kb-scalp-mint",
   worldtour: "kb-worldtour-palm",
   quantum: "kb-quantum-fronds",

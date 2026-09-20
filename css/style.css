@@ -409,10 +409,12 @@ footer .fine a:hover{color:#fff}
 /* 진료 페이지 상단 띠의 무늬 — 오른쪽에서 서서히 사라집니다 */
 .page-hero{position:relative;overflow:hidden}
 .page-hero > *{position:relative;z-index:1}
+/* 사진 띠(.photo-bg)와 같은 기준으로 맞춥니다. 무늬가 밝아 글씨가 묻히던
+   것을 재어 보고 고쳤습니다 — 비뇨의학 2.94, 내성발톱 3.36 등 여덟 곳. */
 .page-hero .motif-bg{position:absolute;right:0;top:0;height:100%;width:min(58%,720px);
-  object-fit:cover;opacity:.30;pointer-events:none;z-index:0;
-  -webkit-mask-image:linear-gradient(to right,transparent,#000 55%);
-          mask-image:linear-gradient(to right,transparent,#000 55%)}
+  object-fit:cover;opacity:.19;pointer-events:none;z-index:0;filter:brightness(.72);
+  -webkit-mask-image:linear-gradient(to right,transparent,#000 70%);
+          mask-image:linear-gradient(to right,transparent,#000 70%)}
 
 @media (max-width:768px){
   .hero .motif-bg{opacity:.30}
@@ -423,9 +425,9 @@ footer .fine a:hover{color:#fff}
   .page-hero .photo-bg{width:100%;opacity:.16;
     -webkit-mask-image:linear-gradient(to bottom,transparent,#000 80%);
             mask-image:linear-gradient(to bottom,transparent,#000 80%)}
-  .page-hero .motif-bg{width:100%;opacity:.20;
-    -webkit-mask-image:linear-gradient(to bottom,transparent,#000 70%);
-            mask-image:linear-gradient(to bottom,transparent,#000 70%)}
+  .page-hero .motif-bg{width:100%;opacity:.14;
+    -webkit-mask-image:linear-gradient(to bottom,transparent,#000 80%);
+            mask-image:linear-gradient(to bottom,transparent,#000 80%)}
 }
 
 /* 동작 줄이기와 무관하게 정지 이미지라 그대로 둡니다 */

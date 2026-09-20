@@ -131,6 +131,103 @@ header.site .nav-wrap { transition: padding .3s ease; }
 .btn:active { transform: scale(.97); }
 .btn-green:hover, .nav-cta:hover { box-shadow: 0 8px 20px rgba(30, 107, 52, .28); }
 
+/* ============================================================
+   커서를 따라다니는 빛 (.spot)
+   ------------------------------------------------------------
+   카드 위에 마우스를 올리면 커서 자리에서 은은한 빛이 번지고,
+   테두리에도 같은 자리가 밝아집니다.
+
+   · 마우스가 있는 기기에서만 켭니다. 손가락에는 커서가 없어
+     터치 기기에서는 의미가 없고 성능만 씁니다.
+   · 의료기관 화면이라 색은 브랜드 초록 하나로만 쓰고,
+     진하기를 낮춰 글씨를 방해하지 않게 합니다.
+   · 좌표는 js/anim.js 가 --mx / --my 에 넣어 줍니다.
+   ============================================================ */
+@media (hover: hover) and (pointer: fine) {
+  html.js .spot {
+    position: relative;
+    isolation: isolate;
+    --spot-r: 240px;                          /* 빛의 지름 */
+    --spot-fill: rgba(61, 139, 82, .15);      /* 안쪽에 번지는 색 */
+    --spot-line: rgba(61, 139, 82, .66);      /* 테두리에 얹히는 색 */
+  }
+
+  /* 글씨가 빛에 덮이지 않도록 한 단 올려 둡니다 */
+  html.js .spot > * { position: relative; z-index: 1; }
+
+  /* ① 안쪽에 번지는 빛
+     좌표는 카드 기준이지만, 카드 밖의 값도 들어옵니다.
+     그래야 커서가 카드 사이에 있을 때 가장자리만 밝아집니다. */
+  html.js .spot::before {
+    content: "";
+    position: absolute; inset: 0; z-index: 0;
+    border-radius: inherit; pointer-events: none;
+    background: radial-gradient(
+      var(--spot-r) var(--spot-r) at var(--mx, -999px) var(--my, -999px),
+      var(--spot-fill), transparent 70%);
+    opacity: var(--spot-a, 0);
+  }
+
+  /* ② 테두리만 밝히기 — 가운데를 도려내 테두리 굵기만 남깁니다 */
+  html.js .spot::after {
+    content: "";
+    position: absolute; inset: 0; z-index: 2;
+    border-radius: inherit; pointer-events: none;
+    padding: 1.5px;
+    background: radial-gradient(
+      calc(var(--spot-r) * .5) calc(var(--spot-r) * .5) at var(--mx, -999px) var(--my, -999px),
+      var(--spot-line), transparent 64%);
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+            mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+            mask-composite: exclude;
+    opacity: var(--spot-a, 0);
+  }
+
+  /* 밝기(--spot-a)는 js/anim.js 가 매 프레임 다시 넣습니다.
+     그래서 평소에는 전환을 걸지 않습니다 — 걸면 값이 뒤따라오느라 굼떠 보입니다.
+     마우스가 창 밖으로 나갈 때만 부드럽게 꺼지도록 이때만 전환을 켭니다. */
+  html.js body.spots-out .spot::before,
+  html.js body.spots-out .spot::after { transition: opacity .45s ease; }
+
+  /* 안내 띠는 짙은 초록 바탕이라 초록 빛이 보이지 않습니다. 흰빛으로 바꿉니다.
+     padding 만큼 음수 여백을 줘서 자리는 그대로 두고 빛 칸만 넓힙니다. */
+  html.js .info-strip .spot {
+    padding: 16px 18px; margin: -16px -18px; border-radius: 16px;
+    --spot-r: 280px;
+    --spot-fill: rgba(255, 255, 255, .10);
+    --spot-line: rgba(255, 255, 255, .40);
+  }
+
+  /* 공지 목록은 가로로 긴 줄이라 빛을 넓게 잡습니다 */
+  html.js .board .spot { --spot-r: 340px; --spot-fill: rgba(61,139,82,.10); --spot-line: rgba(61,139,82,.55); }
+}
+
+/* ---------- 공지 목록: 올리면 살짝 밀려납니다 ---------- */
+.board a { transition: background .2s ease, padding-left .25s cubic-bezier(.22,.61,.36,1); }
+.board a:hover { padding-left: 18px; }
+.board .badge { transition: transform .25s ease; display: inline-block; }
+.board a:hover .badge { transform: translateX(-3px); }
+
+/* ---------- 섹션 제목의 밑줄이 그어집니다 ---------- */
+html.js .sec-head .tag { position: relative; display: inline-block; }
+html.js .sec-head .tag::after {
+  content: ""; position: absolute; left: 0; right: 0; bottom: -7px; height: 2px;
+  background: var(--green-mid); border-radius: 2px;
+  transform: scaleX(0); transform-origin: left;
+  transition: transform .7s cubic-bezier(.22,.61,.36,1) calc(var(--d, 0s) + .18s);
+}
+html.js .sec-head.in .tag::after { transform: scaleX(1); }
+
+/* ---------- 안내 띠 아이콘: 아주 느리게 숨 쉽니다 ---------- */
+@keyframes ic-breathe {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-3px); }
+}
+.info-item .ic { display: inline-block; animation: ic-breathe 6s ease-in-out infinite; }
+.info-strip .container > :nth-child(2) .ic { animation-delay: 1.2s; }
+.info-strip .container > :nth-child(3) .ic { animation-delay: 2.4s; }
+
 /* ---------- 숫자 세기 ---------- */
 .countup { font-variant-numeric: tabular-nums; }
 
@@ -181,9 +278,16 @@ header.site .nav-wrap { transition: padding .3s ease; }
   }
   .hero .glow { opacity: .6; }
 
-  .card, .card .icon, .card .more, .btn, .quick a, header.site .nav-wrap {
+  .card, .card .icon, .card .more, .btn, .quick a, header.site .nav-wrap,
+  .board a, .board .badge {
     transition: none !important;
   }
+  .board a:hover { padding-left: 8px !important; }
+  .board a:hover .badge { transform: none !important; }
+  .info-item .ic { animation: none !important; }
+  html.js .sec-head .tag::after { transform: scaleX(1) !important; transition: none !important; }
+  /* 커서를 따라다니는 빛도 끕니다 */
+  html.js .spot::before, html.js .spot::after { display: none !important; }
   .card:hover { transform: none !important; }
   .card:hover .icon { transform: none !important; }
   .card:hover .more { transform: none !important; }

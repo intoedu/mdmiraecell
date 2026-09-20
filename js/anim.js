@@ -101,6 +101,91 @@
     }, 900);
   }
 
+  /* ---------- 커서를 따라다니는 빛 ----------
+     카드 위에 마우스를 올리면 커서 자리에서 빛이 번집니다.
+
+     · 마우스가 있는 기기에서만 켭니다. 손가락에는 커서가 없습니다.
+     · 듣는 자리는 문서 하나뿐입니다. 카드마다 달면 수십 개가 됩니다.
+     · 좌표 계산은 한 프레임에 한 번만 합니다. 마우스는 1초에 백 번도
+       움직이는데 그때마다 화면을 다시 그리면 버벅입니다.
+     · 빛이 켜진 카드는 언제나 하나뿐이라, 다시 그리는 곳도 하나입니다. */
+  var fine = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+  if (fine) {
+    /* 어디에 빛을 켤지 — HTML 을 고치지 않고 여기서 정합니다.
+       .card 는 홈·의원소개·오시는 길·진료 분야 페이지에 두루 쓰입니다.
+       관리자 패널(admin.html)은 이 파일을 아예 불러오지 않으므로 빠집니다.
+       갤러리 사진(.gal img)은 넣지 않았습니다. <img> 같은 요소에는 브라우저가
+       가상 요소를 그리지 않아 빛이 아예 나타나지 않습니다. */
+    var SPOT = [".card", ".info-strip .info-item", ".board a",
+                ".faq details, .accordion details"];
+    var spots = [];
+    SPOT.forEach(function (sel) {
+      document.querySelectorAll(sel).forEach(function (el) {
+        el.classList.add("spot");
+        spots.push({ el: el, a: 0 });
+      });
+    });
+
+    if (spots.length) {
+      /* 빛은 화면에 하나뿐이고, 카드들은 그 빛을 나눠 받습니다.
+         그래서 커서가 카드 사이 빈 곳에 있어도 양옆 카드의 마주 보는
+         가장자리가 밝아지고, 빛이 카드를 건너 이어져 보입니다.
+
+         카드마다 좌표를 따로 넣는 이유: 그라데이션 자리는 그 카드 기준이라
+         같은 화면 지점을 가리키려면 카드마다 값이 달라야 합니다.
+         카드 밖의 값도 그대로 넣습니다 — 그래야 가장자리만 밝아집니다. */
+      var FALL = 200;            /* 카드 바깥으로 이만큼까지 빛이 닿습니다 */
+      var lastX = null, lastY = null, raf = 0;
+
+      var frame = function () {
+        raf = 0;
+        if (lastX === null) return;
+
+        /* 읽기를 먼저 몰아서 하고 쓰기를 나중에 합니다.
+           번갈아 하면 브라우저가 계산을 여러 번 다시 합니다. */
+        var i, rects = [];
+        for (i = 0; i < spots.length; i++) rects[i] = spots[i].el.getBoundingClientRect();
+
+        for (i = 0; i < spots.length; i++) {
+          var s = spots[i], r = rects[i];
+          /* 커서에서 카드까지의 거리 — 카드 안이면 0 */
+          var dx = lastX < r.left ? r.left - lastX : (lastX > r.right ? lastX - r.right : 0);
+          var dy = lastY < r.top ? r.top - lastY : (lastY > r.bottom ? lastY - r.bottom : 0);
+          var d = Math.sqrt(dx * dx + dy * dy);
+          var a = d >= FALL ? 0 : 1 - d / FALL;
+          a = a * a;               /* 멀어질수록 더 빨리 어두워지게 */
+
+          if (a === 0 && s.a === 0) continue;   /* 멀리 있는 카드는 건드리지 않습니다 */
+          s.a = a;
+          s.el.style.setProperty("--spot-a", a.toFixed(3));
+          s.el.style.setProperty("--mx", (lastX - r.left).toFixed(1) + "px");
+          s.el.style.setProperty("--my", (lastY - r.top).toFixed(1) + "px");
+        }
+      };
+
+      /* 한 프레임에 한 번만 계산합니다. 마우스도 스크롤도 1초에 수십 번 일어납니다. */
+      var queue = function () { if (!raf) raf = requestAnimationFrame(frame); };
+
+      document.addEventListener("pointermove", function (e) {
+        if (e.pointerType !== "mouse") return;
+        document.body.classList.remove("spots-out");
+        lastX = e.clientX; lastY = e.clientY;
+        queue();
+      }, { passive: true });
+
+      /* 커서가 멈춰 있어도 화면이 움직이면 카드가 커서 밑을 지나갑니다 */
+      window.addEventListener("scroll", queue, { passive: true });
+      window.addEventListener("resize", queue, { passive: true });
+
+      /* 창 밖으로 나가면 부드럽게 꺼 둡니다. 안 그러면 마지막 자리에 빛이 남습니다. */
+      document.addEventListener("pointerleave", function () {
+        lastX = lastY = null;
+        document.body.classList.add("spots-out");
+        spots.forEach(function (s) { s.a = 0; s.el.style.setProperty("--spot-a", "0"); });
+      });
+    }
+  }
+
   /* ---------- 헤더: 스크롤하면 얇아지기 ---------- */
   var header = document.querySelector("header.site");
   if (header) {

@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>비밀번호 설정 | 명동미래셀의원</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" type="image/svg+xml" href="images/favicon.svg?v=2">
+<style>
+  :root{
+    --green:#1e6b34; --green-deep:#0f3d1d; --green-mid:#3d8b52;
+    --ink:#1c2420; --gray:#5f6b64; --line:#e3e8e4; --bg-alt:#f6f9f6;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'Apple SD Gothic Neo','Malgun Gothic',system-ui,sans-serif;
+    color:var(--ink);background:var(--bg-alt);line-height:1.7;
+    min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
+  .box{width:100%;max-width:420px;background:#fff;border:1px solid var(--line);
+    border-radius:18px;padding:40px 34px;box-shadow:0 10px 30px rgba(15,61,29,.08)}
+  h1{font-size:19px;color:var(--green-deep);margin-bottom:6px}
+  .sub{font-size:13.5px;color:var(--gray);margin-bottom:26px}
+  label{display:block;font-weight:700;font-size:13.5px;margin-bottom:7px}
+  input{width:100%;padding:12px 14px;border:1px solid #ccd6cf;border-radius:10px;
+    background:#fbfdfb;margin-bottom:16px;font-size:15px}
+  input:focus{outline:2px solid var(--green-mid);border-color:transparent}
+  .btn{border:none;border-radius:999px;padding:13px 26px;font-weight:700;cursor:pointer;
+    width:100%;background:var(--green);color:#fff;font-size:15px;transition:.15s}
+  .btn:hover{background:var(--green-deep)}
+  .btn:disabled{background:#9db5a5;cursor:default}
+  .msg{font-size:13.5px;border-radius:9px;padding:11px 14px;margin-bottom:16px}
+  .msg.bad{background:#fdf1ef;border:1px solid #f0c7bf;color:#8c2d18}
+  .msg.good{background:#eef7f0;border:1px solid #bfdcc8;color:#1b5e2c}
+  .rule{font-size:12.5px;color:var(--gray);margin:-8px 0 18px}
+  .foot{margin-top:22px;font-size:13px;color:var(--gray);text-align:center}
+  .foot a{color:var(--green);font-weight:700}
+</style>
+</head>
+<body>
+
+<div class="box">
+  <h1>비밀번호 설정</h1>
+  <p class="sub">명동미래셀의원 · 관리자 전용</p>
+
+  <div class="msg bad" id="msg-bad" hidden></div>
+  <div class="msg good" id="msg-good" hidden></div>
+
+  <form id="form" hidden>
+    <label for="pw1">새 비밀번호</label>
+    <input id="pw1" type="password" autocomplete="new-password" required minlength="10">
+    <p class="rule">10자 이상으로 정해 주십시오. 환자분의 연락처와 상담 내용이 들어 있는 화면입니다.</p>
+
+    <label for="pw2">한 번 더</label>
+    <input id="pw2" type="password" autocomplete="new-password" required minlength="10">
+
+    <button class="btn" id="go" type="submit">비밀번호 설정</button>
+  </form>
+
+  <p class="foot" id="foot" hidden><a href="admin">관리자 패널로 가기</a></p>
+</div>
+
+<script src="js/config.js?v=60"></script>
+<script>
+(function () {
+  "use strict";
+  var $ = function (id) { return document.getElementById(id); };
+  var cfg = window.MIRAE_CONFIG || {};
+  var URL_BASE = (cfg.SUPABASE_URL || "").replace(/\/+$/, "");
+  var ANON = cfg.SUPABASE_ANON_KEY || "";
+
+  function bad(html) { $("msg-bad").innerHTML = html; $("msg-bad").hidden = false; }
+  function good(html) { $("msg-good").innerHTML = html; $("msg-good").hidden = false; }
+
+  /* 메일로 받은 링크에는 주소 뒤 # 뒤쪽에 임시 토큰이 붙어 옵니다.
+     이 부분은 서버로 전송되지 않고 브라우저 안에만 남습니다. */
+  function readHash() {
+    var out = {};
+    (location.hash || "").replace(/^#/, "").split("&").forEach(function (pair) {
+      if (!pair) return;
+      var i = pair.indexOf("=");
+      var k = i < 0 ? pair : pair.slice(0, i);
+      var v = i < 0 ? "" : pair.slice(i + 1);
+      out[decodeURIComponent(k)] = decodeURIComponent(v.replace(/\+/g, " "));
+    });
+    return out;
+  }
+
+  var h = readHash();
+
+  /* 주소에서 토큰을 바로 지웁니다.
+     화면에 남겨 두면 어깨 너머로 보이거나 방문기록에 남습니다. */
+  if (location.hash) {
+    history.replaceState(null, "", location.pathname + location.search);
+  }
+
+  if (!URL_BASE || !ANON) {
+    bad("연결 설정이 비어 있습니다. 관리자에게 알려 주십시오.");
+    return;
+  }
+
+  if (h.error || h.error_description) {
+    bad("<b>링크를 쓸 수 없습니다.</b><br>" +
+        (h.error_description || h.error) +
+        "<br><br>대부분 시간이 지나 만료된 경우입니다. " +
+        "관리자 패널 로그인 화면에서 <b>비밀번호를 잊으셨나요</b> 를 눌러 다시 받아 주십시오.");
+    $("foot").hidden = false;
+    return;
+  }
+
+  var token = h.access_token || "";
+  if (!token) {
+    bad("<b>잘못된 접근입니다.</b><br>메일로 받으신 링크를 그대로 눌러 주십시오. " +
+        "링크를 복사해 옮기면 뒤쪽이 잘려 동작하지 않습니다.");
+    $("foot").hidden = false;
+    return;
+  }
+
+  $("form").hidden = false;
+
+  $("form").addEventListener("submit", function (e) {
+    e.preventDefault();
+    $("msg-bad").hidden = true;
+
+    var p1 = $("pw1").value, p2 = $("pw2").value;
+    if (p1.length < 10) { bad("10자 이상으로 정해 주십시오."); return; }
+    if (p1 !== p2) { bad("두 번 입력하신 비밀번호가 서로 다릅니다."); return; }
+
+    var btn = $("go");
+    btn.disabled = true; btn.textContent = "설정 중…";
+
+    fetch(URL_BASE + "/auth/v1/user", {
+      method: "PUT",
+      headers: { apikey: ANON, Authorization: "Bearer " + token, "content-type": "application/json" },
+      body: JSON.stringify({ password: p1 })
+    }).then(function (r) {
+      return r.json().catch(function () { return {}; }).then(function (j) { return { ok: r.ok, j: j }; });
+    }).then(function (res) {
+      if (!res.ok) {
+        var m = res.j && (res.j.msg || res.j.message || res.j.error_description);
+        throw new Error(m || "설정하지 못했습니다.");
+      }
+      $("form").hidden = true;
+      good("<b>비밀번호가 설정되었습니다.</b><br>새 비밀번호로 로그인해 주십시오.");
+      $("foot").hidden = false;
+    }).catch(function (err) {
+      btn.disabled = false; btn.textContent = "비밀번호 설정";
+      bad("<b>설정하지 못했습니다.</b><br>" + String(err.message) +
+          "<br><br>링크가 만료되었을 수 있습니다. 로그인 화면에서 다시 받아 주십시오.");
+    });
+  });
+})();
+</script>
+</body>
+</html>

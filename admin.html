@@ -44,9 +44,12 @@ button,input,select,textarea{font-family:inherit;font-size:inherit}
 
 /* ---------- 상단 ---------- */
 .top{background:#fff;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:20}
-.top .in{max-width:1240px;margin:0 auto;padding:14px 22px;display:flex;align-items:center;gap:14px}
-.top h1{font-size:17px;color:var(--green-deep);font-weight:800}
-.top .who{margin-left:auto;font-size:13px;color:var(--gray);text-align:right;line-height:1.35}
+.top .in{max-width:1240px;margin:0 auto;padding:14px 22px;display:flex;align-items:center;
+  gap:14px;flex-wrap:wrap}
+.top h1{font-size:17px;color:var(--green-deep);font-weight:800;white-space:nowrap}
+.top .in .ghost{white-space:nowrap}
+.top .who{margin-left:auto;font-size:13px;color:var(--gray);text-align:right;line-height:1.35;
+  min-width:0;overflow-wrap:anywhere}
 .top .who b{display:block;color:var(--ink)}
 .ghost{border:1px solid var(--line);background:#fff;border-radius:999px;padding:8px 16px;font-size:13.5px;font-weight:700;color:var(--gray);cursor:pointer}
 .ghost:hover{border-color:var(--green-mid);color:var(--green)}
@@ -119,6 +122,64 @@ td.msg{color:var(--gray);max-width:340px;overflow:hidden;text-overflow:ellipsis;
   th.hide,td.hide{display:none}
   td.msg{max-width:130px}
 }
+
+/* 휴대폰 — 윗줄에 버튼이 셋이라 한 줄에 들어가지 않습니다.
+   제목과 계정은 윗줄에, 버튼은 아랫줄에 나란히 둡니다. */
+@media (max-width:620px){
+  .top .in{padding:12px 14px;gap:10px}
+  .top h1{font-size:16px}
+  .top .who{font-size:12.5px}
+  .top .in .ghost{flex:1 1 auto;order:2;padding:8px 10px;font-size:13px}
+  .pw-modal{padding:26px 20px}
+}
+
+/* ---------- 로그인 화면의 작은 링크들 ---------- */
+.login-links{margin-top:18px;text-align:center;font-size:13px;color:var(--gray)}
+.login-links .sep{margin:0 8px;color:#c6d2ca}
+.linkish{background:none;border:none;padding:0;font:inherit;color:var(--green);
+  font-weight:700;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+.linkish:hover{color:var(--green-deep)}
+.msg.good{background:#eef7f0;border:1px solid #bfdcc8;color:#1b5e2c}
+.login-box .rule{font-size:12.5px;color:var(--gray);margin:-8px 0 18px}
+
+/* ---------- 비밀번호 변경 ---------- */
+.pw-modal{position:fixed;z-index:60;left:50%;top:50%;transform:translate(-50%,-50%);
+  width:min(420px,calc(100% - 32px));background:#fff;border:1px solid var(--line);
+  border-radius:18px;padding:30px 28px;box-shadow:0 18px 50px rgba(15,61,29,.18)}
+.pw-modal h2{font-size:17px;color:var(--green-deep);margin-bottom:18px}
+.pw-modal label{display:block;font-weight:700;font-size:13.5px;margin-bottom:7px}
+.pw-modal input{width:100%;padding:12px 14px;border:1px solid #ccd6cf;border-radius:10px;
+  background:#fbfdfb;margin-bottom:16px}
+.pw-modal input:focus{outline:2px solid var(--green-mid);border-color:transparent}
+.pw-modal .rule{font-size:12.5px;color:var(--gray);margin:-8px 0 18px}
+.pw-btns{display:flex;gap:10px;justify-content:flex-end;margin-top:4px;align-items:center}
+/* '취소' 가 '취/소' 로 꺾이지 않게. 아래 .btn-green 은 로그인 화면용이라
+   width:100% 를 달고 있어서, 여기서는 남는 자리만 차지하도록 되돌립니다. */
+.pw-btns .ghost{flex:0 0 auto;white-space:nowrap}
+.pw-btns .btn{flex:1 1 auto;width:auto;white-space:nowrap}
+
+/* ---------- 가입 신청 ---------- */
+.signups{background:#fff;border:1px solid var(--line);border-radius:16px;
+  padding:24px 26px;margin-bottom:22px}
+.signups h2{font-size:16px;color:var(--green-deep);display:flex;align-items:center;gap:10px}
+.signups .count{background:var(--green);color:#fff;border-radius:999px;
+  padding:1px 10px;font-size:12.5px}
+.signups .hint{font-size:13px;color:var(--gray);margin:10px 0 18px}
+.su-row{border-top:1px solid var(--line);padding:16px 0;display:flex;gap:16px;
+  align-items:flex-start;flex-wrap:wrap}
+.su-row .who{flex:1;min-width:220px}
+.su-row .who b{font-size:15px}
+.su-row .who .mail{color:var(--gray);font-size:13.5px}
+.su-row .who .why{color:var(--gray);font-size:13.5px;margin-top:4px}
+.su-row .when{color:var(--gray);font-size:12.5px;white-space:nowrap}
+.su-row .act{display:flex;gap:8px;flex:0 0 auto}
+/* .btn-green 은 로그인 화면용이라 width:100% 를 달고 있습니다.
+   여기서는 글자 크기에 맞춰야 칸 밖으로 비어져 나오지 않습니다.
+   글씨가 '거/절' 처럼 두 줄로 꺾이는 것도 함께 막습니다. */
+.su-row .act button{width:auto;white-space:nowrap;flex:0 0 auto}
+.su-row .when{flex:0 0 auto}
+.su-none{color:var(--gray);font-size:13.5px;padding:14px 0;border-top:1px solid var(--line)}
+.su-link{margin-top:10px;font-size:12.5px;color:#8c2d18;word-break:break-all}
 </style>
 </head>
 <body>
@@ -134,6 +195,46 @@ td.msg{color:var(--gray);max-width:340px;overflow:hidden;text-overflow:ellipsis;
     <label for="lg-pw">비밀번호</label>
     <input id="lg-pw" type="password" autocomplete="current-password" required>
     <button class="btn btn-green" type="submit">로그인</button>
+    <div class="login-links">
+      <button type="button" class="linkish" id="go-recover">비밀번호를 잊으셨나요</button>
+      <span class="sep">·</span>
+      <button type="button" class="linkish" id="go-signup">관리자 가입 신청</button>
+    </div>
+  </form>
+
+  <!-- 비밀번호 재설정 메일 받기 -->
+  <form class="login-box" id="recover-form" hidden>
+    <h1>비밀번호 재설정</h1>
+    <p class="sub">가입하신 이메일로 설정 링크를 보내 드립니다.</p>
+    <div class="msg bad" id="rc-bad" hidden></div>
+    <div class="msg good" id="rc-good" hidden></div>
+    <label for="rc-email">이메일</label>
+    <input id="rc-email" type="email" autocomplete="username" required>
+    <button class="btn btn-green" type="submit" id="rc-go">링크 받기</button>
+    <div class="login-links">
+      <button type="button" class="linkish" data-back>로그인으로 돌아가기</button>
+    </div>
+  </form>
+
+  <!-- 관리자 가입 신청 -->
+  <form class="login-box" id="signup-form" hidden>
+    <h1>관리자 가입 신청</h1>
+    <p class="sub">대표원장님이 승인하면 계정이 만들어집니다.</p>
+    <div class="msg bad" id="su-bad" hidden></div>
+    <div class="msg good" id="su-good" hidden></div>
+    <label for="su-name">성함</label>
+    <input id="su-name" type="text" autocomplete="name" required maxlength="40">
+    <label for="su-email">이메일</label>
+    <input id="su-email" type="email" autocomplete="email" required>
+    <label for="su-reason">어떤 일로 필요하신지</label>
+    <input id="su-reason" type="text" maxlength="300" placeholder="예) 간호사 · 상담 접수 확인">
+    <!-- 사람 눈에는 보이지 않는 칸입니다. 자동 프로그램이 채우면 걸러냅니다. -->
+    <input id="su-company" type="text" tabindex="-1" autocomplete="off" aria-hidden="true"
+           style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
+    <button class="btn btn-green" type="submit" id="su-go">신청하기</button>
+    <div class="login-links">
+      <button type="button" class="linkish" data-back>로그인으로 돌아가기</button>
+    </div>
   </form>
 </div>
 
@@ -143,6 +244,7 @@ td.msg{color:var(--gray);max-width:340px;overflow:hidden;text-overflow:ellipsis;
     <h1>상담 신청 관리</h1>
     <div class="who"><b id="me-name"></b><span id="me-email"></span></div>
     <button class="ghost" id="btn-csv">엑셀 내보내기</button>
+    <button class="ghost" id="btn-pw">비밀번호 변경</button>
     <button class="ghost" id="btn-out">로그아웃</button>
   </div></div>
 
@@ -178,6 +280,14 @@ td.msg{color:var(--gray);max-width:340px;overflow:hidden;text-overflow:ellipsis;
       <button class="ghost" id="btn-reset">초기화</button>
     </div>
 
+    <!-- 대표(owner)에게만 보입니다. 실제 판정은 데이터베이스가 합니다. -->
+    <section class="signups" id="su-box" hidden>
+      <h2>관리자 가입 신청 <span class="count" id="su-count">0</span></h2>
+      <p class="hint">승인하기 전에 <b>신청하신 분이 맞는지 전화 등 다른 방법으로 확인</b>해 주십시오.
+        승인하면 계정이 만들어지고 비밀번호 설정 메일이 나갑니다.</p>
+      <div id="su-list"></div>
+    </section>
+
     <div class="list">
       <table>
         <thead><tr>
@@ -196,6 +306,25 @@ td.msg{color:var(--gray);max-width:340px;overflow:hidden;text-overflow:ellipsis;
   </div>
 </div>
 
+<!-- ================= 비밀번호 변경 ================= -->
+<div class="veil" id="pw-veil" hidden></div>
+<div class="pw-modal" id="pw-modal" hidden>
+  <form id="pw-form">
+    <h2>비밀번호 변경</h2>
+    <div class="msg bad" id="pw-bad" hidden></div>
+    <div class="msg good" id="pw-good" hidden></div>
+    <label for="pw-new">새 비밀번호</label>
+    <input id="pw-new" type="password" autocomplete="new-password" required minlength="10">
+    <p class="rule">10자 이상. 환자분의 연락처와 상담 내용이 들어 있는 화면입니다.</p>
+    <label for="pw-new2">한 번 더</label>
+    <input id="pw-new2" type="password" autocomplete="new-password" required minlength="10">
+    <div class="pw-btns">
+      <button class="ghost" type="button" id="pw-cancel">취소</button>
+      <button class="btn btn-green" type="submit" id="pw-go">변경</button>
+    </div>
+  </form>
+</div>
+
 <!-- ================= 상세 ================= -->
 <div class="veil" id="veil" hidden></div>
 <aside class="drawer" id="drawer" hidden>
@@ -206,7 +335,7 @@ td.msg{color:var(--gray);max-width:340px;overflow:hidden;text-overflow:ellipsis;
   <div class="body" id="d-body"></div>
 </aside>
 
-<script src="js/config.js?v=44"></script>
+<script src="js/config.js?v=60"></script>
 <script>
 /* ============================================================
    관리자 패널
@@ -341,9 +470,235 @@ td.msg{color:var(--gray);max-width:340px;overflow:hidden;text-overflow:ellipsis;
   }
   $("btn-out").addEventListener("click", signOut);
 
+  /* ============================================================
+     비밀번호 · 가입 신청
+     ============================================================ */
+  var FN_BASE = URL_BASE + "/functions/v1/";
+
+  function show(el, html) {
+    el.innerHTML = html; el.hidden = false;
+  }
+  function hideAll(ids) { ids.forEach(function (id) { $(id).hidden = true; }); }
+
+  /* ---------- 로그인 화면 전환 ---------- */
+  function showPane(which) {
+    $("login-form").hidden = which !== "login";
+    $("recover-form").hidden = which !== "recover";
+    $("signup-form").hidden = which !== "signup";
+    hideAll(["rc-bad", "rc-good", "su-bad", "su-good", "login-msg"]);
+  }
+  $("go-recover").addEventListener("click", function () {
+    $("rc-email").value = $("lg-email").value;
+    showPane("recover");
+  });
+  $("go-signup").addEventListener("click", function () { showPane("signup"); });
+  document.querySelectorAll("[data-back]").forEach(function (b) {
+    b.addEventListener("click", function () { showPane("login"); });
+  });
+
+  /* ---------- 비밀번호 재설정 메일 ----------
+     메일이 실제로 갔는지는 알려 주지 않습니다. 알려 주면 어느 이메일이
+     등록돼 있는지 밖에서 하나씩 확인할 수 있습니다. */
+  $("recover-form").addEventListener("submit", function (e) {
+    e.preventDefault();
+    hideAll(["rc-bad", "rc-good"]);
+    var btn = $("rc-go");
+    btn.disabled = true; btn.textContent = "보내는 중…";
+
+    /* 같은 폴더의 admin-reset 페이지. 주소가 /admin 이든 /admin.html 이든 맞게 잡힙니다.
+       이 주소는 Supabase 대시보드의 Redirect URLs 목록에 들어 있어야 합니다. */
+    var redirect = new URL("admin-reset", location.href).href;
+
+    fetch(URL_BASE + "/auth/v1/recover", {
+      method: "POST",
+      headers: { apikey: ANON, "content-type": "application/json" },
+      body: JSON.stringify({ email: $("rc-email").value.trim(), redirect_to: redirect })
+    }).then(function () {
+      show($("rc-good"),
+        "<b>메일을 보냈습니다.</b><br>등록된 이메일이라면 잠시 후 도착합니다. " +
+        "메일의 링크에서 새 비밀번호를 정해 주십시오.<br><br>" +
+        "<span style=\"color:var(--gray)\">받은편지함에 없으면 스팸함도 확인해 주십시오.</span>");
+    }).catch(function () {
+      show($("rc-bad"), "보내지 못했습니다. 잠시 후 다시 시도해 주십시오.");
+    }).finally(function () {
+      btn.disabled = false; btn.textContent = "링크 받기";
+    });
+  });
+
+  /* ---------- 가입 신청 ---------- */
+  $("signup-form").addEventListener("submit", function (e) {
+    e.preventDefault();
+    hideAll(["su-bad", "su-good"]);
+    var btn = $("su-go");
+    btn.disabled = true; btn.textContent = "보내는 중…";
+
+    fetch(FN_BASE + "request-admin-access", {
+      method: "POST",
+      headers: { apikey: ANON, Authorization: "Bearer " + ANON, "content-type": "application/json" },
+      body: JSON.stringify({
+        name: $("su-name").value.trim(),
+        email: $("su-email").value.trim(),
+        reason: $("su-reason").value.trim(),
+        company: $("su-company").value
+      })
+    }).then(function (r) {
+      return r.json().catch(function () { return {}; }).then(function (j) { return { ok: r.ok, j: j }; });
+    }).then(function (res) {
+      if (!res.ok || !res.j.ok) {
+        var m = {
+          rate_limited: "짧은 시간에 여러 번 신청하셨습니다. 잠시 후 다시 시도해 주십시오.",
+          email_invalid: "이메일 주소를 다시 확인해 주십시오.",
+          name_required: "성함을 적어 주십시오."
+        }[res.j && res.j.error] || "신청하지 못했습니다. 잠시 후 다시 시도해 주십시오.";
+        throw new Error(m);
+      }
+      $("signup-form").querySelectorAll("input").forEach(function (i) { i.value = ""; });
+      show($("su-good"),
+        "<b>신청이 접수되었습니다.</b><br>대표원장님이 확인한 뒤 승인되면 " +
+        "비밀번호 설정 메일이 갑니다.");
+    }).catch(function (err) {
+      show($("su-bad"), String(err.message));
+    }).finally(function () {
+      btn.disabled = false; btn.textContent = "신청하기";
+    });
+  });
+
+  /* ---------- 비밀번호 변경 (로그인 상태) ---------- */
+  function closePw() {
+    $("pw-modal").hidden = true; $("pw-veil").hidden = true;
+    $("pw-new").value = ""; $("pw-new2").value = "";
+    hideAll(["pw-bad", "pw-good"]);
+  }
+  $("btn-pw").addEventListener("click", function () {
+    hideAll(["pw-bad", "pw-good"]);
+    $("pw-modal").hidden = false; $("pw-veil").hidden = false;
+    $("pw-new").focus();
+  });
+  $("pw-cancel").addEventListener("click", closePw);
+  $("pw-veil").addEventListener("click", closePw);
+
+  $("pw-form").addEventListener("submit", function (e) {
+    e.preventDefault();
+    hideAll(["pw-bad", "pw-good"]);
+    var p1 = $("pw-new").value, p2 = $("pw-new2").value;
+    if (p1.length < 10) { show($("pw-bad"), "10자 이상으로 정해 주십시오."); return; }
+    if (p1 !== p2) { show($("pw-bad"), "두 번 입력하신 비밀번호가 서로 다릅니다."); return; }
+
+    var btn = $("pw-go");
+    btn.disabled = true; btn.textContent = "변경 중…";
+
+    authFetch("/auth/v1/user", { method: "PUT", body: JSON.stringify({ password: p1 }) })
+      .then(function (r) {
+        return r.json().catch(function () { return {}; }).then(function (j) { return { ok: r.ok, j: j }; });
+      })
+      .then(function (res) {
+        if (!res.ok) {
+          throw new Error((res.j && (res.j.msg || res.j.message)) || "변경하지 못했습니다.");
+        }
+        log("password_change");
+        show($("pw-good"), "<b>변경되었습니다.</b><br>다음 로그인부터 새 비밀번호를 쓰십시오.");
+        $("pw-new").value = ""; $("pw-new2").value = "";
+        setTimeout(closePw, 2200);
+      })
+      .catch(function (err) { show($("pw-bad"), String(err.message)); })
+      .finally(function () { btn.disabled = false; btn.textContent = "변경"; });
+  });
+
+  /* ---------- 가입 신청 목록 (대표 전용) ---------- */
+  function loadSignups() {
+    if (myRole !== "owner") return Promise.resolve();
+    return authFetch("/rest/v1/admin_signup_requests?select=*&status=eq.pending&order=created_at.desc", {})
+      .then(function (r) { return r.ok ? r.json() : []; })
+      .then(function (rows) {
+        $("su-box").hidden = false;
+        $("su-count").textContent = rows.length;
+        if (!rows.length) {
+          $("su-list").innerHTML = '<div class="su-none">처리할 신청이 없습니다.</div>';
+          return;
+        }
+        $("su-list").innerHTML = rows.map(function (r) {
+          return '<div class="su-row" data-id="' + r.id + '">' +
+            '<div class="who"><b>' + esc(r.name) + '</b>' +
+            '<div class="mail">' + esc(r.email) + '</div>' +
+            (r.reason ? '<div class="why">' + esc(r.reason) + '</div>' : '') +
+            '</div>' +
+            '<div class="when">' + new Date(r.created_at).toLocaleString("ko-KR") + '</div>' +
+            '<div class="act">' +
+              '<button class="ghost" data-act="reject">거절</button>' +
+              '<button class="btn btn-green" data-act="approve" style="padding:8px 18px;font-size:13.5px">승인</button>' +
+            '</div></div>';
+        }).join("");
+      })
+      .catch(function () { /* 대표가 아니면 정책에 막힙니다. 조용히 넘어갑니다. */ });
+  }
+
+  $("su-list").addEventListener("click", function (e) {
+    var btn = e.target.closest("[data-act]");
+    if (!btn) return;
+    var row = btn.closest(".su-row");
+    var id = Number(row.dataset.id);
+    var act = btn.dataset.act;
+    var who = row.querySelector(".who b").textContent;
+    var mail = row.querySelector(".mail").textContent;
+
+    var ask = act === "approve"
+      ? "\"" + who + "\" (" + mail + ") 님의 접근을 승인합니다.\n\n" +
+        "계정이 만들어지고 비밀번호 설정 메일이 갑니다.\n" +
+        "신청하신 분이 맞는지 다른 방법으로 확인하셨습니까?"
+      : "\"" + who + "\" 님의 신청을 거절합니다.\n\n계속할까요?";
+    if (!confirm(ask)) return;
+
+    var note = act === "reject" ? (prompt("거절 사유 (선택)") || "") : "";
+
+    row.querySelectorAll("button").forEach(function (b) { b.disabled = true; });
+    btn.textContent = "처리 중…";
+
+    authFetch("/functions/v1/approve-admin-access", {
+      method: "POST",
+      body: JSON.stringify({ id: id, action: act, note: note })
+    })
+      .then(function (r) {
+        return r.json().catch(function () { return {}; }).then(function (j) { return { ok: r.ok, j: j }; });
+      })
+      .then(function (res) {
+        if (!res.ok || !res.j.ok) throw new Error((res.j && res.j.error) || "failed");
+        if (act === "approve" && res.j.mailed === false) {
+          alert("승인은 되었지만 메일이 발송되지 않았습니다.\n\n" +
+                "아래 링크를 신청하신 분께 안전한 방법으로 전달해 주십시오.\n" +
+                "(메신저보다는 전화로 불러 주시는 편이 안전합니다)\n\n" +
+                (res.j.link || "링크도 만들지 못했습니다. 메일 설정을 확인해 주십시오."));
+        }
+        return loadSignups();
+      })
+      .catch(function (err) {
+        row.querySelectorAll("button").forEach(function (b) { b.disabled = false; });
+        btn.textContent = act === "approve" ? "승인" : "거절";
+        alert("처리하지 못했습니다.\n\n" +
+              ({
+                not_owner: "대표 계정만 승인하거나 거절할 수 있습니다.",
+                not_signed_in: "로그인이 풀렸습니다. 다시 로그인해 주십시오.",
+                not_found_or_handled: "이미 처리된 신청입니다. 목록을 새로 불러오십시오.",
+                create_user_failed:
+                  "이 이메일로 계정을 만들지 못했습니다.\n" +
+                  "이미 쓰이고 있는 주소일 수 있습니다.\n" +
+                  "Supabase 대시보드 > Authentication > Users 에서 확인해 주십시오.",
+                register_failed: "계정은 만들어졌지만 관리자 명단 등록이 실패했습니다. 기록을 확인해 주십시오."
+              }[String(err.message)] || "잠시 후 다시 시도해 주십시오."));
+      });
+  });
+
+
   /* ---------- 진입 (관리자 명단 확인) ---------- */
   function enter() {
-    return authFetch("/rest/v1/admin_users?select=email,name,role", {})
+    /* 반드시 내 계정으로 걸러서 가져옵니다.
+       대표 계정은 명단 전체를 볼 수 있으므로, 조건 없이 가져오면
+       관리자가 둘 이상일 때 남의 줄을 내 것으로 착각합니다.
+       (가입 승인 기능이 생기면서 관리자가 여러 명이 됩니다) */
+    var myId = session && session.user && session.user.id;
+    if (!myId) throw new Error("not_admin");
+
+    return authFetch("/rest/v1/admin_users?select=email,name,role&user_id=eq." +
+                     encodeURIComponent(myId), {})
       .then(function (r) { return r.ok ? r.json() : []; })
       .then(function (rows) {
         if (!rows.length) throw new Error("not_admin");
@@ -360,6 +715,7 @@ td.msg{color:var(--gray);max-width:340px;overflow:hidden;text-overflow:ellipsis;
         });
         log("login");
         loadTiles();
+        loadSignups();
         return loadRows();
       });
   }

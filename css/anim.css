@@ -157,12 +157,15 @@ header.site.scrolled { box-shadow: 0 6px 22px rgba(15, 61, 29, .10); }
 header.site.scrolled .nav-wrap { padding-top: 10px; padding-bottom: 10px; }
 header.site .nav-wrap { transition: padding .3s ease; }
 
-/* ---------- 카드: 조금 더 살아 있게 ---------- */
-.card { transition: transform .3s cubic-bezier(.22,.61,.36,1), box-shadow .3s ease, border-color .3s ease; }
-.card .icon { transition: transform .35s cubic-bezier(.22,.61,.36,1), background .3s ease; }
-.card:hover .icon { transform: scale(1.12) rotate(-6deg); }
-.card .more { transition: transform .25s ease; display: inline-block; }
-.card:hover .more { transform: translateX(6px); }
+/* ---------- 카드: 눌러서 이동하는 카드(<a class="card">)만 움직입니다 ----------
+   마우스를 올렸을 때 떠오르고·빛이 따라오는 효과는 '누르면 어딘가로 간다'는 신호입니다.
+   그래서 안내만 하는 카드(<div class="card"> — 진료 철학, 오시는 길의 주소·교통 등)에는 주지 않습니다.
+   그런 카드까지 움직이면 눌러도 아무 일이 없어 오히려 헷갈립니다. */
+a.card { transition: transform .3s cubic-bezier(.22,.61,.36,1), box-shadow .3s ease, border-color .3s ease; }
+a.card .icon { transition: transform .35s cubic-bezier(.22,.61,.36,1), background .3s ease; }
+a.card:hover .icon { transform: scale(1.12) rotate(-6deg); }
+a.card .more { transition: transform .25s ease; display: inline-block; }
+a.card:hover .more { transform: translateX(6px); }
 
 /* 버튼 — 눌리는 느낌 */
 .btn { will-change: transform; }
@@ -227,18 +230,6 @@ header.site .nav-wrap { transition: padding .3s ease; }
      마우스가 창 밖으로 나갈 때만 부드럽게 꺼지도록 이때만 전환을 켭니다. */
   html.js body.spots-out .spot::before,
   html.js body.spots-out .spot::after { transition: opacity .45s ease; }
-
-  /* 안내 띠는 짙은 초록 바탕이라 초록 빛이 보이지 않습니다. 흰빛으로 바꿉니다.
-     padding 만큼 음수 여백을 줘서 자리는 그대로 두고 빛 칸만 넓힙니다.
-     빛 칸은 글씨 크기만큼만 잡습니다(justify-self:start). 예전처럼 칸 너비를 꽉 채우면
-     옆 칸과 틈(30px)보다 넓어져 두 칸의 테두리가 겹쳐 보였습니다. */
-  html.js .info-strip .spot {
-    padding: 14px 16px; margin: -14px -16px; border-radius: 16px;
-    justify-self: start; max-width: calc(100% + 4px);
-    --spot-r: 280px;
-    --spot-fill: rgba(255, 255, 255, .10);
-    --spot-line: rgba(255, 255, 255, .40);
-  }
 
   /* 공지 목록은 가로로 긴 줄이라 빛을 넓게 잡습니다 */
   html.js .board .spot { --spot-r: 340px; --spot-fill: rgba(61,139,82,.10); --spot-line: rgba(61,139,82,.55); }
@@ -326,8 +317,8 @@ html.js .sec-head.in .tag::after { transform: scaleX(1); }
   html.js .sec-head .tag::after { transform: scaleX(1) !important; transition: none !important; }
   /* 커서를 따라다니는 빛도 끕니다 */
   html.js .spot::before, html.js .spot::after { display: none !important; }
-  .card:hover { transform: none !important; }
-  .card:hover .icon { transform: none !important; }
-  .card:hover .more { transform: none !important; }
+  a.card:hover { transform: none !important; }
+  a.card:hover .icon { transform: none !important; }
+  a.card:hover .more { transform: none !important; }
   .quick a:hover { transform: none !important; }
 }

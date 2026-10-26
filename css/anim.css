@@ -229,9 +229,12 @@ header.site .nav-wrap { transition: padding .3s ease; }
   html.js body.spots-out .spot::after { transition: opacity .45s ease; }
 
   /* 안내 띠는 짙은 초록 바탕이라 초록 빛이 보이지 않습니다. 흰빛으로 바꿉니다.
-     padding 만큼 음수 여백을 줘서 자리는 그대로 두고 빛 칸만 넓힙니다. */
+     padding 만큼 음수 여백을 줘서 자리는 그대로 두고 빛 칸만 넓힙니다.
+     빛 칸은 글씨 크기만큼만 잡습니다(justify-self:start). 예전처럼 칸 너비를 꽉 채우면
+     옆 칸과 틈(30px)보다 넓어져 두 칸의 테두리가 겹쳐 보였습니다. */
   html.js .info-strip .spot {
-    padding: 16px 18px; margin: -16px -18px; border-radius: 16px;
+    padding: 14px 16px; margin: -14px -16px; border-radius: 16px;
+    justify-self: start; max-width: calc(100% + 4px);
     --spot-r: 280px;
     --spot-fill: rgba(255, 255, 255, .10);
     --spot-line: rgba(255, 255, 255, .40);

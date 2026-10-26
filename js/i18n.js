@@ -127,7 +127,7 @@
     box.className = "lang-pick";
     box.innerHTML =
       '<button type="button" class="lang-btn" aria-haspopup="true" aria-expanded="false">' +
-        '<span class="globe" aria-hidden="true">🌐</span>' +
+        '<span class="globe" aria-hidden="true"><svg class="i" aria-hidden="true"><use href="images/icons.svg?v=1#i-globe"></use></svg></span>' +
         '<span class="cur">' + (pack.short || lang.toUpperCase()) + '</span>' +
       '</button>' +
       '<ul class="lang-list">' +

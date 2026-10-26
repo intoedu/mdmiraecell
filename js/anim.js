@@ -24,16 +24,147 @@
 
   if (reduced) return; /* 여기서부터는 움직임이므로 그만둡니다 */
 
-  /* ---------- 히어로 배경 광점 ----------
-     HTML을 건드리지 않고 여기서 넣습니다. 장식 전용이라 읽어 줄 필요가 없습니다. */
-  var hero = document.querySelector(".hero");
-  if (hero) {
-    ["g1", "g2"].forEach(function (cls) {
-      var d = document.createElement("span");
-      d.className = "glow " + cls;
-      d.setAttribute("aria-hidden", "true");
-      hero.appendChild(d);
+  /* ---------- 첫 화면 글씨 순서 ----------
+     예전 홈페이지(Anti-aging Therapy 화면)처럼
+     큰 제목 글자가 하나씩 떠오르고 → 설명이 천천히 올라오고 → 단추가 돌아 열립니다.
+     홈 큰 제목은 다 나온 뒤 잠시 머물렀다가 사라지고 다시 한 글자씩 나옵니다(LOOP).
+     움직임은 CSS(css/anim.css 의 .seq 규칙)가 그리고, 여기서는 글자를 쪼개고 순서만 정합니다. */
+  var LOOP = true;  /* 홈 큰 제목을 되풀이할지 — false 로 바꾸면 처음 한 번만 나옵니다 */
+  var HOLD = 5;     /* 제목이 다 나온 뒤 머무는 시간(초) — 예전 홈페이지와 같습니다 */
+  var introUntil = 0; /* 첫 화면 순서가 끝나는 시각. 그 전에 보이는 아래쪽 요소는 이때까지 기다립니다 */
+
+  /* 글자를 하나씩 <span> 으로 나눕니다. 줄바꿈(<br>)은 그대로 두고,
+     낱말은 한 덩어리로 묶어 낱말 가운데서 줄이 갈리지 않게 합니다.
+     화면 읽기 프로그램에는 쪼개지 않은 문장을 따로 읽어 줍니다. */
+  function splitChars(el) {
+    if (el.dataset.split) return 0;
+    var n = 0;
+    var vis = document.createElement("span");
+    vis.setAttribute("aria-hidden", "true");
+    (function walk(from, into) {
+      Array.prototype.forEach.call(from.childNodes, function (c) {
+        if (c.nodeType === 3) {
+          c.textContent.split(/(\s+)/).forEach(function (part) {
+            if (!part) return;
+            if (/^\s+$/.test(part)) { into.appendChild(document.createTextNode(" ")); return; }
+            var w = document.createElement("span");
+            w.className = "split-w";
+            Array.from(part).forEach(function (ch) {
+              var s = document.createElement("span");
+              s.className = "split-ch";
+              s.style.setProperty("--i", n++);
+              s.textContent = ch;
+              w.appendChild(s);
+            });
+            into.appendChild(w);
+          });
+        } else if (c.nodeType === 1) {
+          var copy = c.cloneNode(false);
+          into.appendChild(copy);
+          if (c.tagName !== "BR") walk(c, copy);
+        }
+      });
+    })(el, vis);
+    if (!n) return 0;
+    var sr = document.createElement("span");
+    sr.className = "sr-only";
+    /* 줄바꿈(<br>) 자리는 띄어 읽도록 빈칸으로 바꿉니다 — 그대로 두면 '되살리는건강한'처럼 붙습니다 */
+    var plain = el.cloneNode(true);
+    plain.querySelectorAll("br").forEach(function (br) { br.replaceWith(" "); });
+    sr.textContent = plain.textContent.replace(/\s+/g, " ").trim();
+    el.textContent = "";
+    el.appendChild(sr);
+    el.appendChild(vis);
+    el.dataset.split = "1";
+    el.classList.add("split");
+    return n;
+  }
+
+  /* 여러 요소에 등장 시각(--at)과 길이(--dur)를 적고 효과 이름표를 붙입니다 */
+  function cue(els, cls, at, dur, step) {
+    Array.prototype.forEach.call(els, function (el, i) {
+      el.classList.add(cls);
+      el.style.setProperty("--at", (at + i * (step || 0)).toFixed(2) + "s");
+      if (dur) el.style.setProperty("--dur", dur + "s");
     });
+  }
+
+  /* 제목 글자를 켭니다. 꺼진 자세를 화면이 한 번 그린 뒤에 켜야 전환이 일어납니다. */
+  function lightUp(h) {
+    requestAnimationFrame(function () { requestAnimationFrame(function () { h.classList.add("on"); }); });
+  }
+
+  function heroIntro() {
+    /* ① 홈 첫 화면 */
+    var hero = document.querySelector(".hero");
+    var box = hero && hero.querySelector(".container");
+    var h = box && box.querySelector("h1");
+    if (h) {
+      var n = splitChars(h);
+      if (n) {
+        box.classList.add("seq");
+        /* 글자 사이 간격 — 글자가 많은 언어(영어 등)도 2초 안에 다 나오게 줄입니다 */
+        var stag = Math.min(0.085, 1.9 / n);
+        var AT = 0.55;
+        var hEnd = AT + (n - 1) * stag + 0.55;
+        h.style.setProperty("--stag", stag.toFixed(3) + "s");
+        h.style.setProperty("--at", AT + "s");
+        cue(box.querySelectorAll(".eyebrow"), "seq-rise", 0.15, 1.2);
+        cue(box.querySelectorAll(":scope > p"), "seq-rise", hEnd - 0.2, 1.8);
+        cue(box.querySelectorAll(".btns > *"), "seq-flip", hEnd + 0.5, 0, 0.22);
+        introUntil = performance.now() + (hEnd + 0.7) * 1000;
+        lightUp(h);
+
+        if (LOOP) {
+          var visible = true;
+          if ("IntersectionObserver" in window) {
+            new IntersectionObserver(function (es) { visible = es[0].isIntersecting; }).observe(hero);
+          }
+          var again = (n - 1) * stag + 0.65;  /* 다시 나올 때 걸리는 시간 */
+          var wait = function (sec) {
+            setTimeout(function tick() {
+              /* 화면 밖이거나 다른 탭을 보고 계시면 쉬었다가 돌아오면 이어 갑니다 */
+              if (!visible || document.hidden) { setTimeout(tick, 1000); return; }
+              h.classList.remove("on");                 /* 모든 글자가 함께 사라지고 */
+              setTimeout(function () {
+                h.style.setProperty("--at", "0.1s");
+                h.classList.add("on");                  /* 다시 한 글자씩 */
+                wait(again + HOLD);
+              }, 800);
+            }, sec * 1000);
+          };
+          wait(hEnd + HOLD);
+        }
+      }
+    }
+
+    /* ② 하위 페이지 상단 띠 — 같은 순서로, 한 번만 */
+    var ph = document.querySelector(".page-hero");
+    var ph1 = ph && ph.querySelector("h1");
+    if (ph1) {
+      var m = splitChars(ph1);
+      if (m) {
+        ph.classList.add("seq");
+        var pst = Math.min(0.07, 1.2 / m);
+        var pAt = 0.3;
+        var pEnd = pAt + (m - 1) * pst + 0.55;
+        ph1.style.setProperty("--stag", pst.toFixed(3) + "s");
+        ph1.style.setProperty("--at", pAt + "s");
+        cue(ph.querySelectorAll(".crumb"), "seq-rise", 0.08, 1);
+        cue(ph.querySelectorAll(":scope > p:not(.crumb)"), "seq-rise", pEnd - 0.15, 1.4);
+        cue(ph.querySelectorAll(".btns > *"), "seq-flip", pEnd + 0.4, 0, 0.2);
+        introUntil = Math.max(introUntil, performance.now() + pEnd * 1000);
+        lightUp(ph1);
+      }
+    }
+  }
+
+  /* 번역(js/i18n.js)이 제목을 바꿔 넣은 뒤에 쪼개야 합니다. i18n 도 이 시점에 일하므로
+     그보다 늦게 등록된 이 처리가 뒤에 돕니다. */
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", heroIntro);
+  } else {
+    heroIntro();
   }
 
   var M = window.Motion;
@@ -46,9 +177,11 @@
      위에 적은 규칙이 먼저입니다. 이미 고른 요소의 안쪽이나 바깥쪽은 다시 고르지 않습니다.
      (상자와 그 안의 글줄이 같이 흐려졌다 나타나면 두 번 깜빡이는 것처럼 보입니다) */
   var TARGETS = [
-    [".sec-head", "reveal", false],
-    [".grid > .card", "reveal", true],
-    [".info-strip .info-item", "reveal", true],
+    /* 섹션 제목 — 영문 꼬리표·제목·설명이 좌우에서 번갈아 들어옵니다(예전 홈페이지의 fade-left/right) */
+    [".sec-head > *", "alt-lr", true],
+    /* 카드 줄 — 위·아래에서 번갈아 엇갈려 들어옵니다(예전 홈페이지의 fade-down/up) */
+    [".grid > .card", "alt-ud", true],
+    [".info-strip .info-item", "alt-ud", true],
     [".board li", "reveal", true],
     [".about-visual", "reveal-left", false],
     [".about-txt", "reveal-right", false],
@@ -77,24 +210,35 @@
     ["section.block > .container > div:not([class])", "reveal", false],
   ];
 
-  var STAGGER = 0.08; /* 초 단위. 너무 길면 굼떠 보입니다 */
-  var MAX_DELAY = 0.48; /* 한 묶음이 아무리 길어도 이 이상 기다리게 하지 않습니다 */
+  var STAGGER = 0.22; /* 초 단위. 예전 홈페이지(0.3초)처럼 '하나씩' 보이도록 넉넉히 둡니다 */
+  var MAX_DELAY = 1.1; /* 한 묶음이 아무리 길어도 이 이상 기다리게 하지 않습니다 */
 
   /* 효과별 출발 자세 — 도착 자세는 모두 '제자리'입니다 */
   var FROM = {
-    "reveal":       "translateY(30px)",
-    "reveal-left":  narrow ? "translateY(30px)" : "translateX(-40px)",
-    "reveal-right": narrow ? "translateY(30px)" : "translateX(40px)",
-    "reveal-zoom":  "scale(0.94)",
+    "reveal":       "translateY(56px)",
+    "reveal-down":  "translateY(-56px)",
+    "reveal-left":  narrow ? "translateY(56px)" : "translateX(-70px)",
+    "reveal-right": narrow ? "translateY(56px)" : "translateX(70px)",
+    "reveal-zoom":  "scale(0.92)",
   };
   var REST = {
-    "reveal": "translateY(0px)", "reveal-left": narrow ? "translateY(0px)" : "translateX(0px)",
+    "reveal": "translateY(0px)", "reveal-down": "translateY(0px)",
+    "reveal-left": narrow ? "translateY(0px)" : "translateX(0px)",
     "reveal-right": narrow ? "translateY(0px)" : "translateX(0px)", "reveal-zoom": "scale(1)",
   };
 
-  /* 용수철 움직임 — 처음엔 빠르게 다가오고 끝에서 천천히 내려앉습니다.
-     튕김(bounce)은 아주 조금만 줍니다. 의료기관 화면이라 통통 튀면 가벼워 보입니다. */
-  var SPRING = { type: "spring", visualDuration: 0.8, bounce: 0.12 };
+  /* 천천히 다가와 부드럽게 멈추는 곡선. 튕김 없이 차분하게 — 예전 홈페이지처럼 1초 남짓 */
+  var EASE = [0.25, 0.46, 0.45, 0.94];
+  var DUR = 1.1;
+
+  /* 번갈아 쓰는 효과 — 형제 사이 순번으로 정합니다.
+     위·아래: 첫째는 위에서, 둘째는 아래에서 … / 좌·우: 첫째는 오른쪽에서, 둘째는 왼쪽에서 … */
+  function resolveFx(el, fx) {
+    if (fx !== "alt-ud" && fx !== "alt-lr") return fx;
+    var k = Array.prototype.indexOf.call(el.parentElement.children, el) % 2;
+    if (fx === "alt-ud") return k ? "reveal" : "reveal-down";
+    return k ? "reveal-left" : "reveal-right";
+  }
 
   var picked = [];   /* [요소, 효과, 묶음 여부] */
   TARGETS.forEach(function (t) {
@@ -104,18 +248,26 @@
       if (el.querySelector("[data-revealed]")) return;
       if (el.closest("#site-header, #site-footer")) return;
       el.dataset.revealed = "1";
-      picked.push([el, t[1], t[2]]);
+      picked.push([el, resolveFx(el, t[1]), t[2]]);
     });
   });
+
+  /* 섹션 제목의 밑줄은 CSS 가 그립니다(.sec-head.in). 꼬리표(.tag)가 나올 때 함께 긋습니다. */
+  function underline(el, on, delay) {
+    var head = el.parentElement;
+    if (!head || !head.classList.contains("sec-head") || !el.classList.contains("tag")) return;
+    head.style.setProperty("--d", (delay || 0).toFixed(2) + "s");
+    head.classList.toggle("in", on);
+  }
 
   if (hasMotion) {
     document.documentElement.classList.add("has-motion");
 
-    /* 처음 자세로 숨겨 둡니다. 화면은 아직 투명(body.ready 전)이라 깜빡이지 않습니다. */
-    picked.forEach(function (p) {
-      p[0].style.opacity = "0";
-      p[0].style.transform = FROM[p[1]];
-    });
+    /* 처음에는 투명하게만 숨겨 둡니다. 화면은 아직 투명(body.ready 전)이라 깜빡이지 않습니다.
+       자리를 미리 옮겨 두지는 않습니다 — 아래로 밀어 둔 요소는 '화면에 들어왔는지' 판단이
+       어긋나, 화면 맨 아래 줄(안내 띠 등)이 끝내 나타나지 않는 일이 생깁니다.
+       출발 자리는 움직이기 시작할 때 Motion 이 잡습니다. */
+    picked.forEach(function (p) { p[0].style.opacity = "0"; });
 
     /* ---------- 화면에 들어오면 떠오르기 ----------
        같은 순간에 함께 들어온 형제들끼리만 순서를 매깁니다.
@@ -130,38 +282,63 @@
       batch.sort(function (a, b) {
         return a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING ? -1 : 1;
       });
+      /* 첫 화면 글씨가 아직 나오는 중이면, 그 아래 보이는 요소(안내 띠 등)는 끝날 때까지 기다립니다 */
+      var wait = Math.max(0, (introUntil - performance.now()) / 1000);
       var counter = new Map();
       batch.forEach(function (el) {
         var fx = effectOf.get(el);
-        var delay = 0;
+        var delay = wait;
         if (stagOf.get(el)) {
           var n = counter.get(el.parentElement) || 0;
           counter.set(el.parentElement, n + 1);
-          delay = Math.min(n * STAGGER, MAX_DELAY);
+          delay += Math.min(n * STAGGER, MAX_DELAY);
         }
-        /* 섹션 제목의 밑줄은 CSS 가 그립니다(.sec-head.in). 함께 시작하도록 지연값만 넘깁니다. */
         el.style.setProperty("--d", delay.toFixed(2) + "s");
         el.classList.add("in");
+        underline(el, true, delay);
 
-        M.animate(el, { opacity: [0, 1] }, { duration: 0.7, delay: delay, ease: [0.22, 0.61, 0.36, 1] });
-        M.animate(el, { transform: [FROM[fx], REST[fx]] }, Object.assign({ delay: delay }, SPRING))
-          .then(function () {
-            /* 다 끝나면 손을 뗍니다. 남겨 두면 카드에 마우스를 올렸을 때
-               CSS 의 떠오르는 효과(:hover)를 이 값이 막아 버립니다.
-               Motion 이 끝난 직후 마지막 값을 한 번 더 적어 넣으므로,
-               그다음 차례(setTimeout 0)에 지워야 실제로 지워집니다. */
-            setTimeout(function () {
-              el.style.transform = "";
-              el.style.opacity = "";
-            }, 0);
-          });
+        var token = el._rv = (el._rv || 0) + 1;
+        var a1 = M.animate(el, { opacity: [0, 1] }, { duration: DUR, delay: delay, ease: EASE });
+        var a2 = M.animate(el, { transform: [FROM[fx], REST[fx]] }, { duration: DUR + 0.1, delay: delay, ease: EASE });
+        el._anims = [a1, a2];
+        a2.then(function () {
+          /* 다 끝나면 손을 뗍니다. 남겨 두면 카드에 마우스를 올렸을 때
+             CSS 의 떠오르는 효과(:hover)를 이 값이 막아 버립니다.
+             Motion 이 끝난 직후 마지막 값을 한 번 더 적어 넣으므로,
+             그다음 차례(setTimeout 0)에 지워야 실제로 지워집니다. */
+          setTimeout(function () {
+            if (el._rv !== token) return;   /* 그사이 다시 숨겨졌으면 건드리지 않습니다 */
+            el.style.transform = "";
+            el.style.opacity = "";
+          }, 0);
+        });
       });
     };
 
+    /* 숨겨 둔 요소만 떠오릅니다. 처음엔 모두 숨겨져 있습니다. */
+    picked.forEach(function (p) { p[0]._hidden = true; });
+
     M.inView(picked.map(function (p) { return p[0]; }), function (el) {
-      pending.push(el);
-      if (!flushQueued) { flushQueued = true; requestAnimationFrame(flush); }
-      /* 아무것도 돌려주지 않으면 한 번만 일어납니다. 오르내릴 때마다 깜빡이면 피곤합니다 */
+      if (el._hidden) {
+        el._hidden = false;
+        pending.push(el);
+        if (!flushQueued) { flushQueued = true; requestAnimationFrame(flush); }
+      }
+      /* 예전 홈페이지처럼, 위로 올라갔다가 다시 내려오면 또 한 번 나타납니다.
+         단, 요소가 화면 '아래'로 빠져나갔을 때(=위로 되돌아 올라갔을 때)만 다시 숨깁니다.
+         화면 위로 지나간 요소까지 숨기면, 거꾸로 올라올 때마다 깜빡여 피곤합니다. */
+      return function (entry) {
+        /* 화면 밖 아래로 완전히 내려갔을 때만입니다. 막 떠오르기 시작한 요소는 출발 자리(아래 56px)
+           때문에 잠깐 '빠져나간' 것으로 잡힐 수 있는데, 그때 숨기면 끝내 나타나지 않습니다. */
+        if (entry.boundingClientRect.top <= window.innerHeight) return;
+        el._rv = (el._rv || 0) + 1;
+        (el._anims || []).forEach(function (a) { a.stop(); });
+        el._hidden = true;
+        el.classList.remove("in");
+        underline(el, false);
+        el.style.opacity = "0";
+        el.style.transform = "";
+      };
     }, { margin: "0px 0px -10% 0px", amount: 0.08 });
 
     scrollLinked();
@@ -173,19 +350,20 @@
       el.classList.add(p[1]);
       if (p[2]) {
         if (el.parentElement !== group) { group = el.parentElement; idx = 0; }
-        el.style.setProperty("--d", (idx * 0.09).toFixed(2) + "s");
+        el.style.setProperty("--d", (idx * 0.2).toFixed(2) + "s");
         idx++;
       }
     });
 
     var watched = picked.map(function (p) { return p[0]; });
     if (!("IntersectionObserver" in window)) {
-      watched.forEach(function (el) { el.classList.add("in"); });
+      watched.forEach(function (el) { el.classList.add("in"); underline(el, true, 0); });
     } else {
       var io = new IntersectionObserver(function (entries) {
         entries.forEach(function (e) {
           if (!e.isIntersecting) return;
           e.target.classList.add("in");
+          underline(e.target, true, parseFloat(e.target.style.getPropertyValue("--d")) || 0);
           io.unobserve(e.target);
         });
       }, { rootMargin: "0px 0px -12% 0px", threshold: 0.08 });
@@ -210,11 +388,12 @@
 
     /* ② 홈 히어로 — 배경은 천천히, 글씨는 살짝 빨리 위로 빠지며 옅어집니다.
        배경을 미리 조금 키워 두어(1.18배) 내려가도 위쪽 가장자리가 드러나지 않습니다.
-       글씨 하나하나는 CSS 진입 애니메이션이 붙잡고 있어서, 감싸는 상자를 움직입니다. */
+       글자 하나하나는 CSS 등장 효과가 맡고 있어서, 감싸는 상자를 움직입니다. */
     var hero = document.querySelector(".hero");
     if (hero) {
       var heroRange = { target: hero, offset: ["start start", "end start"] };
-      hero.querySelectorAll(".hero-photo, .motif-bg").forEach(function (bg) {
+      /* 바깥 상자만 움직입니다. 안의 사진은 CSS 가 따로 천천히 흔듭니다(leaf-sway). */
+      hero.querySelectorAll(".hero-media").forEach(function (bg) {
         M.scroll(M.animate(bg, { transform: ["translateY(0%) scale(1.18)", "translateY(9%) scale(1.18)"] }, lin), heroRange);
       });
       var heroBox = hero.querySelector(".container");

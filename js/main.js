@@ -200,7 +200,7 @@ const SERVICES = [
     cta: `
       <h3 style="font-size:20px;margin-bottom:8px">어떤 방법이 맞는지, 함께 정하시면 됩니다</h3>
       <p style="color:var(--gray);margin-bottom:14px">PRP가 맞는 분도, 줄기세포가 맞는 분도, 지금은 다른 치료가 먼저인 분도 계십니다.<br>상태를 먼저 보고 솔직하게 말씀드리는 것부터 시작합니다.</p>
-      <p style="color:var(--ink);font-weight:700;margin-bottom:20px"><svg class="i" aria-hidden="true"><use href="images/icons.svg?v=1#i-phone"></use></svg> 02-776-8768</p>
+      <p style="color:var(--ink);font-weight:700;margin-bottom:20px"><svg class="i" aria-hidden="true"><use href="images/icons.svg?v=2#i-phone"></use></svg> 02-776-8768</p>
       <a class="btn btn-green" href="reserve">상담 예약하기</a>` },
   { key: "derma", no: 2, title: "피부과",
     desc: "좋아지는 것만 말하지 않습니다. 얼마나, 언제까지, 어떤 위험이 있는지까지 말씀드리는 피부 진료입니다.",
@@ -548,7 +548,7 @@ const SERVICES = [
     cta: `
       <h3 style="font-size:20px;margin-bottom:8px">지금 피부에 무슨 일이 있는지부터, 함께 확인하시면 됩니다</h3>
       <p style="color:var(--gray);margin-bottom:14px">시술이 필요한 분도, 지금은 관리가 먼저인 분도 계십니다.<br>상태를 먼저 보고 솔직하게 말씀드리는 것부터 시작합니다.</p>
-      <p style="color:var(--ink);font-weight:700;margin-bottom:20px"><svg class="i" aria-hidden="true"><use href="images/icons.svg?v=1#i-phone"></use></svg> 02-776-8768</p>
+      <p style="color:var(--ink);font-weight:700;margin-bottom:20px"><svg class="i" aria-hidden="true"><use href="images/icons.svg?v=2#i-phone"></use></svg> 02-776-8768</p>
       <a class="btn btn-green" href="reserve">상담 예약하기</a>` },
   { key: "plastic", no: 3, title: "성형외과",
     desc: "나이 들어 보이는 이유는 사람마다 다릅니다. 명동미래셀은 그 이유부터 찾습니다.",
@@ -843,7 +843,7 @@ const SERVICES = [
     cta: `
       <h3 style="font-size:20px;margin-bottom:8px">무엇이 문제인지부터, 함께 확인하시면 됩니다</h3>
       <p style="color:var(--gray);margin-bottom:14px">당겨야 하는 분도, 채워야 하는 분도, 지금은 수술이 필요 없는 분도 계십니다.<br>원인을 먼저 보고 솔직하게 말씀드리는 것부터 시작합니다.</p>
-      <p style="color:var(--ink);font-weight:700;margin-bottom:20px"><svg class="i" aria-hidden="true"><use href="images/icons.svg?v=1#i-phone"></use></svg> 02-776-8768</p>
+      <p style="color:var(--ink);font-weight:700;margin-bottom:20px"><svg class="i" aria-hidden="true"><use href="images/icons.svg?v=2#i-phone"></use></svg> 02-776-8768</p>
       <a class="btn btn-green" href="reserve">상담 예약하기</a>` },
   { key: "urology", no: 4, title: "비뇨기과",
     desc: "드문 일이 아니라, 대부분이 겪는 일입니다. 말하기 어려운 문제일수록 정확한 검사부터 시작합니다.",
@@ -1078,7 +1078,7 @@ const SERVICES = [
     cta: `
       <h3 style="font-size:20px;margin-bottom:8px">부끄러워하실 일이 아닙니다. 검사부터 함께 시작하시면 됩니다</h3>
       <p style="color:var(--gray);margin-bottom:14px">약이 필요한 분도, 지켜보기만 하면 되는 분도 계십니다.<br>검사로 원인을 구분하고, 근거가 확실한 치료부터 솔직하게 말씀드립니다.</p>
-      <p style="color:var(--ink);font-weight:700;margin-bottom:20px"><svg class="i" aria-hidden="true"><use href="images/icons.svg?v=1#i-phone"></use></svg> 02-776-8768</p>
+      <p style="color:var(--ink);font-weight:700;margin-bottom:20px"><svg class="i" aria-hidden="true"><use href="images/icons.svg?v=2#i-phone"></use></svg> 02-776-8768</p>
       <a class="btn btn-green" href="reserve">상담 예약하기</a>`,
     note: "※ 비뇨기과 상세 정보는 전용 홈페이지에서 확인하실 수 있습니다. (별도 홈페이지 연결 예정)" },
   { key: "esthetic", no: 5, title: "에스테틱",
@@ -1250,7 +1250,7 @@ const SERVICES = [
     cta: `
       <h3 style="font-size:20px;margin-bottom:8px">어떤 관리가 가능한지부터, 함께 확인하시면 됩니다</h3>
       <p style="color:var(--gray);margin-bottom:14px">받으신 시술과 피부 상태에 따라 가능한 관리가 다릅니다.<br>차트를 보고, 지금 받아도 되는 관리부터 솔직하게 안내해 드립니다.</p>
-      <p style="color:var(--ink);font-weight:700;margin-bottom:20px"><svg class="i" aria-hidden="true"><use href="images/icons.svg?v=1#i-phone"></use></svg> 02-776-8768</p>
+      <p style="color:var(--ink);font-weight:700;margin-bottom:20px"><svg class="i" aria-hidden="true"><use href="images/icons.svg?v=2#i-phone"></use></svg> 02-776-8768</p>
       <a class="btn btn-green" href="reserve">상담 예약하기</a>` },
   { key: "toenail", no: 6, title: "내성발톱",
     desc: "한 걸음 뗄 때마다 아픈 엄지발톱, 참고 지낼 이유가 없습니다. 초기에는 발톱을 뽑지 않고도 좋아지는 경우가 있습니다.",
@@ -1382,7 +1382,7 @@ const SERVICES = [
     cta: `
       <h3 style="font-size:20px;margin-bottom:8px">아플 때 일찍 오실수록, 선택할 수 있는 방법이 많아집니다</h3>
       <p style="color:var(--gray);margin-bottom:14px">발톱을 뽑지 않아도 되는 분도, 교정 기구면 충분한 분도 계십니다.<br>상태를 먼저 보고 가장 부담이 적은 방법부터 안내해 드립니다.</p>
-      <p style="color:var(--ink);font-weight:700;margin-bottom:20px"><svg class="i" aria-hidden="true"><use href="images/icons.svg?v=1#i-phone"></use></svg> 02-776-8768</p>
+      <p style="color:var(--ink);font-weight:700;margin-bottom:20px"><svg class="i" aria-hidden="true"><use href="images/icons.svg?v=2#i-phone"></use></svg> 02-776-8768</p>
       <a class="btn btn-green" href="reserve">상담 예약하기</a>` },
   { key: "scalp", no: 7, title: "두피케어",
     desc: "두피의 각질과 기름기를 정돈하고, 굳어 있는 두피를 풀어 준 뒤 얼굴까지 이어서 관리하는 프로그램입니다.",
@@ -1502,7 +1502,7 @@ const SERVICES = [
     cta: `
       <h3 style="font-size:20px;margin-bottom:8px">두피부터 얼굴까지 — 한 번에 이어서</h3>
       <p style="color:var(--gray);margin-bottom:14px">두피는 안 보이는 피부입니다.<br>상태를 먼저 확인하고, 지금 필요한 관리부터 안내해 드립니다.</p>
-      <p style="color:var(--ink);font-weight:700;margin-bottom:20px"><svg class="i" aria-hidden="true"><use href="images/icons.svg?v=1#i-phone"></use></svg> 02-776-8768</p>
+      <p style="color:var(--ink);font-weight:700;margin-bottom:20px"><svg class="i" aria-hidden="true"><use href="images/icons.svg?v=2#i-phone"></use></svg> 02-776-8768</p>
       <a class="btn btn-green" href="reserve">상담 예약하기</a>` },
   { key: "lymph", no: 8, title: "림프해독",
     desc: "붓기 완화 · 순환 관리 · 회복기 컨디션 케어. 림프의 흐름을 부드럽게 도와드리는 관리입니다.",
@@ -1599,7 +1599,7 @@ const SERVICES = [
     cta: `
       <h3 style="font-size:20px;margin-bottom:8px">받으셔도 되는 상태인지부터, 먼저 확인해 드립니다</h3>
       <p style="color:var(--gray);margin-bottom:14px">케어가 도움이 되는 분도, 지금은 진료가 먼저인 분도 계십니다.<br>상담으로 원인을 확인하고 솔직하게 안내해 드립니다.</p>
-      <p style="color:var(--ink);font-weight:700;margin-bottom:20px"><svg class="i" aria-hidden="true"><use href="images/icons.svg?v=1#i-phone"></use></svg> 02-776-8768</p>
+      <p style="color:var(--ink);font-weight:700;margin-bottom:20px"><svg class="i" aria-hidden="true"><use href="images/icons.svg?v=2#i-phone"></use></svg> 02-776-8768</p>
       <a class="btn btn-green" href="reserve">상담 예약하기</a>` },
   { key: "worldtour", no: 9, title: "월드투어",
     desc: "내국인과 해외 방문 고객 모두를 위한 메디컬 투어 프로그램입니다.",
@@ -1713,7 +1713,7 @@ const SERVICES = [
     cta: `
       <h3 style="font-size:20px;margin-bottom:8px">지금 필요한 관리인지부터, 함께 확인하시면 됩니다</h3>
       <p style="color:var(--gray);margin-bottom:14px">회복을 돕는 보조 관리가 맞는 분도, 지금은 진료가 먼저인 분도 계십니다.<br>상태를 확인하고 솔직하게 안내해 드립니다.</p>
-      <p style="color:var(--ink);font-weight:700;margin-bottom:20px"><svg class="i" aria-hidden="true"><use href="images/icons.svg?v=1#i-phone"></use></svg> 02-776-8768</p>
+      <p style="color:var(--ink);font-weight:700;margin-bottom:20px"><svg class="i" aria-hidden="true"><use href="images/icons.svg?v=2#i-phone"></use></svg> 02-776-8768</p>
       <a class="btn btn-green" href="reserve">상담 예약하기</a>` },
 ];
 const svcHref = s => `${s.key}`;
@@ -1760,7 +1760,7 @@ const NAV_ITEMS = [
 
 /* 직접 그린 선 아이콘(images/icons.svg)을 꺼내 쓰는 도우미.
    이모지·기호 문자는 기기마다 모양이 달라 쓰지 않습니다. 장식이라 읽어 주지 않습니다. */
-const ICON = name => `<svg class="i" aria-hidden="true"><use href="images/icons.svg?v=1#i-${name}"></use></svg>`;
+const ICON = name => `<svg class="i" aria-hidden="true"><use href="images/icons.svg?v=2#i-${name}"></use></svg>`;
 const TEL = "02-776-8768";
 const EMAIL = "mdmiraecellclinic@gmail.com";
 const ADDR = t("site.addr", "서울특별시 중구 퇴계로 123, 7층 명동미래셀의원");
@@ -1775,12 +1775,12 @@ document.getElementById("site-header").innerHTML = `
       const mobileLinks = sub === "mega"
         ? SERVICES.map(s => [svcHref(s), svcTitle(s)])
         : sub.map(([h, l]) => [h, l]);
-      return `<li data-mi="${mi}"><a href="${href}">${label}<span class="caret"><svg class="i" aria-hidden="true"><use href="images/icons.svg?v=1#i-caret"></use></svg></span></a>
+      return `<li data-mi="${mi}"><a href="${href}">${label}<span class="caret"><svg class="i" aria-hidden="true"><use href="images/icons.svg?v=2#i-caret"></use></svg></span></a>
         <ul class="sub">${mobileLinks.map(([h, l]) => `<li><a href="${h}">${l}</a></li>`).join("")}</ul></li>`;
     }).join("")}
   </ul></nav>
   <a class="nav-cta" href="reserve">${t("nav.cta", "진료 예약")}</a>
-  <button id="menu-btn" aria-label="${t("nav.menu", "메뉴 열기")}"><svg class="i" aria-hidden="true"><use href="images/icons.svg?v=1#i-menu"></use></svg></button>
+  <button id="menu-btn" aria-label="${t("nav.menu", "메뉴 열기")}"><svg class="i" aria-hidden="true"><use href="images/icons.svg?v=2#i-menu"></use></svg></button>
 </div>
 ${NAV_ITEMS.map(([href, label, sub], mi) => {
   const cols = sub === "mega"
@@ -1997,12 +1997,18 @@ if (svcPage) {
   }
 }
 
+/* 진료 분야별 아이콘 (images/icons.svg) — 홈 카드와 같은 그림을 씁니다 */
+const SVC_ICON = {
+  stemcell: "cell", derma: "skin", plastic: "face", urology: "kidney", esthetic: "lotus",
+  toenail: "toe", scalp: "scalp", lymph: "flow", worldtour: "plane", quantum: "atom",
+};
+
 /* 진료안내 허브 페이지 카드 목록 (<div id="svc-index">) */
 const svcIndex = document.getElementById("svc-index");
 if (svcIndex) {
   svcIndex.innerHTML = SERVICES.map(s => `
     <a class="card" href="${svcHref(s)}">
-      <div class="icon">${s.no}</div>
+      <div class="icon">${ICON(SVC_ICON[s.key] || "cell")}</div>
       <h3>${svcTitle(s)}</h3>
       <p>${svcDesc(s)}</p>
       <span class="more">${t("home.more", "자세히 보기 →")}</span>

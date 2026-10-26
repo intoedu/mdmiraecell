@@ -124,7 +124,7 @@
         const tel = cfg.TEL || "02-776-8768";
         form.innerHTML = `
           <div class="form-done">
-            <div class="mark"><svg class="i" aria-hidden="true"><use href="images/icons.svg?v=1#i-check"></use></svg></div>
+            <div class="mark"><svg class="i" aria-hidden="true"><use href="images/icons.svg?v=2#i-check"></use></svg></div>
             <h3>${kind === "reserve"
               ? t("msg.done.r", "예약 신청이 접수되었습니다")
               : t("msg.done.c", "문의가 접수되었습니다")}</h3>

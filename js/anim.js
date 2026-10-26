@@ -304,13 +304,14 @@
         a2.then(function () {
           /* 다 끝나면 손을 뗍니다. 남겨 두면 카드에 마우스를 올렸을 때
              CSS 의 떠오르는 효과(:hover)를 이 값이 막아 버립니다.
-             Motion 이 끝난 직후 마지막 값을 한 번 더 적어 넣으므로,
-             그다음 차례(setTimeout 0)에 지워야 실제로 지워집니다. */
-          setTimeout(function () {
+             Motion 이 끝난 뒤 다음 화면을 그릴 때 마지막 값을 한 번 더 적어 넣으므로,
+             두 프레임 뒤에 지워야 실제로 지워집니다. (setTimeout 0 으로는 다시 덮여
+             카드에 마우스를 올려도 떠오르지 않았습니다 — 재어 보고 고쳤습니다) */
+          requestAnimationFrame(function () { requestAnimationFrame(function () {
             if (el._rv !== token) return;   /* 그사이 다시 숨겨졌으면 건드리지 않습니다 */
             el.style.transform = "";
             el.style.opacity = "";
-          }, 0);
+          }); });
         });
       });
     };
@@ -433,7 +434,9 @@
        관리자 패널(admin.html)은 이 파일을 아예 불러오지 않으므로 빠집니다.
        갤러리 사진(.gal img)은 넣지 않았습니다. <img> 같은 요소에는 브라우저가
        가상 요소를 그리지 않아 빛이 아예 나타나지 않습니다. */
-    var SPOT = [".card", ".info-strip .info-item", ".board a",
+    /* 누르면 이동하는 것에만 켭니다. 안내만 하는 카드(<div class="card">)와
+       초록 안내 띠(진료 상담·오시는 길 등)는 버튼이 아니라서 빛을 주지 않습니다. */
+    var SPOT = ["a.card", ".board a",
                 ".faq details, .accordion details"];
     var spots = [];
     SPOT.forEach(function (sel) {

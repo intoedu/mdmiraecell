@@ -186,7 +186,22 @@ section.block.alt{background:var(--bg-alt)}
 .info-strip{background:var(--green-deep);color:#fff}
 .info-strip .container{display:grid;grid-template-columns:repeat(3,1fr);gap:30px;padding:46px 24px}
 .info-item{display:flex;gap:16px;align-items:flex-start}
-.info-item .ic{font-size:26px}
+.info-item .ic{font-size:26px;color:#cfe3d5;line-height:1}
+.info-item .ic .i{display:block;width:28px;height:28px}
+
+/* ---------- 선 아이콘 (images/icons.svg) ----------
+   이모지·기호 문자 대신 직접 그린 아이콘을 씁니다. 크기는 글자 크기(1em)를,
+   색은 글자색을 따라갑니다. 자리마다 크기만 아래에서 따로 맞춥니다. */
+.i{width:1em;height:1em;display:inline-block;vertical-align:-.15em;flex-shrink:0;
+  fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.card .icon .i{width:28px;height:28px}
+.sns a .i{width:19px;height:19px}
+.quick a .i{width:25px;height:25px;stroke-width:1.8}
+#menu-btn .i{display:block;width:28px;height:28px;stroke-width:1.8}
+nav.main .caret .i{display:block;width:14px;height:14px;stroke-width:2.2}
+.form-done .mark .i{width:32px;height:32px;stroke-width:2.2}
+.lb-close .i{width:22px;height:22px}
+.btn .i{width:1.1em;height:1.1em;vertical-align:-.2em}
 .info-item h4{font-size:15px;color:#a9c6b2;margin-bottom:4px;font-weight:600}
 .info-item p{font-weight:700;font-size:16.5px}
 

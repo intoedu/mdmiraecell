@@ -1736,6 +1736,32 @@ const svcSections = s => [...((s.intro || "") + (s.outro || ""))
   .matchAll(/<div class="svc-article[^"]*">\s*<h3>([\s\S]*?)<\/h3>/g)]
   .map((m, i) => ({ i, title: m[1].replace(/<[^>]+>/g, "").trim() }))
   .filter(x => x.title !== "안내" && x.title !== s.title);   /* 분야 이름과 같은 소제목은 메뉴 제목과 겹쳐 뺍니다 */
+/* 메뉴에 보일 짧은 이름 — [메뉴 이름, 본문 소제목]. 소제목이 길어 메뉴가 늘어지지 않도록
+   위쪽 칸(탭 이름)처럼 짧게 줄이고, 꼭 필요한 대여섯 개만 고릅니다.
+   본문 소제목을 바꾸시면 오른쪽 글자도 똑같이 바꿔 주셔야 연결됩니다. */
+const SECTION_MENU = {
+  toenail: [["내성발톱이란", "내성발톱, 쉽게 말하면 이런 상태입니다"], ["자가 체크", "혹시 나도? 자가 체크"],
+            ["원인", "왜 하필 나에게 생겼을까"], ["치료 방법", "치료 방법"],
+            ["재발 예방", "재발을 막는 발톱 깎는 법"], ["자주 묻는 질문", "자주 묻는 질문"]],
+  scalp:   [["프로그램 소개", "두피케어 + 페이스 집중관리"], ["자가 체크", "혹시 이런 적 없으세요?"],
+            ["두피 이야기", "두피에서 무슨 일이 일어나고 있을까요"], ["진행 과정", "3회, 이렇게 진행됩니다"],
+            ["홈케어", "집에서는 이렇게 해보세요"], ["자주 묻는 질문", "자주 묻는 질문"]],
+  lymph:   [["림프란?", "림프가 무엇인가요?"], ["권해드리는 분", "이런 분께 권해드립니다"],
+            ["진행 방법", "어떻게 진행되나요?"], ["받으실 수 없는 분", "이런 분은 받으실 수 없습니다"],
+            ["자주 묻는 질문", "자주 묻는 질문"]],
+  quantum: [["양자란?", "'양자'가 뭔가요?"], ["빛 관리 원리", "빛이 어떻게 세포를 깨우나요?"],
+            ["프로그램 구성", "프로그램 구성"], ["진행 순서", "진행 순서"],
+            ["주의사항", "꼭 알아두셔야 할 점"], ["자주 묻는 질문", "자주 묻는 질문"]],
+};
+const svcMenuItems = s => {
+  const secs = svcSections(s);
+  const pick = SECTION_MENU[s.key];
+  if (!pick) return secs.map(x => [`${svcHref(s)}#sec${x.i}`, x.title]);
+  return pick.map(([label, title]) => {
+    const x = secs.find(y => y.title === title);
+    return x ? [`${svcHref(s)}#sec${x.i}`, label] : null;
+  }).filter(Boolean);
+};
 
 /* ---------- 번역 도우미 ----------
    js/i18n.js 가 없거나 한국어면 두 번째 인자(한국어 원문)가 그대로 나옵니다.
@@ -1813,7 +1839,7 @@ ${NAV_ITEMS.map(([href, label, sub], mi) => {
               typeof tg === "object" ? [`${svcHref(s)}#t${gi}-${ti}`, tg.n] : [svcHref(s), tg]))
           : [];
         const items = isKo() && !tabItems.length
-          ? svcSections(s).map(x => [`${svcHref(s)}#sec${x.i}`, x.title])
+          ? svcMenuItems(s)
           : tabItems;
         return `<div class="mega-col"><h5><a href="${svcHref(s)}">${svcTitle(s)}</a></h5>
           ${items.length

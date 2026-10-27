@@ -40,6 +40,7 @@ en: { name: "English", short: "EN", htmlLang: "en", s: {
   "footer.rights": "Myeongdong Mirae Cell Clinic. All rights reserved.",
   "footer.privacy": "Privacy Policy",
   "footer.compliance": "The content on this site complies with Korean medical advertising review standards.",
+  "footer.ai": "Some images on this site were created with generative AI.",
   "footer.langnote": "This page is a translation for your convenience. The Korean version prevails.",
   "quick.call": "Call us", "quick.reserve": "Book a visit",
 
@@ -187,6 +188,7 @@ zh: { name: "简体中文", short: "中文", htmlLang: "zh-CN", s: {
   "footer.rights": "明洞未来细胞医院 版权所有。",
   "footer.privacy": "隐私政策",
   "footer.compliance": "本网站内容遵守韩国医疗广告审查标准。",
+  "footer.ai": "本网站部分图片由生成式AI制作。",
   "footer.langnote": "本页为方便阅读而提供的译文，以韩文版本为准。",
   "quick.call": "拨打电话", "quick.reserve": "预约就诊",
 
@@ -334,6 +336,7 @@ ja: { name: "日本語", short: "日本語", htmlLang: "ja", s: {
   "footer.rights": "明洞未来セルクリニック All rights reserved.",
   "footer.privacy": "個人情報保護方針",
   "footer.compliance": "本サイトの内容は韓国の医療広告審査基準を遵守しています。",
+  "footer.ai": "本サイトの一部の画像は生成AIで制作しています。",
   "footer.langnote": "このページは参考のための翻訳です。韓国語版が正文となります。",
   "quick.call": "電話をかける", "quick.reserve": "診療を予約する",
 
@@ -481,6 +484,7 @@ ru: { name: "Русский", short: "RU", htmlLang: "ru", s: {
   "footer.rights": "Клиника Myeongdong Mirae Cell. Все права защищены.",
   "footer.privacy": "Политика конфиденциальности",
   "footer.compliance": "Содержание сайта соответствует корейским правилам проверки медицинской рекламы.",
+  "footer.ai": "Некоторые изображения на сайте созданы с помощью генеративного ИИ.",
   "footer.langnote": "Эта страница — перевод для удобства чтения. Юридическую силу имеет корейская версия.",
   "quick.call": "Позвонить", "quick.reserve": "Записаться",
 

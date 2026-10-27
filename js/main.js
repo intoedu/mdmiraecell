@@ -1838,6 +1838,7 @@ document.getElementById("site-footer").innerHTML = `
     <span><a href="tel:${TEL.replace(/-/g, "")}">${ICON("phone")} ${TEL}</a> · <a href="mailto:${EMAIL}">${ICON("mail")} ${EMAIL}</a></span>
     <span>© ${new Date().getFullYear()} ${t("footer.rights", "명동미래셀의원. All rights reserved.")}</span>
     <span><a href="privacy" style="font-weight:800;text-decoration:underline">${t("footer.privacy", "개인정보처리방침")}</a> · ${t("footer.compliance", "본 사이트의 콘텐츠는 의료광고 심의 기준을 준수합니다.")}</span>
+    <span class="ai-note">${t("footer.ai", "일부 이미지는 생성형 AI로 제작되었습니다.")}</span>
     ${isKo() ? "" : `<span>${t("footer.langnote", "")}</span>`}
   </div>
 </div></footer>

@@ -110,6 +110,7 @@ a.card:hover{transform:translateY(-6px);box-shadow:var(--shadow);border-color:va
 .svc-side li:last-child a{border-bottom:none}
 .svc-side a:hover,.svc-side a.on{background:var(--green);color:#fff}
 .svc-sec{margin-bottom:64px;scroll-margin-top:110px}
+.svc-article[id]{scroll-margin-top:110px} /* 메가 메뉴 소제목 링크로 왔을 때 헤더에 안 가리게 */
 .svc-sec h2{font-family:var(--font-serif);font-size:27px;font-weight:800;color:var(--green-deep);padding-bottom:14px;border-bottom:2px solid var(--green);margin-bottom:8px}
 .svc-sec .desc{color:var(--gray);margin-bottom:22px;font-size:15px}
 .tags{display:flex;flex-wrap:wrap;gap:10px}

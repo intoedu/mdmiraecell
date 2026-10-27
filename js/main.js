@@ -1729,6 +1729,13 @@ const SHOWN = SERVICES.filter(s => !s.hidden);
 const svcNo = s => SHOWN.indexOf(s) + 1 || s.no;
 /* 전문의 과목이 확인되기 전까지 '진료과목'임을 밝혀 두는 분야 (의료광고 검수 D3) */
 const SUBJECT_KEYS = ["derma", "plastic", "urology"];
+/* 탭이 없는 분야(내성발톱·두피케어·림프순환 케어·퀀텀)는 본문 소제목(h3)을 세부 항목으로 씁니다.
+   메가 메뉴에 설명 문장 대신 이 소제목들이 들어가고, 누르면 그 소제목 위치로 갑니다(#sec번호).
+   맨 끝의 '안내'처럼 내용 없는 칸과, 분야 이름과 똑같은 소제목은 메뉴에서 뺍니다. */
+const svcSections = s => [...((s.intro || "") + (s.outro || ""))
+  .matchAll(/<div class="svc-article[^"]*">\s*<h3>([\s\S]*?)<\/h3>/g)]
+  .map((m, i) => ({ i, title: m[1].replace(/<[^>]+>/g, "").trim() }))
+  .filter(x => x.title !== "안내" && x.title !== s.title);   /* 분야 이름과 같은 소제목은 메뉴 제목과 겹쳐 뺍니다 */
 
 /* ---------- 번역 도우미 ----------
    js/i18n.js 가 없거나 한국어면 두 번째 인자(한국어 원문)가 그대로 나옵니다.
@@ -1801,10 +1808,13 @@ ${NAV_ITEMS.map(([href, label, sub], mi) => {
     ? SHOWN.map(s => {
         /* 세부 항목명은 아직 한국어만 있습니다.
            다른 언어에서는 한국어를 늘어놓는 대신 분야 이름만 보여 줍니다. */
-        const items = isKo()
+        const tabItems = isKo()
           ? s.groups.flatMap((g, gi) => g.tags.map((tg, ti) =>
               typeof tg === "object" ? [`${svcHref(s)}#t${gi}-${ti}`, tg.n] : [svcHref(s), tg]))
           : [];
+        const items = isKo() && !tabItems.length
+          ? svcSections(s).map(x => [`${svcHref(s)}#sec${x.i}`, x.title])
+          : tabItems;
         return `<div class="mega-col"><h5><a href="${svcHref(s)}">${svcTitle(s)}</a></h5>
           ${items.length
             ? items.map(([h, l]) => `<a href="${h}">${l}</a>`).join("")
@@ -2007,8 +2017,24 @@ if (svcPage) {
         else window.addEventListener("load", go, { once: true });
       }
     };
+    /* 소제목 위치 표시 — 메가 메뉴의 #sec번호 링크가 여기로 옵니다 */
+    const secs = svcSections(cur);
+    svcPage.querySelectorAll(".svc-article > h3").forEach(h => {
+      const hit = secs.find(x => x.title === h.textContent.trim());
+      if (hit && !h.parentElement.id) h.parentElement.id = "sec" + hit.i;
+    });
+    const openHashSec = () => {
+      if (!/^#sec\d+$/.test(location.hash)) return;
+      const el = document.getElementById(location.hash.slice(1));
+      if (!el) return;
+      const go = () => setTimeout(() => el.scrollIntoView({ block: "start" }), 100);
+      if (document.readyState === "complete") go();
+      else window.addEventListener("load", go, { once: true });
+    };
     paintHeroMotif(MOTIF_BY_SVC[cur.key], PHOTO_BY_SVC[cur.key]);
     openHashTab();
+    openHashSec();
+    window.addEventListener("hashchange", openHashSec);
     window.addEventListener("hashchange", openHashTab);
   }
 }

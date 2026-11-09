@@ -1,37 +1,175 @@
-# 무료 요금제의 Supabase 프로젝트는 일주일간 아무 요청이 없으면 자동으로 멈춥니다.
-# 멈춘 동안에는 홈페이지에서 신청을 넣어도 접수가 실패합니다.
-# 그래서 3일마다 가볍게 한 번 찔러 깨어 있게 유지합니다.
+# 무료 요금제의 Supabase 프로젝트는 한 주 동안 '데이터베이스 활동'이 충분하지 않으면
+# 자동으로 멈춥니다. 멈춘 동안에는 홈페이지에서 예약·문의를 넣어도 접수되지 않습니다.
 #
-# 사용 전 준비: 저장소 Settings > Secrets and variables > Actions 에 아래 두 개를 등록
+# 공식 문서: https://supabase.com/docs/guides/platform/free-project-pausing
+#   "지난 한 주 동안 충분한 사용자 데이터베이스 활동이 없으면 비활성으로 간주됩니다.
+#    보통 하루에 몇 번씩 데이터베이스에 요청이 있으면 중단을 피할 수 있습니다."
+#
+# 전에 쓰던 방식(3일에 한 번, 권한 없는 표를 불러 보기)은 이 기준을 둘 다 못 맞췄습니다.
+# 요청은 갔지만 권한 검사에서 막혀 '수행된 쿼리'가 없었고, 간격도 너무 길었습니다.
+# 2026년 9월과 10월에 프로젝트가 두 번 멈춘 원인입니다.
+#
+# 지금은 하루 세 번, 실제로 읽히는 표(public.health)를 조회합니다.
+# 그 표는 supabase/migrations/20261109000001_keepalive_health.sql 로 만듭니다.
+#
+# 준비: 저장소 Settings > Secrets and variables > Actions 에 아래 두 개를 등록
 #   SUPABASE_URL       예) https://xxxxxxxx.supabase.co
 #   SUPABASE_ANON_KEY  공개(anon) 키
 name: Supabase keepalive
 
 on:
   schedule:
-    - cron: "17 3 */3 * *"   # 3일마다 03:17 UTC (한국시간 낮 12시 17분)
+    # 하루 세 번. 분을 0 이 아닌 값으로 둔 것은 정각에 몰리는 지연을 피하기 위해서입니다.
+    # GitHub 의 예약 실행은 밀리거나 건너뛸 수 있어, 세 번으로 여유를 둡니다.
+    - cron: "17 1 * * *"    # 한국시간 오전 10:17
+    - cron: "43 9 * * *"    # 한국시간 오후 6:43
+    - cron: "29 17 * * *"   # 한국시간 새벽 2:29
   workflow_dispatch:
+
+# 실패했을 때 이슈를 열어 알리기 위해 필요합니다.
+permissions:
+  contents: read
+  issues: write
 
 jobs:
   ping:
     runs-on: ubuntu-latest
     steps:
       - name: 데이터베이스 깨우기
+        id: ping
         env:
           URL: ${{ secrets.SUPABASE_URL }}
           KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+        # 기본값인 'bash -e' 를 쓰지 않습니다.
+        # -e 는 명령이 실패하는 순간 스크립트를 끝내 버려서, 왜 실패했는지 적어 둔
+        # 아래 메시지들이 하나도 찍히지 않습니다. 10월에 원인 파악이 늦어진 이유입니다.
+        shell: bash {0}
         run: |
           if [ -z "$URL" ] || [ -z "$KEY" ]; then
-            echo "SUPABASE_URL / SUPABASE_ANON_KEY 시크릿이 비어 있습니다."
+            echo "::error::SUPABASE_URL / SUPABASE_ANON_KEY 시크릿이 비어 있습니다."
+            echo "reason=시크릿이 등록되지 않았습니다." >> "$GITHUB_OUTPUT"
             exit 1
           fi
-          # 로그인하지 않은 상태로 호출하므로 아무 데이터도 돌아오지 않습니다.
-          # 목적은 '요청이 있었다'는 사실을 남기는 것뿐입니다.
-          code=$(curl -s -o /dev/null -w "%{http_code}" \
+
+          # 실제로 읽히는 표를 조회합니다. 200 이 와야 데이터베이스에서
+          # '쿼리가 수행되었다'로 집계됩니다. 권한 오류(401/403)는 집계되지 않습니다.
+          body=$(mktemp)
+          code=$(curl -sS -o "$body" -w "%{http_code}" --max-time 30 \
             -H "apikey: $KEY" -H "Authorization: Bearer $KEY" \
-            "$URL/rest/v1/consultations?select=id&limit=1")
+            "$URL/rest/v1/health?select=id&limit=1" 2>"$body.err")
+          curl_exit=$?
+
+          echo "curl 종료 코드: $curl_exit"
           echo "응답 코드: $code"
+          echo "응답 내용: $(head -c 300 "$body")"
+          [ -s "$body.err" ] && echo "curl 메시지: $(head -c 300 "$body.err")"
+
+          if [ "$curl_exit" -eq 6 ]; then
+            echo "::error::주소를 찾을 수 없습니다. 프로젝트가 멈췄을 때 나타나는 증상입니다."
+            echo "reason=프로젝트 주소가 조회되지 않습니다. 멈췄을 가능성이 높습니다. (curl 6)" >> "$GITHUB_OUTPUT"
+            exit 1
+          fi
+          if [ "$curl_exit" -ne 0 ]; then
+            echo "::error::연결하지 못했습니다. (curl $curl_exit)"
+            echo "reason=Supabase 에 연결하지 못했습니다(curl 종료 코드 $curl_exit). 프로젝트가 멈췄을 수 있으니 대시보드를 먼저 봐 주십시오." >> "$GITHUB_OUTPUT"
+            exit 1
+          fi
+
           case "$code" in
-            200|401|403) echo "정상 — 프로젝트가 살아 있습니다." ;;
-            *) echo "확인 필요 — 프로젝트가 멈췄을 수 있습니다."; exit 1 ;;
+            200)
+              echo "정상 — 쿼리가 수행되었습니다. 이 요청은 활동으로 집계됩니다."
+              ;;
+            401|403)
+              # 전에는 이것을 '정상'으로 처리했습니다. 그게 잘못이었습니다.
+              # 요청은 닿았으니 프로젝트는 살아 있지만, 쿼리로는 집계되지 않습니다.
+              echo "::error::권한에 막혔습니다($code). 프로젝트는 살아 있지만 활동으로 집계되지 않습니다."
+              echo "reason=health 표를 읽지 못했습니다($code). 20261109000001_keepalive_health.sql 을 실행하셨는지 확인해 주십시오. 이대로 두면 프로젝트가 또 멈춥니다." >> "$GITHUB_OUTPUT"
+              exit 1
+              ;;
+            404)
+              echo "::error::health 표가 없습니다."
+              echo "reason=health 표가 없습니다. SQL Editor 에서 20261109000001_keepalive_health.sql 을 실행해 주십시오." >> "$GITHUB_OUTPUT"
+              exit 1
+              ;;
+            *)
+              echo "::error::예상하지 못한 응답($code)."
+              echo "reason=예상하지 못한 응답을 받았습니다. (HTTP $code)" >> "$GITHUB_OUTPUT"
+              exit 1
+              ;;
           esac
+
+      # ---- 실패하면 이슈를 열어 메일이 가게 합니다 ----
+      # 네 번 연속 조용히 실패하는 동안 아무도 몰랐던 일이 다시 없게 하기 위해서입니다.
+      - name: 실패를 이슈로 알리기
+        if: failure()
+        uses: actions/github-script@v7
+        env:
+          REASON: ${{ steps.ping.outputs.reason }}
+        with:
+          script: |
+            const LABEL = 'keepalive';
+            const reason = process.env.REASON || '원인을 확인하지 못했습니다. 실행 기록을 봐 주십시오.';
+            const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+
+            const open = await github.rest.issues.listForRepo({
+              ...context.repo, state: 'open', labels: LABEL, per_page: 1,
+            });
+
+            const body = [
+              '## Supabase 프로젝트 확인이 실패했습니다',
+              '',
+              `**${reason}**`,
+              '',
+              `확인 시각: ${new Date().toISOString()}`,
+              `실행 기록: ${runUrl}`,
+              '',
+              '### 지금 확인해 주십시오',
+              '',
+              '1. https://supabase.com/dashboard 에서 프로젝트가 **멈춰 있지 않은지** 봐 주십시오.',
+              '   멈춰 있으면 **Resume project** 를 누르십시오. 데이터는 그대로 있습니다.',
+              '2. 멈춘 동안에는 **홈페이지 예약·문의가 저장되지 않습니다.**',
+              '   환자분께는 "접수되지 않았습니다 · 02-776-8768로 전화 주십시오" 만 보입니다.',
+              '3. 되살린 뒤 `/admin` 에서 신청이 보이는지 확인해 주십시오.',
+              '',
+              '다시 정상이 되면 이 이슈는 자동으로 닫힙니다.',
+            ].join('\n');
+
+            if (open.data.length) {
+              await github.rest.issues.createComment({
+                ...context.repo, issue_number: open.data[0].number, body,
+              });
+              core.info(`기존 이슈 #${open.data[0].number} 에 덧붙였습니다.`);
+              return;
+            }
+
+            await github.rest.issues.create({
+              ...context.repo,
+              title: '⚠ Supabase 프로젝트 확인 실패 — 예약·문의가 저장되지 않을 수 있습니다',
+              body,
+              labels: [LABEL],
+            }).catch(async (err) => {
+              // 라벨이 아직 없으면 라벨 없이라도 반드시 엽니다.
+              core.warning(`라벨과 함께 열지 못했습니다: ${err.message}`);
+              await github.rest.issues.create({ ...context.repo, title: '⚠ Supabase 프로젝트 확인 실패', body });
+            });
+
+      # ---- 다시 정상이 되면 열려 있던 이슈를 닫습니다 ----
+      - name: 정상으로 돌아오면 이슈 닫기
+        if: success()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const LABEL = 'keepalive';
+            const open = await github.rest.issues.listForRepo({
+              ...context.repo, state: 'open', labels: LABEL, per_page: 20,
+            });
+            for (const issue of open.data) {
+              await github.rest.issues.createComment({
+                ...context.repo, issue_number: issue.number,
+                body: `정상으로 돌아왔습니다. 쿼리가 수행되었습니다. (${new Date().toISOString()})`,
+              });
+              await github.rest.issues.update({
+                ...context.repo, issue_number: issue.number, state: 'closed',
+              });
+              core.info(`이슈 #${issue.number} 를 닫았습니다.`);
+            }

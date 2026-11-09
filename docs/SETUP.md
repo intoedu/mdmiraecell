@@ -430,12 +430,16 @@ Supabase 대시보드의 **Advisors → Security** 에 아래 세 가지가 계�
 
 ### 12-1. 표 만들기
 
-대시보드 **SQL Editor** 에서 아래 파일 내용을 그대로 붙여 넣고 실행하십시오.
+대시보드 **SQL Editor** 에서 아래 파일 두 개를 순서대로 붙여 넣고 실행하십시오.
 한 번만 하면 되고, 여러 번 실행해도 안전합니다.
 
 ```
 supabase/migrations/20261020000001_admin_signup.sql
+supabase/migrations/20261109000002_admin_signup_service_role_grants.sql
 ```
+
+두 번째 파일이 없으면 함수가 새 표에 쓰지 못합니다. 이 프로젝트는 '새 표 자동 노출'을
+꺼 두어 service_role 권한이 저절로 붙지 않기 때문입니다. (2026-11-09 적용 완료)
 
 ### 12-2. 함수 두 개 배포
 

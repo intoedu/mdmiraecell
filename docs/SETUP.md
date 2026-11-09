@@ -321,6 +321,9 @@ supabase/migrations/20261109000001_keepalive_health.sql
 
 1. [대시보드](https://supabase.com/dashboard) → 프로젝트 → **Resume project**
    데이터·백업·저장 파일은 그대로 있습니다
+   - "members who have exceeded their free project limits" 창이 뜨면 무료 프로젝트 한도에 걸린 것입니다.
+     조직의 Owner·Admin 전원의 활성 무료 프로젝트를 함께 셉니다.
+     푸는 방법은 `docs/지금-해야-할-일.md` 1번의 **Resume 이 막히는 경우** 에 있습니다
 2. 되살아난 뒤 `/admin` 에서 신청이 보이는지 확인
 3. 멈춰 있던 기간을 확인해, 그동안 전화로 오신 분이 있는지 병원에 알림
 

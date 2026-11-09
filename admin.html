@@ -7,6 +7,16 @@
 <title>상담 신청 관리 | 명동미래셀의원</title>
 <link rel="icon" type="image/svg+xml" href="images/favicon.svg?v=2">
 <style>
+/* 홈페이지와 같은 글꼴(SUIT)을 이 화면에도 불러옵니다.
+   이 페이지는 css/style.css 를 쓰지 않아서, 이름만 적어 두면 글꼴 파일이 없어
+   윈도우에서는 맑은 고딕으로 바뀌어 보였습니다. */
+@font-face{
+  font-family:'SUIT';
+  src:url('fonts/SUIT-Variable.woff2') format('woff2-variations'),
+      url('fonts/SUIT-Variable.woff2') format('woff2');
+  font-weight:100 900;
+  font-display:swap;
+}
 :root{
   --green:#1e6b34; --green-deep:#0f3d1d; --green-soft:#e8f2ea; --green-mid:#3d8b52;
   --ink:#1c2420; --gray:#5f6b64; --line:#e3e8e4; --bg:#f6f9f6;

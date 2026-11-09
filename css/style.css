@@ -63,8 +63,6 @@ nav.main .caret{display:none}
 
 /* ---------- Hero ---------- */
 .hero{position:relative;background:linear-gradient(135deg,var(--green-deep) 0%,var(--green) 55%,var(--green-mid) 100%);color:#fff;overflow:hidden}
-.hero::after{content:"";position:absolute;right:-120px;top:-120px;width:520px;height:520px;border-radius:50%;background:rgba(255,255,255,.06)}
-.hero::before{content:"";position:absolute;left:-80px;bottom:-180px;width:380px;height:380px;border-radius:50%;background:rgba(255,255,255,.05)}
 .hero .container{position:relative;padding:110px 24px 120px;z-index:1}
 .hero .eyebrow{display:inline-block;border:1px solid rgba(255,255,255,.4);border-radius:999px;padding:6px 18px;font-size:13.5px;letter-spacing:2px;margin-bottom:26px}
 .hero h1{font-family:var(--font-serif);font-size:clamp(32px,5vw,54px);font-weight:800;line-height:1.35;margin-bottom:22px}
@@ -91,7 +89,8 @@ section.block.alt{background:var(--bg-alt)}
 .grid.c3{grid-template-columns:repeat(3,1fr)}
 .grid.c4{grid-template-columns:repeat(4,1fr)}
 .card{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:34px 28px;transition:.25s;box-shadow:0 2px 8px rgba(15,61,29,.03)}
-.card:hover{transform:translateY(-6px);box-shadow:var(--shadow);border-color:var(--green-mid)}
+/* 떠오르는 효과는 눌러서 이동하는 카드(a.card)에만 — 안내용 카드는 가만히 있습니다 (css/anim.css) */
+a.card:hover{transform:translateY(-6px);box-shadow:var(--shadow);border-color:var(--green-mid)}
 .card .icon{width:54px;height:54px;border-radius:14px;background:var(--green-soft);color:var(--green);display:flex;align-items:center;justify-content:center;font-size:26px;margin-bottom:20px}
 .card h3{font-size:18.5px;font-weight:800;margin-bottom:10px}
 .card p{font-size:14.5px;color:var(--gray)}
@@ -111,6 +110,7 @@ section.block.alt{background:var(--bg-alt)}
 .svc-side li:last-child a{border-bottom:none}
 .svc-side a:hover,.svc-side a.on{background:var(--green);color:#fff}
 .svc-sec{margin-bottom:64px;scroll-margin-top:110px}
+.svc-article[id]{scroll-margin-top:110px} /* 메가 메뉴 소제목 링크로 왔을 때 헤더에 안 가리게 */
 .svc-sec h2{font-family:var(--font-serif);font-size:27px;font-weight:800;color:var(--green-deep);padding-bottom:14px;border-bottom:2px solid var(--green);margin-bottom:8px}
 .svc-sec .desc{color:var(--gray);margin-bottom:22px;font-size:15px}
 .tags{display:flex;flex-wrap:wrap;gap:10px}
@@ -188,7 +188,22 @@ section.block.alt{background:var(--bg-alt)}
 .info-strip{background:var(--green-deep);color:#fff}
 .info-strip .container{display:grid;grid-template-columns:repeat(3,1fr);gap:30px;padding:46px 24px}
 .info-item{display:flex;gap:16px;align-items:flex-start}
-.info-item .ic{font-size:26px}
+.info-item .ic{font-size:26px;color:#cfe3d5;line-height:1}
+.info-item .ic .i{display:block;width:28px;height:28px}
+
+/* ---------- 선 아이콘 (images/icons.svg) ----------
+   이모지·기호 문자 대신 직접 그린 아이콘을 씁니다. 크기는 글자 크기(1em)를,
+   색은 글자색을 따라갑니다. 자리마다 크기만 아래에서 따로 맞춥니다. */
+.i{width:1em;height:1em;display:inline-block;vertical-align:-.15em;flex-shrink:0;
+  fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.card .icon .i{width:28px;height:28px}
+.sns a .i{width:19px;height:19px}
+.quick a .i{width:25px;height:25px;stroke-width:1.8}
+#menu-btn .i{display:block;width:28px;height:28px;stroke-width:1.8}
+nav.main .caret .i{display:block;width:14px;height:14px;stroke-width:2.2}
+.form-done .mark .i{width:32px;height:32px;stroke-width:2.2}
+.lb-close .i{width:22px;height:22px}
+.btn .i{width:1.1em;height:1.1em;vertical-align:-.2em}
 .info-item h4{font-size:15px;color:#a9c6b2;margin-bottom:4px;font-weight:600}
 .info-item p{font-weight:700;font-size:16.5px}
 
@@ -276,6 +291,11 @@ footer a:hover{color:#fff}
 footer li{margin-bottom:8px}
 footer .fine{border-top:1px solid rgba(255,255,255,.12);padding-top:22px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px 24px;font-size:13px}
 footer .fine a:hover{color:#fff}
+/* AI 제작 안내 — 다른 문구 사이에 끼지 않도록 늘 한 줄을 따로 씁니다 */
+footer .fine .ai-note{flex-basis:100%;opacity:.8}
+/* 사진 바로 아래의 AI 제작 표시 */
+.about-fig{margin:0}
+.ai-caption{margin-top:10px;font-size:12.5px;color:var(--gray);text-align:right}
 .sns{display:flex;gap:12px;margin-top:16px}
 .sns a{width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;font-size:17px;transition:.2s}
 .sns a:hover{background:var(--green)}
@@ -382,20 +402,18 @@ footer .fine a:hover{color:#fff}
 .about-visual{padding:0;overflow:hidden;aspect-ratio:4/3}
 .about-visual img.motif{width:100%;height:100%;object-fit:cover}
 
-/* 홈 히어로 배경 사진 — .hero 의 초록 그라데이션 위에 옅게 겹칩니다.
-   opacity 로만 눌러 둡니다. 여기서 ::after 로 막을 덮으면 위쪽(66행)의
-   장식 원과 규칙이 섞여 원이 커져 버립니다. */
+/* 홈 히어로 배경 사진 — .hero 의 초록 그라데이션 위에 겹칩니다.
+   예전에는 위에 빛 무늬(motif-light)와 떠다니는 원을 함께 얹었는데,
+   깔끔하게 사진 한 장만 남기고 사진 자체가 천천히 움직이게 했습니다(css/anim.css).
+   그만큼 사진을 조금 더 또렷하게 올렸고, 글씨 대비는 아래 막(.hero-scrim)이 지킵니다. */
+.hero .hero-media{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:0}
 .hero .hero-photo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
-  opacity:.22;pointer-events:none;z-index:0}
+  opacity:.3;pointer-events:none}
 
 /* 글씨가 놓이는 왼쪽만 눌러 주는 막. 오른쪽으로 갈수록 사라져 잎사귀가 그대로 보입니다.
    사진을 넣기 전에도 제목 대비가 3.23 : 1 로 빠듯했는데, 이 막으로 함께 올라갑니다. */
 .hero .hero-scrim{position:absolute;inset:0;z-index:0;pointer-events:none;
   background:linear-gradient(100deg,rgba(8,38,21,.62) 0%,rgba(8,38,21,.44) 42%,rgba(8,38,21,0) 78%)}
-
-/* 히어로 뒤에 깔리는 빛 — 아주 옅게, 글씨를 방해하지 않도록 */
-.hero .motif-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
-  opacity:.42;mix-blend-mode:screen;pointer-events:none;z-index:0}
 
 /* 상단 띠의 배경 사진 — 도형 무늬(.motif-bg)와 같은 자리, 같은 방식으로 사라집니다.
    사진은 무늬보다 정보가 많아 더 옅게 깔고, 초록 쪽으로 살짝 눌러 둡니다. */
@@ -417,10 +435,9 @@ footer .fine a:hover{color:#fff}
           mask-image:linear-gradient(to right,transparent,#000 70%)}
 
 @media (max-width:768px){
-  .hero .motif-bg{opacity:.30}
   /* 좁은 화면에서는 글씨가 가로 전체를 쓰므로, 왼쪽만 눌러서는 모자랍니다.
      막을 위아래 방향으로 바꿔 글씨 영역 전체를 고르게 덮습니다. */
-  .hero .hero-photo{opacity:.18}
+  .hero .hero-photo{opacity:.24}
   .hero .hero-scrim{background:linear-gradient(180deg,rgba(8,38,21,.66) 0%,rgba(8,38,21,.62) 74%,rgba(8,38,21,.34) 100%)}
   .page-hero .photo-bg{width:100%;opacity:.16;
     -webkit-mask-image:linear-gradient(to bottom,transparent,#000 80%);

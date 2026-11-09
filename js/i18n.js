@@ -76,7 +76,7 @@
     if (document.readyState !== "loading") return;   /* 이미 다 읽은 뒤면 늦었습니다 */
     if (!document.getElementById("svc-page")) return;
     document.write(
-      '<scr' + 'ipt src="js/svc-' + lang + '.js?v=' + (window.MIRAE_VER || "59") + '"></scr' + 'ipt>'
+      '<scr' + 'ipt src="js/svc-' + lang + '.js?v=' + (window.MIRAE_VER || "69") + '"></scr' + 'ipt>'
     );
   }
   loadSvcPack();
@@ -127,7 +127,7 @@
     box.className = "lang-pick";
     box.innerHTML =
       '<button type="button" class="lang-btn" aria-haspopup="true" aria-expanded="false">' +
-        '<span class="globe" aria-hidden="true">🌐</span>' +
+        '<span class="globe" aria-hidden="true"><svg class="i" aria-hidden="true"><use href="images/icons.svg?v=2#i-globe"></use></svg></span>' +
         '<span class="cur">' + (pack.short || lang.toUpperCase()) + '</span>' +
       '</button>' +
       '<ul class="lang-list">' +

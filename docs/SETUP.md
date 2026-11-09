@@ -321,6 +321,9 @@ supabase/migrations/20261109000001_keepalive_health.sql
 
 1. [대시보드](https://supabase.com/dashboard) → 프로젝트 → **Resume project**
    데이터·백업·저장 파일은 그대로 있습니다
+   - "members who have exceeded their free project limits" 창이 뜨면 무료 프로젝트 한도에 걸린 것입니다.
+     조직의 Owner·Admin 전원의 활성 무료 프로젝트를 함께 셉니다.
+     푸는 방법은 `docs/지금-해야-할-일.md` 1번의 **Resume 이 막히는 경우** 에 있습니다
 2. 되살아난 뒤 `/admin` 에서 신청이 보이는지 확인
 3. 멈춰 있던 기간을 확인해, 그동안 전화로 오신 분이 있는지 병원에 알림
 
@@ -427,12 +430,16 @@ Supabase 대시보드의 **Advisors → Security** 에 아래 세 가지가 계�
 
 ### 12-1. 표 만들기
 
-대시보드 **SQL Editor** 에서 아래 파일 내용을 그대로 붙여 넣고 실행하십시오.
+대시보드 **SQL Editor** 에서 아래 파일 두 개를 순서대로 붙여 넣고 실행하십시오.
 한 번만 하면 되고, 여러 번 실행해도 안전합니다.
 
 ```
 supabase/migrations/20261020000001_admin_signup.sql
+supabase/migrations/20261109000002_admin_signup_service_role_grants.sql
 ```
+
+두 번째 파일이 없으면 함수가 새 표에 쓰지 못합니다. 이 프로젝트는 '새 표 자동 노출'을
+꺼 두어 service_role 권한이 저절로 붙지 않기 때문입니다. (2026-11-09 적용 완료)
 
 ### 12-2. 함수 두 개 배포
 
